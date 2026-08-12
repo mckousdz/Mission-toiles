@@ -8229,3 +8229,84 @@ window.addEventListener(
 })();
 
 </script>
+
+<script>
+/* =========================================================
+   CIEL LIVE V4.1.1
+   CORRECTIF DÉMARRAGE
+========================================================= */
+
+(function () {
+
+    "use strict";
+
+    function hideLoadingScreen() {
+
+        const loading =
+            document.getElementById("loading");
+
+        if (!loading) {
+            return;
+        }
+
+        /*
+           L'application est déjà initialisée
+           lorsque ce script est exécuté.
+
+           On masque donc l'écran de démarrage.
+        */
+
+        loading.style.opacity = "0";
+        loading.style.pointerEvents = "none";
+
+        /*
+           Suppression complète après l'animation.
+        */
+
+        setTimeout(() => {
+
+            loading.style.display = "none";
+
+        }, 350);
+
+    }
+
+    /*
+       Le DOM est déjà disponible puisque
+       le script est placé à la fin du document.
+    */
+
+    if (
+        document.readyState === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            hideLoadingScreen,
+            {
+                once: true
+            }
+        );
+
+    }
+    else {
+
+        hideLoadingScreen();
+
+    }
+
+    /*
+       Sécurité :
+       même si une initialisation future
+       reste bloquée (GPS, réseau, etc.),
+       l'application ne doit JAMAIS rester
+       derrière l'écran de chargement.
+    */
+
+    setTimeout(
+        hideLoadingScreen,
+        1500
+    );
+
+})();
+</script>
