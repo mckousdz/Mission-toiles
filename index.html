@@ -1,851 +1,8231 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
+<meta
+  name="viewport"
+  content="width=device-width,
+           initial-scale=1,
+           maximum-scale=1,
+           user-scalable=no,
+           viewport-fit=cover">
 
-  <meta name="theme-color" content="#020617">
+<meta name="theme-color" content="#050814">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <meta
-    name="description"
-    content="Ciel Live V4 — Explore le ciel, les étoiles, les planètes et les satellites."
-  >
+<title>🌌 Ciel Live V4.1</title>
 
-  <title>🌌 Ciel Live V4</title>
+<style>
 
-  <link rel="stylesheet" href="style.css">
+/* =========================================================
+   CIEL LIVE V4.1
+   Interface
+========================================================= */
+
+:root {
+    --bg: #030611;
+    --panel: rgba(8, 13, 30, .88);
+    --panel-solid: #080d1e;
+
+    --text: #ffffff;
+    --muted: #9ca8c8;
+
+    --accent: #67d9ff;
+    --accent2: #7385ff;
+
+    --gold: #ffd85a;
+    --green: #69f6a0;
+    --red: #ff6d78;
+
+    --border: rgba(255,255,255,.12);
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: var(--bg);
+
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Segoe UI",
+        sans-serif;
+}
+
+body {
+    overscroll-behavior: none;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+
+    border: 0;
+
+    cursor: pointer;
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+#app {
+
+    position: fixed;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 45%,
+            #111d46 0%,
+            #070c20 42%,
+            #02040b 100%
+        );
+}
+
+/* =========================================================
+   SKY
+========================================================= */
+
+#sky {
+
+    position: absolute;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    z-index: 1;
+}
+
+#skyLayer {
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+
+    will-change: contents;
+}
+
+/* =========================================================
+   STARS
+========================================================= */
+
+.star {
+
+    position: absolute;
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 5px #ffffff,
+        0 0 12px rgba(130,190,255,.8);
+
+    transform:
+        translate(-50%, -50%)
+        scale(var(--scale, 1));
+
+    transition:
+        left .12s linear,
+        top .12s linear;
+
+    z-index: 5;
+}
+
+.star.major {
+
+    width: 9px;
+    height: 9px;
+
+    box-shadow:
+        0 0 7px #ffffff,
+        0 0 18px rgba(130,210,255,.9);
+}
+
+.star.small {
+
+    opacity: .72;
+}
+
+.star.target {
+
+    animation:
+        targetPulse 1.3s ease-in-out infinite;
+}
+
+@keyframes targetPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 6px #fff,
+            0 0 15px rgba(100,210,255,.8);
+    }
+
+    50% {
+        box-shadow:
+            0 0 12px #fff,
+            0 0 30px rgba(100,220,255,1);
+    }
+}
+
+/* =========================================================
+   LABELS
+========================================================= */
+
+.objectLabel {
+
+    position: absolute;
+
+    transform:
+        translate(-50%, -50%);
+
+    padding:
+        5px 9px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(3,7,18,.72);
+
+    border:
+        1px solid rgba(255,255,255,.13);
+
+    backdrop-filter:
+        blur(8px);
+
+    white-space: nowrap;
+
+    pointer-events: none;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-shadow:
+        0 1px 5px #000;
+
+    z-index: 7;
+
+    transition:
+        left .12s linear,
+        top .12s linear;
+}
+
+.objectLabel .altitude {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    font-weight: 500;
+}
+
+/* =========================================================
+   HORIZON
+========================================================= */
+
+#horizon {
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 50%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.18),
+            transparent
+        );
+
+    z-index: 3;
+
+    pointer-events: none;
+
+    opacity: .35;
+}
+
+/* =========================================================
+   CENTER CROSSHAIR
+========================================================= */
+
+#crosshair {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 48px;
+    height: 48px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border:
+        1px solid rgba(255,255,255,.58);
+
+    border-radius: 50%;
+
+    z-index: 20;
+
+    pointer-events: none;
+}
+
+#crosshair::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: -13px;
+
+    width: 1px;
+    height: 74px;
+
+    background:
+        rgba(255,255,255,.58);
+}
+
+#crosshair::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: -13px;
+    top: 50%;
+
+    width: 74px;
+    height: 1px;
+
+    background:
+        rgba(255,255,255,.58);
+}
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+#topBar {
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top:
+        env(safe-area-inset-top, 0px);
+
+    height: 58px;
+
+    padding:
+        10px 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    z-index: 100;
+
+    pointer-events: none;
+}
+
+.logo {
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    letter-spacing: -.4px;
+
+    text-shadow:
+        0 2px 12px #000;
+}
+
+.status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding:
+        7px 10px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(4,8,20,.68);
+
+    border:
+        1px solid rgba(255,255,255,.10);
+
+    backdrop-filter:
+        blur(10px);
+
+    font-size: 10px;
+
+    color: var(--muted);
+}
+
+.statusDot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow:
+        0 0 8px var(--green);
+}
+
+.statusDot.error {
+
+    background: var(--red);
+
+    box-shadow:
+        0 0 8px var(--red);
+}
+
+/* =========================================================
+   COMPASS
+========================================================= */
+
+#compass {
+
+    position: absolute;
+
+    left: 50%;
+
+    top:
+        calc(
+            env(safe-area-inset-top, 0px)
+            + 58px
+        );
+
+    width: 220px;
+    height: 32px;
+
+    transform:
+        translateX(-50%);
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background:
+        rgba(4,8,20,.68);
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    backdrop-filter:
+        blur(10px);
+
+    z-index: 90;
+}
+
+#compassTrack {
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 0;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    white-space: nowrap;
+
+    transform:
+        translateX(-50%);
+
+    will-change: transform;
+
+    transition:
+        transform .08s linear;
+}
+
+.compassMark {
+
+    width: 44px;
+
+    flex: 0 0 44px;
+
+    text-align: center;
+
+    font-size: 9px;
+
+    color: var(--muted);
+}
+
+.compassMark.north {
+
+    color: #ff707a;
+
+    font-weight: 800;
+}
+
+#headingValue {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    pointer-events: none;
+
+    text-shadow:
+        0 1px 4px #000;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+#actions {
+
+    position: absolute;
+
+    right: 12px;
+
+    top:
+        calc(
+            env(safe-area-inset-top, 0px)
+            + 105px
+        );
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 9px;
+
+    z-index: 110;
+}
+
+.actionButton {
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(7,12,29,.80);
+
+    border:
+        1px solid rgba(255,255,255,.13);
+
+    backdrop-filter:
+        blur(12px);
+
+    font-size: 19px;
+
+    box-shadow:
+        0 7px 24px rgba(0,0,0,.25);
+
+    transition:
+        transform .15s ease,
+        background .15s ease;
+}
+
+.actionButton:active {
+
+    transform:
+        scale(.92);
+}
+
+.actionButton.active {
+
+    background:
+        rgba(55,110,165,.86);
+
+    border-color:
+        rgba(110,220,255,.7);
+}
+
+/* =========================================================
+   TONIGHT BUTTON
+========================================================= */
+
+#tonightButton {
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom:
+        calc(
+            env(safe-area-inset-bottom, 0px)
+            + 76px
+        );
+
+    transform:
+        translateX(-50%);
+
+    z-index: 120;
+
+    padding:
+        8px 12px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(5,10,25,.82);
+
+    border:
+        1px solid rgba(255,255,255,.13);
+
+    backdrop-filter:
+        blur(12px);
+
+    font-size: 11px;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 6px 20px rgba(0,0,0,.2);
+}
+
+/* =========================================================
+   MISSION PANEL
+========================================================= */
+
+#mission {
+
+    position: absolute;
+
+    left: 10px;
+    right: 10px;
+
+    bottom:
+        calc(
+            env(safe-area-inset-bottom, 0px)
+            + 66px
+        );
+
+    z-index: 115;
+
+    padding:
+        10px 11px;
+
+    border-radius: 16px;
+
+    background:
+        rgba(7,12,28,.91);
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    backdrop-filter:
+        blur(16px);
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,.35);
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+}
+
+#mission.hidden {
+
+    opacity: 0;
+
+    transform:
+        translateY(130%);
+
+    pointer-events: none;
+}
+
+.missionHeader {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 6px;
+}
+
+.missionTitle {
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+.missionCount {
+
+    font-size: 10px;
+
+    color: var(--accent);
+}
+
+.progressTrack {
+
+    width: 100%;
+
+    height: 5px;
+
+    margin-bottom: 8px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background:
+        rgba(255,255,255,.09);
+}
+
+.progressBar {
+
+    width: 0%;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #57d8ff,
+            #75f5a5
+        );
+
+    transition:
+        width .4s ease;
+}
+
+.missionTarget {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+.targetIcon {
+
+    width: 30px;
+    height: 30px;
+
+    flex: 0 0 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,216,90,.10);
+
+    font-size: 16px;
+}
+
+.targetInfo {
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+.targetName {
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+.targetHint {
+
+    margin-top: 2px;
+
+    font-size: 9px;
+
+    color: var(--muted);
+}
+
+.targetStatus {
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    color: var(--gold);
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+#bottomNav {
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    bottom: 0;
+
+    padding:
+        7px 10px
+        calc(
+            env(safe-area-inset-bottom, 0px)
+            + 8px
+        );
+
+    display: flex;
+
+    justify-content: space-around;
+
+    gap: 8px;
+
+    z-index: 100;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(2,4,12,.96),
+            rgba(2,4,12,.75),
+            transparent
+        );
+}
+
+.navButton {
+
+    min-width: 72px;
+
+    padding:
+        7px 10px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 2px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(8,13,30,.72);
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    font-size: 10px;
+
+    color: var(--muted);
+}
+
+.navButton.active {
+
+    color: white;
+
+    background:
+        rgba(53,94,140,.72);
+}
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.panel {
+
+    position: absolute;
+
+    left: 10px;
+    right: 10px;
+
+    bottom:
+        calc(
+            env(safe-area-inset-bottom, 0px)
+            + 64px
+        );
+
+    max-height: 62vh;
+
+    overflow-y: auto;
+
+    z-index: 300;
+
+    padding: 15px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(7,12,28,.97);
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    backdrop-filter:
+        blur(20px);
+
+    box-shadow:
+        0 20px 70px rgba(0,0,0,.55);
+
+    transform:
+        translateY(120%);
+
+    transition:
+        transform .3s ease;
+}
+
+.panel.open {
+
+    transform:
+        translateY(0);
+}
+
+.panelHeader {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 12px;
+}
+
+.panelTitle {
+
+    font-size: 16px;
+
+    font-weight: 800;
+}
+
+.closeButton {
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.08);
+
+    font-size: 18px;
+}
+
+/* =========================================================
+   OBJECT CARDS
+========================================================= */
+
+.objectCard {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 9px;
+
+    margin-bottom: 7px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,.045);
+
+    border:
+        1px solid rgba(255,255,255,.055);
+}
+
+.objectEmoji {
+
+    width: 36px;
+    height: 36px;
+
+    flex: 0 0 36px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,255,255,.06);
+
+    font-size: 20px;
+}
+
+.objectName {
+
+    font-size: 12px;
+
+    font-weight: 750;
+}
+
+.objectInfo {
+
+    margin-top: 2px;
+
+    font-size: 9px;
+
+    color: var(--muted);
+}
+
+/* =========================================================
+   SATELLITE STATUS
+========================================================= */
+
+#satelliteStatus {
+
+    padding: 9px;
+
+    margin-top: 10px;
+
+    border-radius: 11px;
+
+    background:
+        rgba(255,255,255,.045);
+
+    font-size: 10px;
+
+    color: var(--muted);
+}
+
+.ok {
+    color: var(--green);
+}
+
+.error {
+    color: var(--red);
+}
+
+/* =========================================================
+   AR
+========================================================= */
+
+#arVideo {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    z-index: 1;
+
+    display: none;
+
+    background: #000;
+}
+
+#arOverlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 15;
+
+    display: none;
+
+    pointer-events: none;
+}
+
+#app.arMode #arVideo {
+
+    display: block;
+}
+
+#app.arMode #arOverlay {
+
+    display: block;
+}
+
+#app.arMode #sky {
+
+    display: none;
+}
+
+#app.arMode #crosshair {
+
+    display: block;
+}
+
+#arInfo {
+
+    position: absolute;
+
+    left: 50%;
+
+    top:
+        calc(
+            env(safe-area-inset-top, 0px)
+            + 98px
+        );
+
+    transform:
+        translateX(-50%);
+
+    z-index: 30;
+
+    display: none;
+
+    padding:
+        7px 11px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(0,0,0,.55);
+
+    backdrop-filter:
+        blur(8px);
+
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+#app.arMode #arInfo {
+
+    display: block;
+}
+
+.arObject {
+
+    position: absolute;
+
+    transform:
+        translate(-50%, -50%);
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+.arIcon {
+
+    width: 43px;
+    height: 43px;
+
+    margin: auto;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(0,0,0,.55);
+
+    border:
+        1px solid rgba(255,255,255,.45);
+
+    box-shadow:
+        0 0 24px rgba(100,220,255,.6);
+
+    font-size: 21px;
+}
+
+.arName {
+
+    margin-top: 4px;
+
+    padding:
+        3px 7px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(0,0,0,.60);
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+/* =========================================================
+   CALIBRATION
+========================================================= */
+
+#calibration {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 600;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0,0,0,.48);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+#calibration.open {
+
+    display: flex;
+}
+
+.calibrationBox {
+
+    width: min(330px, 100%);
+
+    padding: 21px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(7,12,28,.98);
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 70px rgba(0,0,0,.6);
+}
+
+.calibrationIcon {
+
+    font-size: 40px;
+
+    margin-bottom: 8px;
+}
+
+.calibrationTitle {
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    margin-bottom: 8px;
+}
+
+.calibrationText {
+
+    font-size: 11px;
+
+    line-height: 1.55;
+
+    color: var(--muted);
+
+    margin-bottom: 16px;
+}
+
+.primaryButton {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #279fd4,
+            #626fe0
+        );
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast {
+
+    position: absolute;
+
+    left: 50%;
+
+    top:
+        calc(
+            env(safe-area-inset-top, 0px)
+            + 96px
+        );
+
+    transform:
+        translate(-50%, -12px);
+
+    z-index: 800;
+
+    padding:
+        9px 13px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(3,7,18,.92);
+
+    border:
+        1px solid rgba(255,255,255,.13);
+
+    backdrop-filter:
+        blur(12px);
+
+    font-size: 10px;
+
+    white-space: nowrap;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+#toast.show {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0);
+}
+
+/* =========================================================
+   START SCREEN
+========================================================= */
+
+#loading {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        #050814;
+}
+
+.loadingContent {
+
+    text-align: center;
+}
+
+.loadingIcon {
+
+    font-size: 45px;
+
+    margin-bottom: 12px;
+}
+
+.spinner {
+
+    width: 27px;
+    height: 27px;
+
+    margin: 0 auto 13px;
+
+    border:
+        2px solid rgba(255,255,255,.14);
+
+    border-top-color:
+        var(--accent);
+
+    border-radius: 50%;
+
+    animation:
+        spin .8s linear infinite;
+}
+
+@keyframes spin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+.loadingText {
+
+    font-size: 12px;
+
+    color: var(--muted);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (min-width: 700px) {
+
+    #app {
+
+        width: 600px;
+
+        left: 50%;
+        right: auto;
+
+        transform:
+            translateX(-50%);
+
+        border-left:
+            1px solid rgba(255,255,255,.08);
+
+        border-right:
+            1px solid rgba(255,255,255,.08);
+    }
+}
+
+</style>
 </head>
 
 <body>
 
-  <!-- =========================================================
-       APPLICATION
-  ========================================================== -->
+<div id="app">
 
-  <main id="app">
+    <!-- =====================================================
+         CAMERA AR
+    ====================================================== -->
 
-    <!-- =======================================================
-         HEADER
-    ======================================================== -->
+    <video
+        id="arVideo"
+        autoplay
+        playsinline
+        muted>
+    </video>
 
-    <header class="top-bar">
+    <div id="arOverlay"></div>
 
-      <div class="brand">
+    <div id="arInfo">
+        📷 Réalité augmentée
+    </div>
 
-        <div class="brand-icon">
-          🌌
+    <!-- =====================================================
+         CIEL
+    ====================================================== -->
+
+    <div id="sky">
+
+        <div id="skyLayer"></div>
+
+    </div>
+
+    <div id="horizon"></div>
+
+    <div id="crosshair"></div>
+
+    <!-- =====================================================
+         BARRE SUPÉRIEURE
+    ====================================================== -->
+
+    <div id="topBar">
+
+        <div class="logo">
+            🌌 Ciel Live
         </div>
 
-        <div class="brand-text">
-          <strong>Ciel Live</strong>
-          <span>V4</span>
-        </div>
+        <div class="status">
 
-      </div>
-
-      <div class="header-actions">
-
-        <button
-          id="nightModeButton"
-          class="icon-button"
-          aria-label="Mode nuit"
-          title="Mode nuit"
-        >
-          🌙
-        </button>
-
-        <button
-          id="settingsButton"
-          class="icon-button"
-          aria-label="Paramètres"
-          title="Paramètres"
-        >
-          ⚙️
-        </button>
-
-      </div>
-
-    </header>
-
-
-    <!-- =======================================================
-         STATUS
-    ======================================================== -->
-
-    <section class="status-bar">
-
-      <div class="status-item">
-
-        <span
-          id="locationStatusIcon"
-          class="status-dot"
-        ></span>
-
-        <span id="locationStatus">
-          Position en attente
-        </span>
-
-      </div>
-
-      <div class="status-item">
-
-        <span
-          id="orientationStatusIcon"
-          class="status-dot"
-        ></span>
-
-        <span id="orientationStatus">
-          Orientation inactive
-        </span>
-
-      </div>
-
-      <div class="status-item">
-
-        <span
-          id="timeStatus"
-        >
-          --:--
-        </span>
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         SKY VIEW
-    ======================================================== -->
-
-    <section
-      id="skyView"
-      class="sky-view"
-      aria-label="Carte interactive du ciel"
-    >
-
-      <!-- Canvas principal -->
-      <canvas id="skyCanvas"></canvas>
-
-
-      <!-- Point cardinal -->
-      <div
-        id="directionIndicator"
-        class="direction-indicator"
-      >
-        <span id="directionLetter">N</span>
-      </div>
-
-
-      <!-- Centre de visée -->
-      <div
-        id="aimReticle"
-        class="aim-reticle"
-      >
-        <div></div>
-      </div>
-
-
-      <!-- Indication orientation -->
-      <div
-        id="orientationHint"
-        class="orientation-hint"
-      >
-        <span>📱</span>
-        <strong>Pointe ton téléphone vers le ciel</strong>
-        <small>Active l'orientation pour explorer</small>
-      </div>
-
-
-      <!-- Loading -->
-      <div
-        id="skyLoading"
-        class="sky-loading"
-      >
-
-        <div class="loading-star">
-          ✦
-        </div>
-
-        <strong>
-          Préparation du ciel...
-        </strong>
-
-        <span>
-          Calcul des astres
-        </span>
-
-      </div>
-
-
-      <!-- Informations objet sélectionné -->
-      <article
-        id="objectCard"
-        class="object-card hidden"
-      >
-
-        <button
-          id="closeObjectCard"
-          class="close-button"
-          aria-label="Fermer"
-        >
-          ×
-        </button>
-
-        <div
-          id="objectEmoji"
-          class="object-emoji"
-        >
-          ⭐
-        </div>
-
-        <div class="object-info">
-
-          <span
-            id="objectType"
-            class="object-type"
-          >
-            ÉTOILE
-          </span>
-
-          <h2 id="objectName">
-            Sirius
-          </h2>
-
-          <p id="objectDescription">
-            L'étoile la plus brillante du ciel nocturne.
-          </p>
-
-          <div class="object-data">
-
-            <span>
-              <small>AZIMUT</small>
-              <strong id="objectAzimuth">--°</strong>
+            <span
+                id="statusDot"
+                class="statusDot">
             </span>
 
-            <span>
-              <small>HAUTEUR</small>
-              <strong id="objectAltitude">--°</strong>
+            <span id="statusText">
+                Initialisation
             </span>
 
-          </div>
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         COMPAS
+    ====================================================== -->
+
+    <div id="compass">
+
+        <div id="compassTrack">
+
+            <div class="compassMark north">N</div>
+            <div class="compassMark">30°</div>
+            <div class="compassMark">60°</div>
+            <div class="compassMark">E</div>
+            <div class="compassMark">120°</div>
+            <div class="compassMark">150°</div>
+            <div class="compassMark">S</div>
+            <div class="compassMark">210°</div>
+            <div class="compassMark">240°</div>
+            <div class="compassMark">W</div>
+            <div class="compassMark">300°</div>
+            <div class="compassMark">330°</div>
+            <div class="compassMark north">N</div>
 
         </div>
 
-      </article>
-
-    </section>
-
-
-    <!-- =======================================================
-         MAIN ACTION
-    ======================================================== -->
-
-    <section class="main-action">
-
-      <button
-        id="tonightButton"
-        class="primary-button"
-      >
-
-        <span class="primary-icon">
-          🔭
-        </span>
-
-        <span>
-          <strong>Que puis-je voir ce soir ?</strong>
-          <small>Découvre les merveilles visibles</small>
-        </span>
-
-        <span class="button-arrow">
-          →
-        </span>
-
-      </button>
-
-    </section>
-
-
-    <!-- =======================================================
-         QUICK ACTIONS
-    ======================================================== -->
-
-    <section class="quick-actions">
-
-      <button
-        id="starsButton"
-        class="quick-card"
-      >
-
-        <span class="quick-icon">
-          ⭐
-        </span>
-
-        <strong>
-          Étoiles
-        </strong>
-
-        <small>
-          Explorer
-        </small>
-
-      </button>
-
-
-      <button
-        id="planetsButton"
-        class="quick-card"
-      >
-
-        <span class="quick-icon">
-          🪐
-        </span>
-
-        <strong>
-          Planètes
-        </strong>
-
-        <small>
-          Explorer
-        </small>
-
-      </button>
-
-
-      <button
-        id="satellitesButton"
-        class="quick-card"
-      >
-
-        <span class="quick-icon">
-          🛰️
-        </span>
-
-        <strong>
-          Satellites
-        </strong>
-
-        <small>
-          En direct
-        </small>
-
-      </button>
-
-
-      <button
-        id="missionsButton"
-        class="quick-card mission-card"
-      >
-
-        <span class="quick-icon">
-          🎯
-        </span>
-
-        <strong>
-          Missions
-        </strong>
-
-        <small>
-          Pour jouer
-        </small>
-
-      </button>
-
-    </section>
-
-
-    <!-- =======================================================
-         TONIGHT PANEL
-    ======================================================== -->
-
-    <section
-      id="tonightPanel"
-      class="bottom-panel hidden"
-    >
-
-      <div class="panel-header">
-
-        <div>
-
-          <span class="panel-kicker">
-            🌙 CE SOIR
-          </span>
-
-          <h2>
-            Que peut-on observer ?
-          </h2>
-
+        <div id="headingValue">
+            0°
         </div>
+
+    </div>
+
+    <!-- =====================================================
+         BOUTONS LATÉRAUX
+    ====================================================== -->
+
+    <div id="actions">
 
         <button
-          id="closeTonight"
-          class="close-button"
-          aria-label="Fermer"
-        >
-          ×
+            id="orientationButton"
+            class="actionButton"
+            aria-label="Activer orientation">
+            🧭
         </button>
 
-      </div>
-
-
-      <div
-        id="tonightContent"
-        class="tonight-content"
-      >
-
-        <!-- Généré par app.js -->
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         SATELLITE PANEL
-    ======================================================== -->
-
-    <section
-      id="satellitePanel"
-      class="bottom-panel hidden"
-    >
-
-      <div class="panel-header">
-
-        <div>
-
-          <span class="panel-kicker">
-            🛰️ EN DIRECT
-          </span>
-
-          <h2>
-            Satellites visibles
-          </h2>
-
-        </div>
-
         <button
-          id="closeSatellites"
-          class="close-button"
-          aria-label="Fermer"
-        >
-          ×
+            id="arButton"
+            class="actionButton"
+            aria-label="Réalité augmentée">
+            📷
         </button>
 
-      </div>
-
-
-      <div
-        id="satelliteStatus"
-        class="panel-status"
-      >
-        Chargement des données orbitales...
-      </div>
-
-
-      <div
-        id="satelliteList"
-        class="satellite-list"
-      >
-
-        <!-- Généré par satellites.js -->
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         PLANETS PANEL
-    ======================================================== -->
-
-    <section
-      id="planetPanel"
-      class="bottom-panel hidden"
-    >
-
-      <div class="panel-header">
-
-        <div>
-
-          <span class="panel-kicker">
-            🪐 SYSTÈME SOLAIRE
-          </span>
-
-          <h2>
-            Les planètes
-          </h2>
-
-        </div>
-
         <button
-          id="closePlanets"
-          class="close-button"
-          aria-label="Fermer"
-        >
-          ×
+            id="calibrateButton"
+            class="actionButton"
+            aria-label="Calibrer">
+            🎯
         </button>
 
-      </div>
-
-
-      <div
-        id="planetList"
-        class="planet-list"
-      >
-
-        <!-- Généré par app.js -->
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         MISSIONS PANEL
-    ======================================================== -->
-
-    <section
-      id="missionPanel"
-      class="bottom-panel hidden"
-    >
-
-      <div class="panel-header">
-
-        <div>
-
-          <span class="panel-kicker">
-            🎯 MISSION DU SOIR
-          </span>
-
-          <h2>
-            À toi de jouer !
-          </h2>
-
-        </div>
-
         <button
-          id="closeMissions"
-          class="close-button"
-          aria-label="Fermer"
-        >
-          ×
-        </button>
-
-      </div>
-
-
-      <div class="mission-progress">
-
-        <div class="mission-progress-top">
-
-          <span>
-            Progression
-          </span>
-
-          <strong id="missionProgressText">
-            0 / 4
-          </strong>
-
-        </div>
-
-        <div class="progress-bar">
-
-          <div
-            id="missionProgressBar"
-            class="progress-fill"
-            style="width: 0%"
-          ></div>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="missionList"
-        class="mission-list"
-      >
-
-        <!-- Généré par app.js -->
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         PERMISSION / START SCREEN
-    ======================================================== -->
-
-    <div
-      id="startOverlay"
-      class="start-overlay"
-    >
-
-      <div class="start-card">
-
-        <div class="start-logo">
-          🌌
-        </div>
-
-        <span class="version-label">
-          CIEL LIVE V4
-        </span>
-
-        <h1>
-          Explore le ciel
-        </h1>
-
-        <p>
-          Transforme ton téléphone en véritable
-          carte interactive du ciel.
-        </p>
-
-
-        <div class="start-features">
-
-          <div>
-            <span>📍</span>
-            <strong>Ta position</strong>
-          </div>
-
-          <div>
-            <span>📱</span>
-            <strong>Orientation</strong>
-          </div>
-
-          <div>
-            <span>⭐</span>
-            <strong>Étoiles</strong>
-          </div>
-
-          <div>
-            <span>🪐</span>
-            <strong>Planètes</strong>
-          </div>
-
-          <div>
-            <span>🛰️</span>
-            <strong>Satellites</strong>
-          </div>
-
-        </div>
-
-
-        <button
-          id="startButton"
-          class="start-button"
-        >
-
-          <span>
+            id="missionButton"
+            class="actionButton"
+            aria-label="Mission">
             🚀
-          </span>
-
-          Démarrer l'exploration
-
         </button>
-
-
-        <small class="privacy-note">
-          Les capteurs sont utilisés uniquement
-          pour orienter la carte du ciel.
-        </small>
-
-      </div>
 
     </div>
 
+    <!-- =====================================================
+         MISSION
+    ====================================================== -->
 
-    <!-- =======================================================
-         SETTINGS PANEL
-    ======================================================== -->
+    <div
+        id="mission"
+        class="hidden">
 
-    <section
-      id="settingsPanel"
-      class="bottom-panel hidden"
-    >
+        <div class="missionHeader">
 
-      <div class="panel-header">
+            <div class="missionTitle">
+                🚀 Mission du soir
+            </div>
+
+            <div
+                id="missionCount"
+                class="missionCount">
+                0 / 5
+            </div>
+
+        </div>
+
+        <div class="progressTrack">
+
+            <div
+                id="progressBar"
+                class="progressBar">
+            </div>
+
+        </div>
+
+        <div class="missionTarget">
+
+            <div
+                id="targetIcon"
+                class="targetIcon">
+                ⭐
+            </div>
+
+            <div class="targetInfo">
+
+                <div
+                    id="targetName"
+                    class="targetName">
+                    Sirius
+                </div>
+
+                <div
+                    id="targetHint"
+                    class="targetHint">
+                    Orientez le téléphone vers l'objet
+                </div>
+
+            </div>
+
+            <div
+                id="targetStatus"
+                class="targetStatus">
+                À TROUVER
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         BOUTON CE SOIR
+    ====================================================== -->
+
+    <button id="tonightButton">
+        ✨ Ce soir
+    </button>
+
+    <!-- =====================================================
+         NAVIGATION BASSE
+    ====================================================== -->
+
+    <div id="bottomNav">
+
+        <button
+            id="skyNav"
+            class="navButton active">
+            🌌
+            <span>Ciel</span>
+        </button>
+
+        <button
+            id="satNav"
+            class="navButton">
+            🛰️
+            <span>Satellites</span>
+        </button>
+
+        <button
+            id="missionNav"
+            class="navButton">
+            🚀
+            <span>Mission</span>
+        </button>
+
+    </div>
+
+    <!-- =====================================================
+         PANEL CE SOIR
+    ====================================================== -->
+
+    <div
+        id="tonightPanel"
+        class="panel">
+
+        <div class="panelHeader">
+
+            <div class="panelTitle">
+                🌌 Ce soir
+            </div>
+
+            <button
+                class="closeButton"
+                data-close="tonightPanel">
+                ×
+            </button>
+
+        </div>
+
+        <div id="tonightObjects"></div>
+
+    </div>
+
+    <!-- =====================================================
+         PANEL SATELLITES
+    ====================================================== -->
+
+    <div
+        id="satellitePanel"
+        class="panel">
+
+        <div class="panelHeader">
+
+            <div class="panelTitle">
+                🛰️ Satellites
+            </div>
+
+            <button
+                class="closeButton"
+                data-close="satellitePanel">
+                ×
+            </button>
+
+        </div>
+
+        <div id="satelliteList"></div>
+
+        <div id="satelliteStatus">
+            Préparation des données orbitales…
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         CALIBRATION
+    ====================================================== -->
+
+    <div id="calibration">
+
+        <div class="calibrationBox">
+
+            <div class="calibrationIcon">
+                🧭
+            </div>
+
+            <div class="calibrationTitle">
+                Calibrage du ciel
+            </div>
+
+            <div class="calibrationText">
+
+                Oriente ton téléphone vers le Nord.
+                Garde-le aussi horizontal que possible,
+                puis appuie sur le bouton.
+
+                <br><br>
+
+                Le calibrage permet de corriger
+                le décalage du compas.
+
+            </div>
+
+            <button
+                id="startCalibration"
+                class="primaryButton">
+                🎯 Calibrer maintenant
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+
+    <div id="toast"></div>
+
+    <!-- =====================================================
+         CHARGEMENT INITIAL
+    ====================================================== -->
+
+    <div id="loading">
+
+        <div class="loadingContent">
+
+            <div class="loadingIcon">
+                🌌
+            </div>
+
+            <div class="spinner"></div>
+
+            <div class="loadingText">
+                Préparation du ciel…
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+  <script>
+
+/* =========================================================
+   CIEL LIVE V4.1
+   Moteur astronomique
+========================================================= */
+
+/* =========================================================
+   UTILITAIRES
+========================================================= */
+
+const $ = (id) => document.getElementById(id);
+
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+function degToRad(deg) {
+    return deg * Math.PI / 180;
+}
+
+function radToDeg(rad) {
+    return rad * 180 / Math.PI;
+}
+
+function normalize360(value) {
+    value %= 360;
+
+    if (value < 0) {
+        value += 360;
+    }
+
+    return value;
+}
+
+function normalize180(value) {
+    value = normalize360(value);
+
+    if (value > 180) {
+        value -= 360;
+    }
+
+    return value;
+}
+
+function lerpAngle(a, b, amount) {
+
+    const difference =
+        normalize180(b - a);
+
+    return normalize360(
+        a + difference * amount
+    );
+}
+
+function showToast(message, duration = 2200) {
+
+    const toast = $("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer = setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, duration);
+}
+
+/* =========================================================
+   DONNÉES ASTRONOMIQUES
+========================================================= */
+
+/*
+   Coordonnées approximatives J2000.
+
+   Pour notre usage pédagogique, elles sont suffisantes.
+   Le moteur applique ensuite une correction temporelle
+   simple pour calculer la position apparente.
+*/
+
+const OBJECTS = [
+
+    {
+        id: "sirius",
+        name: "Sirius",
+        shortName: "Sirius",
+        type: "star",
+        emoji: "⭐",
+        ra: 6.7525,
+        dec: -16.7161,
+        magnitude: -1.46,
+        description: "L'étoile la plus brillante du ciel nocturne."
+    },
+
+    {
+        id: "vega",
+        name: "Véga",
+        shortName: "Véga",
+        type: "star",
+        emoji: "⭐",
+        ra: 18.6156,
+        dec: 38.7837,
+        magnitude: 0.03,
+        description: "Une des étoiles les plus brillantes du ciel."
+    },
+
+    {
+        id: "betelgeuse",
+        name: "Bételgeuse",
+        shortName: "Bételgeuse",
+        type: "star",
+        emoji: "🔴",
+        ra: 5.9195,
+        dec: 7.4071,
+        magnitude: 0.42,
+        description: "Supergéante rouge de la constellation d'Orion."
+    },
+
+    {
+        id: "rigel",
+        name: "Rigel",
+        shortName: "Rigel",
+        type: "star",
+        emoji: "💙",
+        ra: 5.2423,
+        dec: -8.2016,
+        magnitude: 0.13,
+        description: "Une étoile brillante de la constellation d'Orion."
+    },
+
+    {
+        id: "aldebaran",
+        name: "Aldébaran",
+        shortName: "Aldébaran",
+        type: "star",
+        emoji: "⭐",
+        ra: 4.5987,
+        dec: 16.5093,
+        magnitude: 0.85,
+        description: "L'œil rougeâtre de la constellation du Taureau."
+    },
+
+    {
+        id: "capella",
+        name: "Capella",
+        shortName: "Capella",
+        type: "star",
+        emoji: "⭐",
+        ra: 5.2782,
+        dec: 45.998,
+        magnitude: 0.08,
+        description: "Une étoile très brillante du Cocher."
+    },
+
+    {
+        id: "procyon",
+        name: "Procyon",
+        shortName: "Procyon",
+        type: "star",
+        emoji: "⭐",
+        ra: 7.6550,
+        dec: 5.2250,
+        magnitude: 0.34,
+        description: "Une des étoiles principales du Petit Chien."
+    },
+
+    {
+        id: "polaris",
+        name: "Polaris",
+        shortName: "Étoile polaire",
+        type: "star",
+        emoji: "🌟",
+        ra: 2.5303,
+        dec: 89.2641,
+        magnitude: 1.98,
+        description: "L'étoile qui indique presque exactement le Nord céleste."
+    },
+
+    {
+        id: "arcturus",
+        name: "Arcturus",
+        shortName: "Arcturus",
+        type: "star",
+        emoji: "🟠",
+        ra: 14.261,
+        dec: 19.1825,
+        magnitude: -0.05,
+        description: "Une géante orange très brillante."
+    },
+
+    {
+        id: "spica",
+        name: "Spica",
+        shortName: "Spica",
+        type: "star",
+        emoji: "💙",
+        ra: 13.4199,
+        dec: -11.1614,
+        magnitude: 0.98,
+        description: "L'étoile principale de la Vierge."
+    },
+
+    {
+        id: "antares",
+        name: "Antarès",
+        shortName: "Antarès",
+        type: "star",
+        emoji: "🔴",
+        ra: 16.4901,
+        dec: -26.4319,
+        magnitude: 0.96,
+        description: "Une gigantesque supergéante rouge du Scorpion."
+    },
+
+    {
+        id: "deneb",
+        name: "Deneb",
+        shortName: "Deneb",
+        type: "star",
+        emoji: "⭐",
+        ra: 20.6905,
+        dec: 45.2803,
+        magnitude: 1.25,
+        description: "Une des étoiles du Triangle d'été."
+    },
+
+    {
+        id: "altair",
+        name: "Altaïr",
+        shortName: "Altaïr",
+        type: "star",
+        emoji: "⭐",
+        ra: 19.8464,
+        dec: 8.8683,
+        magnitude: 0.77,
+        description: "Une des trois étoiles du Triangle d'été."
+    },
+
+    {
+        id: "pollux",
+        name: "Pollux",
+        shortName: "Pollux",
+        type: "star",
+        emoji: "⭐",
+        ra: 7.7553,
+        dec: 28.0262,
+        magnitude: 1.14,
+        description: "L'une des deux étoiles principales des Gémeaux."
+    },
+
+    {
+        id: "castor",
+        name: "Castor",
+        shortName: "Castor",
+        type: "star",
+        emoji: "⭐",
+        ra: 7.5767,
+        dec: 31.8883,
+        magnitude: 1.58,
+        description: "Une étoile multiple célèbre des Gémeaux."
+    },
+
+    {
+        id: "regulus",
+        name: "Régulus",
+        shortName: "Régulus",
+        type: "star",
+        emoji: "⭐",
+        ra: 10.1395,
+        dec: 11.9672,
+        magnitude: 1.35,
+        description: "L'étoile principale du Lion."
+    },
+
+    {
+        id: "fomalhaut",
+        name: "Fomalhaut",
+        shortName: "Fomalhaut",
+        type: "star",
+        emoji: "⭐",
+        ra: 22.9608,
+        dec: -29.6222,
+        magnitude: 1.16,
+        description: "Une étoile brillante de la constellation du Poisson austral."
+    },
+
+    {
+        id: "canopus",
+        name: "Canopus",
+        shortName: "Canopus",
+        type: "star",
+        emoji: "⭐",
+        ra: 6.3992,
+        dec: -52.6957,
+        magnitude: -0.74,
+        description: "La deuxième étoile la plus brillante du ciel."
+    },
+
+    {
+        id: "achernar",
+        name: "Achernar",
+        shortName: "Achernar",
+        type: "star",
+        emoji: "⭐",
+        ra: 1.6286,
+        dec: -57.2368,
+        magnitude: 0.46,
+        description: "Une étoile brillante de l'hémisphère sud."
+    }
+
+];
+
+/* =========================================================
+   CONSTELLATIONS SIMPLIFIÉES
+========================================================= */
+
+const CONSTELLATIONS = [
+
+    {
+        name: "Orion",
+        emoji: "🏹",
+
+        stars: [
+            "betelgeuse",
+            "rigel"
+        ]
+    },
+
+    {
+        name: "Triangle d'été",
+        emoji: "🔺",
+
+        stars: [
+            "vega",
+            "deneb",
+            "altair"
+        ]
+    },
+
+    {
+        name: "Gémeaux",
+        emoji: "♊",
+
+        stars: [
+            "pollux",
+            "castor"
+        ]
+    }
+
+];
+
+/* =========================================================
+   ÉTAT GLOBAL
+========================================================= */
+
+const state = {
+
+    latitude: 43.7102,
+
+    longitude: 7.2620,
+
+    heading: 0,
+
+    pitch: 0,
+
+    roll: 0,
+
+    orientationAvailable: false,
+
+    orientationPermission: false,
+
+    calibrated: false,
+
+    calibrationOffset: 0,
+
+    arEnabled: false,
+
+    cameraStream: null,
+
+    missionOpen: false,
+
+    tonightOpen: false,
+
+    satelliteOpen: false,
+
+    lastUpdate: 0,
+
+    currentObjects: [],
+
+    visibleObjects: [],
+
+    satellites: [],
+
+    satelliteLoaded: false,
+
+    satelliteLoading: false,
+
+    selectedTarget: null,
+
+    missionIndex: 0,
+
+    missionFound: 0
+
+};
+
+/* =========================================================
+   MISSIONS
+========================================================= */
+
+const MISSIONS = [
+
+    {
+        object: "sirius",
+        text: "Trouve Sirius, l'étoile la plus brillante."
+    },
+
+    {
+        object: "vega",
+        text: "Trouve Véga dans le Triangle d'été."
+    },
+
+    {
+        object: "arcturus",
+        text: "Trouve Arcturus, l'étoile orange."
+    },
+
+    {
+        object: "altair",
+        text: "Trouve Altaïr."
+    },
+
+    {
+        object: "polaris",
+        text: "Trouve l'Étoile polaire."
+    }
+
+];
+
+/* =========================================================
+   DATE / JULIEN
+========================================================= */
+
+function julianDate(date = new Date()) {
+
+    return date.getTime() / 86400000
+        + 2440587.5;
+}
+
+/* =========================================================
+   TEMPS SIDÉRAL
+========================================================= */
+
+function greenwichSiderealTime(date = new Date()) {
+
+    const jd = julianDate(date);
+
+    const T =
+        (jd - 2451545.0) /
+        36525;
+
+    let gst =
+        280.46061837
+        +
+        360.98564736629 *
+        (jd - 2451545.0)
+        +
+        0.000387933 * T * T
+        -
+        T * T * T / 38710000;
+
+    gst = normalize360(gst);
+
+    return gst;
+}
+
+function localSiderealTime(date = new Date()) {
+
+    return normalize360(
+        greenwichSiderealTime(date)
+        +
+        state.longitude
+    );
+}
+
+/* =========================================================
+   RA / DEC → ALT / AZ
+========================================================= */
+
+function equatorialToHorizontal(
+    raHours,
+    decDeg,
+    date = new Date()
+) {
+
+    const lst = localSiderealTime(date);
+
+    const raDeg = raHours * 15;
+
+    const hourAngle =
+        normalize180(lst - raDeg);
+
+    const H = degToRad(hourAngle);
+
+    const dec =
+        degToRad(decDeg);
+
+    const lat =
+        degToRad(state.latitude);
+
+    const sinAlt =
+        Math.sin(dec) *
+        Math.sin(lat)
+        +
+        Math.cos(dec) *
+        Math.cos(lat) *
+        Math.cos(H);
+
+    const altitude =
+        radToDeg(
+            Math.asin(
+                clamp(
+                    sinAlt,
+                    -1,
+                    1
+                )
+            )
+        );
+
+    const azimuthRad =
+        Math.atan2(
+
+            Math.sin(H),
+
+            Math.cos(H) *
+                Math.sin(lat)
+            -
+            Math.tan(dec) *
+                Math.cos(lat)
+
+        );
+
+    let azimuth =
+        radToDeg(
+            azimuthRad
+        )
+        + 180;
+
+    azimuth =
+        normalize360(azimuth);
+
+    return {
+
+        altitude,
+
+        azimuth
+
+    };
+
+}
+
+/* =========================================================
+   POSITION DU SOLEIL APPROXIMATIVE
+========================================================= */
+
+function sunPosition(date = new Date()) {
+
+    const jd = julianDate(date);
+
+    const n =
+        jd - 2451545.0;
+
+    const L =
+        normalize360(
+            280.460 +
+            0.9856474 * n
+        );
+
+    const g =
+        degToRad(
+            normalize360(
+                357.528 +
+                0.9856003 * n
+            )
+        );
+
+    const lambda =
+        degToRad(
+            normalize360(
+                L +
+                1.915 * Math.sin(g) +
+                0.020 * Math.sin(2 * g)
+            )
+        );
+
+    const epsilon =
+        degToRad(23.439);
+
+    const ra =
+        radToDeg(
+            Math.atan2(
+                Math.cos(epsilon) *
+                Math.sin(lambda),
+                Math.cos(lambda)
+            )
+        );
+
+    const dec =
+        radToDeg(
+            Math.asin(
+                Math.sin(epsilon) *
+                Math.sin(lambda)
+            )
+        );
+
+    return equatorialToHorizontal(
+        normalize360(ra) / 15,
+        dec,
+        date
+    );
+}
+
+/* =========================================================
+   LUNE APPROXIMATIVE
+========================================================= */
+
+function moonPosition(date = new Date()) {
+
+    const jd = julianDate(date);
+
+    const d =
+        jd - 2451543.5;
+
+    const N =
+        degToRad(
+            normalize360(
+                125.1228 -
+                0.0529538083 * d
+            )
+        );
+
+    const i =
+        degToRad(5.1454);
+
+    const w =
+        degToRad(
+            normalize360(
+                318.0634 +
+                0.1643573223 * d
+            )
+        );
+
+    const a = 60.2666;
+
+    const e = 0.054900;
+
+    const M =
+        degToRad(
+            normalize360(
+                115.3654 +
+                13.0649929509 * d
+            )
+        );
+
+    let E = M;
+
+    for (let k = 0; k < 6; k++) {
+
+        E =
+            E -
+            (
+                E -
+                e * Math.sin(E) -
+                M
+            ) /
+            (
+                1 -
+                e * Math.cos(E)
+            );
+    }
+
+    const xv =
+        a *
+        (
+            Math.cos(E) - e
+        );
+
+    const yv =
+        a *
+        Math.sqrt(1 - e * e) *
+        Math.sin(E);
+
+    const v =
+        Math.atan2(yv, xv);
+
+    const r =
+        Math.sqrt(
+            xv * xv +
+            yv * yv
+        );
+
+    const xh =
+        r *
+        (
+            Math.cos(N) *
+            Math.cos(v + w)
+            -
+            Math.sin(N) *
+            Math.sin(v + w) *
+            Math.cos(i)
+        );
+
+    const yh =
+        r *
+        (
+            Math.sin(N) *
+            Math.cos(v + w)
+            +
+            Math.cos(N) *
+            Math.sin(v + w) *
+            Math.cos(i)
+        );
+
+    const zh =
+        r *
+        Math.sin(v + w) *
+        Math.sin(i);
+
+    const lon =
+        Math.atan2(yh, xh);
+
+    const lat =
+        Math.atan2(
+            zh,
+            Math.sqrt(
+                xh * xh +
+                yh * yh
+            )
+        );
+
+    const ecl =
+        degToRad(23.4393);
+
+    const xe =
+        Math.cos(lat) *
+        Math.cos(lon);
+
+    const ye =
+        Math.cos(lat) *
+        Math.sin(lon);
+
+    const ze =
+        Math.sin(lat);
+
+    const xeq = xe;
+
+    const yeq =
+        ye * Math.cos(ecl)
+        -
+        ze * Math.sin(ecl);
+
+    const zeq =
+        ye * Math.sin(ecl)
+        +
+        ze * Math.cos(ecl);
+
+    const ra =
+        normalize360(
+            radToDeg(
+                Math.atan2(
+                    yeq,
+                    xeq
+                )
+            )
+        ) / 15;
+
+    const dec =
+        radToDeg(
+            Math.asin(
+                clamp(
+                    zeq,
+                    -1,
+                    1
+                )
+            )
+        );
+
+    return equatorialToHorizontal(
+        ra,
+        dec,
+        date
+    );
+
+}
+
+/* =========================================================
+   OBJETS DYNAMIQUES
+========================================================= */
+
+function getAstronomicalObjects() {
+
+    const now = new Date();
+
+    const objects =
+        OBJECTS.map(object => {
+
+            const position =
+                equatorialToHorizontal(
+                    object.ra,
+                    object.dec,
+                    now
+                );
+
+            return {
+
+                ...object,
+
+                ...position
+
+            };
+
+        });
+
+    const sun =
+        sunPosition(now);
+
+    objects.push({
+
+        id: "sun",
+
+        name: "Soleil",
+
+        shortName: "Soleil",
+
+        type: "sun",
+
+        emoji: "☀️",
+
+        altitude: sun.altitude,
+
+        azimuth: sun.azimuth,
+
+        magnitude: -26,
+
+        description:
+            "Notre étoile."
+
+    });
+
+    const moon =
+        moonPosition(now);
+
+    objects.push({
+
+        id: "moon",
+
+        name: "Lune",
+
+        shortName: "Lune",
+
+        type: "moon",
+
+        emoji: "🌙",
+
+        altitude: moon.altitude,
+
+        azimuth: moon.azimuth,
+
+        magnitude: -12,
+
+        description:
+            "Le satellite naturel de la Terre."
+
+    });
+
+    return objects;
+}
+
+/* =========================================================
+   POSITION ÉCRAN
+========================================================= */
+
+/*
+   Ici se trouve une correction importante de la V4.
+
+   Le téléphone regarde réellement le ciel.
+
+   heading = direction horizontale du téléphone
+   pitch   = inclinaison verticale
+
+   On convertit ensuite la direction céleste
+   en coordonnées écran.
+*/
+
+function celestialToScreen(
+    azimuth,
+    altitude
+) {
+
+    const heading =
+        normalize360(
+            state.heading +
+            state.calibrationOffset
+        );
+
+    const relativeAzimuth =
+        normalize180(
+            azimuth - heading
+        );
+
+    /*
+       Champ horizontal.
+       Plus petit = zoom.
+    */
+
+    const horizontalFov = 70;
+
+    /*
+       Champ vertical.
+       Sur téléphone portrait.
+    */
+
+    const verticalFov = 55;
+
+    let x =
+        50 +
+        (
+            relativeAzimuth /
+            horizontalFov
+        ) * 100;
+
+    /*
+       pitch :
+
+       0° = téléphone horizontal
+
+       +90° = téléphone pointé vers le ciel
+
+       On utilise une plage centrée autour
+       de l'inclinaison actuelle.
+    */
+
+    const verticalDifference =
+        altitude -
+        state.pitch;
+
+    let y =
+        50 -
+        (
+            verticalDifference /
+            verticalFov
+        ) * 100;
+
+    return {
+
+        x,
+        y,
+
+        visible:
+            x > -15 &&
+            x < 115 &&
+            y > -15 &&
+            y < 115
+
+    };
+
+}
+
+/* =========================================================
+   RENDU DES ÉTOILES
+========================================================= */
+
+function magnitudeToScale(magnitude) {
+
+    const scale =
+        1.9 -
+        (
+            magnitude + 1
+        ) * 0.35;
+
+    return clamp(
+        scale,
+        .65,
+        2.2
+    );
+
+}
+
+function clearSky() {
+
+    $("skyLayer").innerHTML = "";
+
+}
+
+/* =========================================================
+   CRÉATION OBJET CÉLESTE
+========================================================= */
+
+function createSkyObject(object) {
+
+    const position =
+        celestialToScreen(
+            object.azimuth,
+            object.altitude
+        );
+
+    if (!position.visible) {
+
+        return null;
+
+    }
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "skyObject";
+
+    wrapper.style.position =
+        "absolute";
+
+    wrapper.style.left =
+        `${position.x}%`;
+
+    wrapper.style.top =
+        `${position.y}%`;
+
+    wrapper.style.width =
+        "1px";
+
+    wrapper.style.height =
+        "1px";
+
+    wrapper.dataset.objectId =
+        object.id;
+
+    const star =
+        document.createElement("div");
+
+    star.className =
+        "star";
+
+    if (
+        object.magnitude <= 1
+    ) {
+
+        star.classList.add(
+            "major"
+        );
+
+    }
+
+    if (
+        object.magnitude > 2
+    ) {
+
+        star.classList.add(
+            "small"
+        );
+
+    }
+
+    star.style.setProperty(
+        "--scale",
+        magnitudeToScale(
+            object.magnitude
+        )
+    );
+
+    star.title =
+        object.name;
+
+    wrapper.appendChild(
+        star
+    );
+
+    const label =
+        document.createElement("div");
+
+    label.className =
+        "objectLabel";
+
+    label.innerHTML =
+        `${object.emoji} ${object.shortName}
+         <span class="altitude">
+            ${Math.round(object.altitude)}° ·
+            ${Math.round(object.azimuth)}°
+         </span>`;
+
+    label.style.position =
+        "absolute";
+
+    label.style.left =
+        "0";
+
+    label.style.top =
+        "18px";
+
+    wrapper.appendChild(
+        label
+    );
+
+    /*
+       L'étiquette est affichée
+       uniquement pour les objets importants.
+    */
+
+    if (
+        object.magnitude > 1.5
+        &&
+        object.type === "star"
+    ) {
+
+        label.style.display =
+            "none";
+
+    }
+
+    $("skyLayer").appendChild(
+        wrapper
+    );
+
+    return wrapper;
+
+}
+
+/* =========================================================
+   RENDU DU CIEL
+========================================================= */
+
+function renderSky() {
+
+    clearSky();
+
+    const objects =
+        getAstronomicalObjects();
+
+    state.currentObjects =
+        objects;
+
+    state.visibleObjects = [];
+
+    objects.forEach(
+        object => {
+
+            /*
+               Ne pas afficher le Soleil
+               lorsqu'il est sous l'horizon.
+            */
+
+            if (
+                object.id === "sun"
+                &&
+                object.altitude < -5
+            ) {
+
+                return;
+
+            }
+
+            /*
+               Même principe pour les étoiles.
+            */
+
+            if (
+                object.type === "star"
+                &&
+                object.altitude < -2
+            ) {
+
+                return;
+
+            }
+
+            const element =
+                createSkyObject(
+                    object
+                );
+
+            if (element) {
+
+                state.visibleObjects.push(
+                    object
+                );
+
+            }
+
+        }
+    );
+
+    /*
+       Réinjecte la cible de mission
+       après chaque recalcul.
+    */
+
+    highlightMissionTarget();
+
+}
+
+/* =========================================================
+   DÉTECTION DE CIBLE
+========================================================= */
+
+function angularDistance(
+    az1,
+    alt1,
+    az2,
+    alt2
+) {
+
+    const a1 =
+        degToRad(alt1);
+
+    const a2 =
+        degToRad(alt2);
+
+    const dAz =
+        degToRad(
+            normalize180(
+                az2 - az1
+            )
+        );
+
+    const cosDistance =
+        Math.sin(a1) *
+        Math.sin(a2)
+        +
+        Math.cos(a1) *
+        Math.cos(a2) *
+        Math.cos(dAz);
+
+    return radToDeg(
+        Math.acos(
+            clamp(
+                cosDistance,
+                -1,
+                1
+            )
+        )
+    );
+
+}
+
+/* =========================================================
+   OBJET POINTÉ
+========================================================= */
+
+function getPointedObject() {
+
+    const objects =
+        state.currentObjects;
+
+    let best = null;
+
+    let bestDistance =
+        Infinity;
+
+    objects.forEach(
+        object => {
+
+            if (
+                object.altitude < 0
+            ) {
+
+                return;
+
+            }
+
+            const distance =
+                angularDistance(
+                    state.heading,
+                    state.pitch,
+                    object.azimuth,
+                    object.altitude
+                );
+
+            if (
+                distance < bestDistance
+            ) {
+
+                bestDistance =
+                    distance;
+
+                best =
+                    object;
+
+            }
+
+        }
+    );
+
+    return {
+
+        object: best,
+
+        distance: bestDistance
+
+    };
+
+}
+
+/* =========================================================
+   MISSION
+========================================================= */
+
+function currentMission() {
+
+    return MISSIONS[
+        state.missionIndex %
+        MISSIONS.length
+    ];
+
+}
+
+function setMissionTarget() {
+
+    const mission =
+        currentMission();
+
+    const object =
+        OBJECTS.find(
+            item =>
+                item.id ===
+                mission.object
+        );
+
+    if (!object) {
+
+        return;
+
+    }
+
+    state.selectedTarget =
+        object.id;
+
+    $("targetIcon").textContent =
+        object.emoji;
+
+    $("targetName").textContent =
+        object.name;
+
+    $("targetHint").textContent =
+        mission.text;
+
+    $("targetStatus").textContent =
+        "À TROUVER";
+
+    $("targetStatus").style.color =
+        "var(--gold)";
+
+    updateMissionProgress();
+
+}
+
+function updateMissionProgress() {
+
+    const total =
+        MISSIONS.length;
+
+    const found =
+        state.missionFound;
+
+    const percent =
+        total === 0
+            ? 0
+            : (
+                found /
+                total
+            ) * 100;
+
+    $("missionCount").textContent =
+        `${found} / ${total}`;
+
+    $("progressBar").style.width =
+        `${percent}%`;
+
+}
+
+function highlightMissionTarget() {
+
+    document
+        .querySelectorAll(".star")
+        .forEach(
+            element =>
+                element.classList.remove(
+                    "target"
+                )
+        );
+
+    if (!state.selectedTarget) {
+
+        return;
+
+    }
+
+    const target =
+        document.querySelector(
+            `[data-object-id="${state.selectedTarget}"] .star`
+        );
+
+    if (target) {
+
+        target.classList.add(
+            "target"
+        );
+
+    }
+
+}
+
+/* =========================================================
+   VÉRIFICATION MISSION
+========================================================= */
+
+function checkMission() {
+
+    if (!state.selectedTarget) {
+
+        return;
+
+    }
+
+    const result =
+        getPointedObject();
+
+    if (!result.object) {
+
+        return;
+
+    }
+
+    if (
+        result.object.id !==
+        state.selectedTarget
+    ) {
+
+        return;
+
+    }
+
+    /*
+       Tolérance de détection :
+
+       8° est suffisamment large
+       pour un enfant mais suffisamment
+       précis pour réellement chercher.
+    */
+
+    if (
+        result.distance <= 8
+    ) {
+
+        missionSuccess();
+
+    }
+
+}
+
+function missionSuccess() {
+
+    $("targetStatus").textContent =
+        "✓ TROUVÉ !";
+
+    $("targetStatus").style.color =
+        "var(--green)";
+
+    state.missionFound++;
+
+    updateMissionProgress();
+
+    showToast(
+        `🎉 ${$("targetName").textContent} trouvé !`
+    );
+
+    setTimeout(() => {
+
+        state.missionIndex++;
+
+        if (
+            state.missionIndex >=
+            MISSIONS.length
+        ) {
+
+            showToast(
+                "🏆 Mission terminée ! Bravo !",
+                3500
+            );
+
+            state.missionIndex = 0;
+
+            state.missionFound = 0;
+
+        }
+
+        setMissionTarget();
+
+    }, 1500);
+
+}
+
+/* =========================================================
+   BOUCLE DE MISE À JOUR
+========================================================= */
+
+function updateScene() {
+
+    const now =
+        performance.now();
+
+    /*
+       Évite un recalcul excessif.
+    */
+
+    if (
+        now -
+        state.lastUpdate <
+        100
+    ) {
+
+        requestAnimationFrame(
+            updateScene
+        );
+
+        return;
+
+    }
+
+    state.lastUpdate =
+        now;
+
+    renderSky();
+
+    updateCompass();
+
+    checkMission();
+
+    if (
+        state.arEnabled
+    ) {
+
+        renderARObjects();
+
+    }
+
+    requestAnimationFrame(
+        updateScene
+    );
+
+}
+
+/* =========================================================
+   FIN DU BLOC 2
+========================================================= */
+
+</script>
+
+  <script>
+
+/* =========================================================
+   ORIENTATION DU TÉLÉPHONE
+========================================================= */
+
+/*
+   L'objectif est de gérer correctement les iPhone,
+   notamment les appareils qui exigent une autorisation
+   explicite pour accéder au gyroscope / magnétomètre.
+*/
+
+function isIOS() {
+
+    return /iPhone|iPad|iPod/i.test(
+        navigator.userAgent
+    );
+
+}
+
+/* =========================================================
+   DEMANDE DE PERMISSION
+========================================================= */
+
+async function requestOrientationPermission() {
+
+    /*
+       iOS 13+ utilise une API de permission
+       directement sur DeviceOrientationEvent.
+    */
+
+    if (
+        typeof DeviceOrientationEvent !==
+        "undefined"
+        &&
+        typeof DeviceOrientationEvent
+            .requestPermission ===
+            "function"
+    ) {
+
+        try {
+
+            const permission =
+                await DeviceOrientationEvent
+                    .requestPermission();
+
+            if (
+                permission === "granted"
+            ) {
+
+                state.orientationPermission =
+                    true;
+
+                startOrientation();
+
+                showToast(
+                    "🧭 Orientation activée"
+                );
+
+                return true;
+
+            }
+
+            showToast(
+                "⚠️ Autorisation d'orientation refusée",
+                3000
+            );
+
+            return false;
+
+        }
+        catch (error) {
+
+            console.error(
+                "Orientation permission:",
+                error
+            );
+
+            showToast(
+                "Impossible d'activer le compas",
+                3000
+            );
+
+            return false;
+
+        }
+
+    }
+
+    /*
+       Android / autres navigateurs :
+       pas de permission explicite.
+    */
+
+    state.orientationPermission =
+        true;
+
+    startOrientation();
+
+    return true;
+
+}
+
+/* =========================================================
+   ORIENTATION STANDARD
+========================================================= */
+
+function handleOrientation(event) {
+
+    /*
+       alpha :
+
+       rotation autour de l'axe vertical.
+
+       Sur iOS, webkitCompassHeading
+       est beaucoup plus fiable pour obtenir
+       directement le Nord magnétique.
+
+    */
+
+    let heading = null;
+
+    if (
+        typeof event.webkitCompassHeading ===
+        "number"
+    ) {
+
+        /*
+           iPhone Safari
+
+           webkitCompassHeading :
+           0 = Nord
+           90 = Est
+           180 = Sud
+           270 = Ouest
+        */
+
+        heading =
+            event.webkitCompassHeading;
+
+    }
+    else if (
+        typeof event.alpha ===
+        "number"
+    ) {
+
+        /*
+           Fallback standard.
+
+           alpha est inversé par rapport
+           à notre convention.
+        */
+
+        heading =
+            360 -
+            event.alpha;
+
+    }
+
+    if (
+        heading === null ||
+        Number.isNaN(heading)
+    ) {
+
+        return;
+
+    }
+
+    /*
+       Correction de calibration.
+    */
+
+    heading =
+        normalize360(
+            heading
+        );
+
+    /*
+       Filtre anti-tremblement.
+
+       Sans ce filtre, l'affichage peut
+       bouger énormément lorsque l'enfant
+       tient le téléphone.
+    */
+
+    if (
+        !state.orientationAvailable
+    ) {
+
+        state.heading =
+            heading;
+
+    }
+    else {
+
+        state.heading =
+            lerpAngle(
+                state.heading,
+                heading,
+                0.28
+            );
+
+    }
+
+    state.orientationAvailable =
+        true;
+
+    /*
+       beta :
+
+       inclinaison avant/arrière.
+
+       Sur la plupart des téléphones :
+       téléphone horizontal ≈ 0°
+       écran vers le ciel ≈ +90°
+    */
+
+    if (
+        typeof event.beta ===
+        "number"
+    ) {
+
+        let pitch =
+            event.beta;
+
+        /*
+           Sur iOS portrait,
+           beta est généralement suffisant.
+
+           On limite pour éviter les valeurs
+           aberrantes lorsque le téléphone
+           passe derrière la verticale.
+        */
+
+        pitch =
+            clamp(
+                pitch,
+                -90,
+                90
+            );
+
+        state.pitch =
+            pitch;
+    }
+
+    if (
+        typeof event.gamma ===
+        "number"
+    ) {
+
+        state.roll =
+            clamp(
+                event.gamma,
+                -90,
+                90
+            );
+
+    }
+
+}
+
+/* =========================================================
+   DÉMARRAGE ORIENTATION
+========================================================= */
+
+function startOrientation() {
+
+    if (
+        typeof DeviceOrientationEvent ===
+        "undefined"
+    ) {
+
+        showToast(
+            "⚠️ Ce navigateur ne fournit pas l'orientation",
+            3500
+        );
+
+        return false;
+
+    }
+
+    /*
+       iOS Safari
+    */
+
+    window.addEventListener(
+        "deviceorientation",
+        handleOrientation,
+        true
+    );
+
+    /*
+       iOS fournit également parfois
+       deviceorientationabsolute.
+
+       On l'utilise lorsque disponible.
+    */
+
+    window.addEventListener(
+        "deviceorientationabsolute",
+        handleOrientation,
+        true
+    );
+
+    state.orientationPermission =
+        true;
+
+    return true;
+
+}
+
+/* =========================================================
+   ORIENTATION DU COMPAS À L'ÉCRAN
+========================================================= */
+
+function updateCompass() {
+
+    const heading =
+        normalize360(
+            state.heading +
+            state.calibrationOffset
+        );
+
+    $("headingValue").textContent =
+        `${Math.round(heading)}°`;
+
+    /*
+       Le ruban doit se déplacer dans
+       le sens opposé à la rotation
+       du téléphone.
+    */
+
+    const track =
+        $("compassTrack");
+
+    /*
+       12 directions affichées.
+       Nous centrons approximativement
+       la direction actuelle.
+    */
+
+    const offset =
+        -(heading / 30) * 44;
+
+    track.style.transform =
+        `translateX(calc(-50% + ${offset}px))`;
+
+}
+
+/* =========================================================
+   CALIBRATION
+========================================================= */
+
+function openCalibration() {
+
+    $("calibration")
+        .classList
+        .add("open");
+
+}
+
+function closeCalibration() {
+
+    $("calibration")
+        .classList
+        .remove("open");
+
+}
+
+/* =========================================================
+   CALIBRATION SIMPLE
+========================================================= */
+
+function performCalibration() {
+
+    /*
+       On considère que la direction actuelle
+       donnée par le capteur correspond au Nord.
+
+       L'utilisateur doit donc réellement
+       pointer vers le Nord avant de lancer
+       cette opération.
+    */
+
+    state.calibrationOffset =
+        normalize360(
+            -state.heading
+        );
+
+    state.calibrated =
+        true;
+
+    closeCalibration();
+
+    showToast(
+        "🎯 Calibration effectuée"
+    );
+
+    updateCompass();
+
+}
+
+/* =========================================================
+   POSITION UTILISATEUR
+========================================================= */
+
+function getUserLocation() {
+
+    return new Promise(
+        resolve => {
+
+            if (
+                !navigator.geolocation
+            ) {
+
+                resolve(false);
+
+                return;
+
+            }
+
+            navigator.geolocation.getCurrentPosition(
+
+                position => {
+
+                    state.latitude =
+                        position.coords.latitude;
+
+                    state.longitude =
+                        position.coords.longitude;
+
+                    resolve(true);
+
+                },
+
+                error => {
+
+                    console.warn(
+                        "Geolocation:",
+                        error
+                    );
+
+                    /*
+                       Nice / position par défaut
+                       pour que l'application continue
+                       à fonctionner si l'utilisateur
+                       refuse la géolocalisation.
+                    */
+
+                    resolve(false);
+
+                },
+
+                {
+                    enableHighAccuracy:
+                        true,
+
+                    timeout:
+                        10000,
+
+                    maximumAge:
+                        300000
+
+                }
+
+            );
+
+        }
+    );
+
+}
+
+/* =========================================================
+   MODE RÉALITÉ AUGMENTÉE
+========================================================= */
+
+async function enableAR() {
+
+    /*
+       Vérification de la caméra.
+    */
+
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        showToast(
+            "⚠️ Caméra non disponible",
+            3000
+        );
+
+        return;
+
+    }
+
+    try {
+
+        /*
+           Caméra arrière.
+        */
+
+        const stream =
+            await navigator.mediaDevices
+                .getUserMedia({
+
+                    video: {
+
+                        facingMode: {
+                            ideal:
+                                "environment"
+                        },
+
+                        width: {
+                            ideal: 1920
+                        },
+
+                        height: {
+                            ideal: 1080
+                        }
+
+                    },
+
+                    audio: false
+
+                });
+
+        state.cameraStream =
+            stream;
+
+        $("arVideo").srcObject =
+            stream;
+
+        $("app")
+            .classList
+            .add("arMode");
+
+        state.arEnabled =
+            true;
+
+        $("arButton")
+            .classList
+            .add("active");
+
+        showToast(
+            "📷 Mode réalité augmentée activé"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Camera error:",
+            error
+        );
+
+        showToast(
+            "⚠️ Autorisation caméra nécessaire",
+            3500
+        );
+
+    }
+
+}
+
+/* =========================================================
+   ARRÊT AR
+========================================================= */
+
+function disableAR() {
+
+    if (
+        state.cameraStream
+    ) {
+
+        state.cameraStream
+            .getTracks()
+            .forEach(
+                track =>
+                    track.stop()
+            );
+
+        state.cameraStream =
+            null;
+
+    }
+
+    $("arVideo").srcObject =
+        null;
+
+    $("app")
+        .classList
+        .remove("arMode");
+
+    state.arEnabled =
+        false;
+
+    $("arButton")
+        .classList
+        .remove("active");
+
+    $("arOverlay").innerHTML =
+        "";
+
+}
+
+/* =========================================================
+   TOGGLE AR
+========================================================= */
+
+async function toggleAR() {
+
+    if (
+        state.arEnabled
+    ) {
+
+        disableAR();
+
+    }
+    else {
+
+        /*
+           L'orientation doit être active
+           pour positionner les objets AR.
+        */
+
+        if (
+            !state.orientationPermission
+        ) {
+
+            const granted =
+                await requestOrientationPermission();
+
+            if (!granted) {
+
+                return;
+
+            }
+
+        }
+
+        await enableAR();
+
+    }
+
+}
+
+/* =========================================================
+   OBJETS AR
+========================================================= */
+
+function renderARObjects() {
+
+    if (
+        !state.arEnabled
+    ) {
+
+        return;
+
+    }
+
+    const overlay =
+        $("arOverlay");
+
+    overlay.innerHTML =
+        "";
+
+    const objects =
+        state.currentObjects;
+
+    objects.forEach(
+        object => {
+
+            if (
+                object.altitude <
+                -2
+            ) {
+
+                return;
+
+            }
+
+            const position =
+                celestialToScreen(
+                    object.azimuth,
+                    object.altitude
+                );
+
+            if (
+                !position.visible
+            ) {
+
+                return;
+
+            }
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+            element.className =
+                "arObject";
+
+            element.style.left =
+                `${position.x}%`;
+
+            element.style.top =
+                `${position.y}%`;
+
+            element.innerHTML = `
+
+                <div class="arIcon">
+                    ${object.emoji}
+                </div>
+
+                <div class="arName">
+                    ${object.shortName}
+                </div>
+
+            `;
+
+            overlay.appendChild(
+                element
+            );
+
+        }
+    );
+
+}
+
+/* =========================================================
+   PERMISSION / ORIENTATION INITIALE
+========================================================= */
+
+async function activateOrientation() {
+
+    /*
+       Si l'orientation est déjà active,
+       rien à faire.
+    */
+
+    if (
+        state.orientationPermission
+    ) {
+
+        showToast(
+            "🧭 Orientation déjà active"
+        );
+
+        return;
+
+    }
+
+    const success =
+        await requestOrientationPermission();
+
+    if (
+        success
+    ) {
+
+        /*
+           On laisse le capteur produire
+           quelques mesures avant de considérer
+           l'orientation comme opérationnelle.
+        */
+
+        setTimeout(() => {
+
+            if (
+                state.orientationAvailable
+            ) {
+
+                $("statusText")
+                    .textContent =
+                    "Orientation active";
+
+                $("statusDot")
+                    .classList
+                    .remove(
+                        "error"
+                    );
+
+            }
+            else {
+
+                $("statusText")
+                    .textContent =
+                    "Orientation indisponible";
+
+                $("statusDot")
+                    .classList
+                    .add(
+                        "error"
+                    );
+
+            }
+
+        }, 1200);
+
+    }
+
+}
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+function closePanels() {
+
+    document
+        .querySelectorAll(".panel")
+        .forEach(
+            panel =>
+                panel.classList.remove(
+                    "open"
+                )
+        );
+
+    state.tonightOpen =
+        false;
+
+    state.satelliteOpen =
+        false;
+
+}
+
+function openPanel(id) {
+
+    closePanels();
+
+    const panel =
+        $(id);
+
+    if (!panel) {
+
+        return;
+
+    }
+
+    panel.classList.add(
+        "open"
+    );
+
+}
+
+/* =========================================================
+   "CE SOIR"
+========================================================= */
+
+function openTonight() {
+
+    const objects =
+        getAstronomicalObjects();
+
+    const visible =
+        objects
+            .filter(
+                object =>
+                    object.altitude > 5
+                    &&
+                    object.type !==
+                        "sun"
+            )
+            .sort(
+                (a, b) =>
+                    a.magnitude -
+                    b.magnitude
+            );
+
+    const container =
+        $("tonightObjects");
+
+    container.innerHTML =
+        "";
+
+    if (
+        visible.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="objectCard">
+
+                <div class="objectEmoji">
+                    🌥️
+                </div>
+
+                <div>
+
+                    <div class="objectName">
+                        Peu d'objets visibles
+                    </div>
+
+                    <div class="objectInfo">
+                        Revenez un peu plus tard.
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+    else {
+
+        visible
+            .slice(0, 10)
+            .forEach(
+                object => {
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+                    card.className =
+                        "objectCard";
+
+                    card.innerHTML = `
+
+                        <div class="objectEmoji">
+                            ${object.emoji}
+                        </div>
+
+                        <div>
+
+                            <div class="objectName">
+                                ${object.name}
+                            </div>
+
+                            <div class="objectInfo">
+                                Altitude :
+                                ${Math.round(object.altitude)}°
+                                · Azimut :
+                                ${Math.round(object.azimuth)}°
+                            </div>
+
+                        </div>
+
+                    `;
+
+                    container.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+    }
+
+    openPanel(
+        "tonightPanel"
+    );
+
+}
+
+/* =========================================================
+   MISSION PANEL
+========================================================= */
+
+function toggleMission() {
+
+    const mission =
+        $("mission");
+
+    const isHidden =
+        mission.classList.contains(
+            "hidden"
+        );
+
+    if (
+        isHidden
+    ) {
+
+        mission.classList.remove(
+            "hidden"
+        );
+
+        state.missionOpen =
+            true;
+
+        setMissionTarget();
+
+    }
+    else {
+
+        mission.classList.add(
+            "hidden"
+        );
+
+        state.missionOpen =
+            false;
+
+    }
+
+}
+
+/* =========================================================
+   SATELLITES
+========================================================= */
+
+function setSatelliteStatus(
+    message,
+    type = ""
+) {
+
+    const element =
+        $("satelliteStatus");
+
+    element.className =
+        "";
+
+    if (
+        type
+    ) {
+
+        element.classList.add(
+            type
+        );
+
+    }
+
+    element.textContent =
+        message;
+
+}
+
+/* =========================================================
+   CHARGEMENT SATELLITES
+========================================================= */
+
+/*
+   Cette version ne dépend pas d'un endpoint
+   qui peut rester bloqué indéfiniment.
+
+   On utilise plusieurs sources possibles.
+
+   Si aucune source n'est disponible,
+   l'application affiche clairement l'état
+   au lieu de rester sur "Chargement...".
+*/
+
+const SATELLITE_URLS = [
+
+    "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle",
+
+    "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle"
+
+];
+
+/* =========================================================
+   FETCH AVEC TIMEOUT
+========================================================= */
+
+async function fetchWithTimeout(
+    url,
+    timeout = 7000
+) {
+
+    const controller =
+        new AbortController();
+
+    const timer =
+        setTimeout(
+            () =>
+                controller.abort(),
+            timeout
+        );
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    signal:
+                        controller.signal,
+
+                    cache:
+                        "no-store"
+                }
+            );
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+        return await response.text();
+
+    }
+    finally {
+
+        clearTimeout(
+            timer
+        );
+
+    }
+
+}
+
+/* =========================================================
+   PARSING TLE
+========================================================= */
+
+function parseTLE(text) {
+
+    const lines =
+        text
+            .split(/\r?\n/)
+            .map(
+                line =>
+                    line.trim()
+            )
+            .filter(
+                line =>
+                    line.length > 0
+            );
+
+    const satellites = [];
+
+    for (
+        let i = 0;
+        i < lines.length;
+        i++
+    ) {
+
+        /*
+           Format :
+
+           NAME
+           1 ....
+           2 ....
+        */
+
+        if (
+            lines[i + 1] &&
+            lines[i + 1].startsWith("1 ")
+            &&
+            lines[i + 2] &&
+            lines[i + 2].startsWith("2 ")
+        ) {
+
+            satellites.push({
+
+                name:
+                    lines[i],
+
+                line1:
+                    lines[i + 1],
+
+                line2:
+                    lines[i + 2]
+
+            });
+
+            i += 2;
+
+        }
+
+    }
+
+    return satellites;
+
+}
+
+/* =========================================================
+   CHARGEMENT ROBUSTE
+========================================================= */
+
+async function loadSatellites() {
+
+    if (
+        state.satelliteLoading
+    ) {
+
+        return;
+
+    }
+
+    state.satelliteLoading =
+        true;
+
+    setSatelliteStatus(
+        "🛰️ Recherche des données orbitales…"
+    );
+
+    $("satelliteList").innerHTML = `
+
+        <div class="objectCard">
+
+            <div class="objectEmoji">
+                🛰️
+            </div>
+
+            <div>
+
+                <div class="objectName">
+                    Recherche des satellites…
+                </div>
+
+                <div class="objectInfo">
+                    Connexion aux données orbitales
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+    let satellites =
+        [];
+
+    let lastError =
+        null;
+
+    for (
+        const url of
+        SATELLITE_URLS
+    ) {
+
+        try {
+
+            const text =
+                await fetchWithTimeout(
+                    url,
+                    7000
+                );
+
+            satellites =
+                parseTLE(
+                    text
+                );
+
+            if (
+                satellites.length > 0
+            ) {
+
+                break;
+
+            }
+
+        }
+        catch (error) {
+
+            lastError =
+                error;
+
+            console.warn(
+                "Satellite source failed:",
+                url,
+                error
+            );
+
+        }
+
+    }
+
+    state.satelliteLoading =
+        false;
+
+    if (
+        satellites.length === 0
+    ) {
+
+        state.satelliteLoaded =
+            false;
+
+        setSatelliteStatus(
+            "⚠️ Données satellites indisponibles pour le moment.",
+            "error"
+        );
+
+        $("satelliteList").innerHTML = `
+
+            <div class="objectCard">
+
+                <div class="objectEmoji">
+                    📡
+                </div>
+
+                <div>
+
+                    <div class="objectName">
+                        Connexion impossible
+                    </div>
+
+                    <div class="objectInfo">
+                        Le ciel et les missions
+                        continuent de fonctionner.
+                        Réessaie dans quelques instants.
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    state.satellites =
+        satellites;
+
+    state.satelliteLoaded =
+        true;
+
+    setSatelliteStatus(
+        `✓ ${satellites.length} satellites chargés`,
+        "ok"
+    );
+
+    renderSatelliteList();
+
+}
+
+/* =========================================================
+   LISTE SATELLITES
+========================================================= */
+
+function renderSatelliteList() {
+
+    const container =
+        $("satelliteList");
+
+    container.innerHTML =
+        "";
+
+    const list =
+        state.satellites
+            .slice(0, 20);
+
+    list.forEach(
+        satellite => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+            card.className =
+                "objectCard";
+
+            card.innerHTML = `
+
+                <div class="objectEmoji">
+                    🛰️
+                </div>
+
+                <div>
+
+                    <div class="objectName">
+                        ${escapeHTML(
+                            satellite.name
+                        )}
+                    </div>
+
+                    <div class="objectInfo">
+                        Données orbitales TLE
+                    </div>
+
+                </div>
+
+            `;
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+/* =========================================================
+   SÉCURITÉ HTML
+========================================================= */
+
+function escapeHTML(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+/* =========================================================
+   FIN DU BLOC 3
+========================================================= */
+
+</script>
+
+  <script>
+
+/* =========================================================
+   BLOC 4/4 — INTERFACE + INITIALISATION
+========================================================= */
+
+/* =========================================================
+   INITIALISATION DOM
+========================================================= */
+
+function initUI() {
+
+    /*
+       Bouton orientation
+    */
+
+    const orientationButton =
+        $("orientationButton");
+
+    if (
+        orientationButton
+    ) {
+
+        orientationButton.addEventListener(
+            "click",
+            activateOrientation
+        );
+
+    }
+
+    /*
+       Bouton calibration
+    */
+
+    const calibrationButton =
+        $("calibrationButton");
+
+    if (
+        calibrationButton
+    ) {
+
+        calibrationButton.addEventListener(
+            "click",
+            openCalibration
+        );
+
+    }
+
+    /*
+       Validation calibration
+    */
+
+    const calibrationConfirm =
+        $("calibrationConfirm");
+
+    if (
+        calibrationConfirm
+    ) {
+
+        calibrationConfirm.addEventListener(
+            "click",
+            performCalibration
+        );
+
+    }
+
+    /*
+       Fermeture calibration
+    */
+
+    const calibrationClose =
+        $("calibrationClose");
+
+    if (
+        calibrationClose
+    ) {
+
+        calibrationClose.addEventListener(
+            "click",
+            closeCalibration
+        );
+
+    }
+
+    /*
+       Bouton réalité augmentée
+    */
+
+    const arButton =
+        $("arButton");
+
+    if (
+        arButton
+    ) {
+
+        arButton.addEventListener(
+            "click",
+            toggleAR
+        );
+
+    }
+
+    /*
+       Bouton mission
+    */
+
+    const missionButton =
+        $("missionButton");
+
+    if (
+        missionButton
+    ) {
+
+        missionButton.addEventListener(
+            "click",
+            toggleMission
+        );
+
+    }
+
+    /*
+       Bouton "Que puis-je voir ce soir ?"
+    */
+
+    const tonightButton =
+        $("tonightButton");
+
+    if (
+        tonightButton
+    ) {
+
+        tonightButton.addEventListener(
+            "click",
+            openTonight
+        );
+
+    }
+
+    /*
+       Fermeture générale des panneaux
+    */
+
+    document
+        .querySelectorAll(
+            "[data-close-panel]"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    closePanels
+                );
+
+            }
+        );
+
+    /*
+       Bouton satellites
+    */
+
+    const satelliteButton =
+        $("satelliteButton");
+
+    if (
+        satelliteButton
+    ) {
+
+        satelliteButton.addEventListener(
+            "click",
+            () => {
+
+                openPanel(
+                    "satellitePanel"
+                );
+
+                state.satelliteOpen =
+                    true;
+
+                if (
+                    !state.satelliteLoaded
+                ) {
+
+                    loadSatellites();
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
+/* =========================================================
+   GÉOLOCALISATION
+========================================================= */
+
+async function initLocation() {
+
+    const success =
+        await getUserLocation();
+
+    if (
+        success
+    ) {
+
+        $("locationText")
+            .textContent =
+            `${state.latitude.toFixed(2)}°, ${state.longitude.toFixed(2)}°`;
+
+        showToast(
+            "📍 Position détectée"
+        );
+
+    }
+    else {
+
+        /*
+           Position par défaut :
+           Nice.
+
+           Cela permet à l'application
+           de fonctionner même si l'utilisateur
+           refuse la géolocalisation.
+        */
+
+        $("locationText")
+            .textContent =
+            "Position par défaut";
+
+    }
+
+    renderSky();
+
+}
+
+/* =========================================================
+   ÉTAT ORIENTATION
+========================================================= */
+
+function updateOrientationUI() {
+
+    const dot =
+        $("statusDot");
+
+    const text =
+        $("statusText");
+
+    if (
+        !dot ||
+        !text
+    ) {
+
+        return;
+
+    }
+
+    if (
+        state.orientationAvailable
+    ) {
+
+        dot.classList.remove(
+            "error"
+        );
+
+        dot.classList.add(
+            "active"
+        );
+
+        text.textContent =
+            "Orientation active";
+
+    }
+    else {
+
+        dot.classList.remove(
+            "active"
+        );
+
+        text.textContent =
+            "Orientation inactive";
+
+    }
+
+}
+
+/* =========================================================
+   MISE À JOUR ÉTAT
+========================================================= */
+
+setInterval(
+    updateOrientationUI,
+    500
+);
+
+/* =========================================================
+   GESTION VISIBILITÉ
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        /*
+           Lorsque l'utilisateur quitte
+           l'application, on évite de garder
+           la caméra active inutilement.
+        */
+
+        if (
+            document.hidden &&
+            state.arEnabled
+        ) {
+
+            disableAR();
+
+        }
+
+    }
+);
+
+/* =========================================================
+   GESTION ÉCRAN
+========================================================= */
+
+function updateScreenMode() {
+
+    const isLandscape =
+        window.innerWidth >
+        window.innerHeight;
+
+    document.body.classList.toggle(
+        "landscape",
+        isLandscape
+    );
+
+}
+
+window.addEventListener(
+    "resize",
+    updateScreenMode
+);
+
+window.addEventListener(
+    "orientationchange",
+    () => {
+
+        setTimeout(
+            () => {
+
+                updateScreenMode();
+
+                renderSky();
+
+            },
+            300
+        );
+
+    }
+);
+
+/* =========================================================
+   GESTION TACTILE
+========================================================= */
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener(
+    "touchstart",
+    event => {
+
+        if (
+            state.arEnabled
+        ) {
+
+            return;
+
+        }
+
+        const touch =
+            event.touches[0];
+
+        touchStartX =
+            touch.clientX;
+
+        touchStartY =
+            touch.clientY;
+
+    },
+    {
+        passive: true
+    }
+);
+
+document.addEventListener(
+    "touchmove",
+    event => {
+
+        if (
+            state.arEnabled
+        ) {
+
+            return;
+
+        }
+
+        /*
+           Le déplacement tactile
+           permet de regarder autour de soi
+           lorsque le capteur n'est pas disponible.
+
+           Cela fournit un fallback utile.
+        */
+
+        const touch =
+            event.touches[0];
+
+        const dx =
+            touch.clientX -
+            touchStartX;
+
+        const dy =
+            touch.clientY -
+            touchStartY;
+
+        if (
+            Math.abs(dx) >
+            3
+        ) {
+
+            state.heading =
+                normalize360(
+                    state.heading -
+                    dx * 0.25
+                );
+
+            touchStartX =
+                touch.clientX;
+
+        }
+
+        if (
+            Math.abs(dy) >
+            3
+        ) {
+
+            state.pitch =
+                clamp(
+                    state.pitch +
+                    dy * 0.15,
+                    -90,
+                    90
+                );
+
+            touchStartY =
+                touch.clientY;
+
+        }
+
+    },
+    {
+        passive: true
+    }
+);
+
+/* =========================================================
+   GESTION CLIC OBJETS
+========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const target =
+            event.target.closest(
+                ".skyObject"
+            );
+
+        if (!target) {
+
+            return;
+
+        }
+
+        const id =
+            target.dataset.objectId;
+
+        const object =
+            state.currentObjects.find(
+                item =>
+                    item.id === id
+            );
+
+        if (!object) {
+
+            return;
+
+        }
+
+        showObjectInfo(
+            object
+        );
+
+    }
+);
+
+/* =========================================================
+   INFORMATIONS OBJET
+========================================================= */
+
+function showObjectInfo(
+    object
+) {
+
+    const info =
+        $("objectInfoPanel");
+
+    if (!info) {
+
+        showToast(
+            `${object.emoji} ${object.name}`
+        );
+
+        return;
+
+    }
+
+    $("infoEmoji").textContent =
+        object.emoji;
+
+    $("infoName").textContent =
+        object.name;
+
+    $("infoDescription").textContent =
+        object.description;
+
+    $("infoAltitude").textContent =
+        `${Math.round(object.altitude)}°`;
+
+    $("infoAzimuth").textContent =
+        `${Math.round(object.azimuth)}°`;
+
+    info.classList.add(
+        "open"
+    );
+
+}
+
+/* =========================================================
+   FERMETURE INFOS
+========================================================= */
+
+const infoClose =
+    $("infoClose");
+
+if (
+    infoClose
+) {
+
+    infoClose.addEventListener(
+        "click",
+        () => {
+
+            $("objectInfoPanel")
+                .classList
+                .remove(
+                    "open"
+                );
+
+        }
+    );
+
+}
+
+/* =========================================================
+   BOUTON RETOUR AU CIEL
+========================================================= */
+
+const backButton =
+    $("backButton");
+
+if (
+    backButton
+) {
+
+    backButton.addEventListener(
+        "click",
+        closePanels
+    );
+
+}
+
+/* =========================================================
+   MODE AUTOMATIQUE
+========================================================= */
+
+function updateDayNightMode() {
+
+    const sun =
+        sunPosition();
+
+    const body =
+        document.body;
+
+    /*
+       Nuit astronomique simplifiée.
+
+       Soleil sous -6° :
+       affichage nocturne.
+
+       Soleil entre -6° et 0° :
+       crépuscule.
+
+       Soleil au-dessus :
+       journée.
+    */
+
+    body.classList.remove(
+        "day",
+        "twilight",
+        "night"
+    );
+
+    if (
+        sun.altitude >
+        0
+    ) {
+
+        body.classList.add(
+            "day"
+        );
+
+    }
+    else if (
+        sun.altitude >
+        -6
+    ) {
+
+        body.classList.add(
+            "twilight"
+        );
+
+    }
+    else {
+
+        body.classList.add(
+            "night"
+        );
+
+    }
+
+}
+
+/* =========================================================
+   HORLOGE
+========================================================= */
+
+function updateClock() {
+
+    const now =
+        new Date();
+
+    const hours =
+        String(
+            now.getHours()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const minutes =
+        String(
+            now.getMinutes()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const seconds =
+        String(
+            now.getSeconds()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const clock =
+        $("clock");
+
+    if (
+        clock
+    ) {
+
+        clock.textContent =
+            `${hours}:${minutes}:${seconds}`;
+
+    }
+
+}
+
+/* =========================================================
+   REFRESH ASTRONOMIQUE
+========================================================= */
+
+setInterval(
+    () => {
+
+        updateDayNightMode();
+
+        updateClock();
+
+    },
+    1000
+);
+
+/* =========================================================
+   INITIALISATION APPLICATION
+========================================================= */
+
+async function initApp() {
+
+    console.log(
+        "🌌 Ciel Live V4 — démarrage"
+    );
+
+    updateScreenMode();
+
+    updateDayNightMode();
+
+    updateClock();
+
+    initUI();
+
+    /*
+       Première génération du ciel.
+    */
+
+    renderSky();
+
+    /*
+       Géolocalisation.
+    */
+
+    await initLocation();
+
+    /*
+       Première mission.
+    */
+
+    setMissionTarget();
+
+    /*
+       Message de démarrage.
+    */
+
+    setTimeout(
+        () => {
+
+            showToast(
+                "🌌 Bienvenue dans Ciel Live V4"
+            );
+
+        },
+        700
+    );
+
+    /*
+       Démarrage de la boucle.
+    */
+
+    requestAnimationFrame(
+        updateScene
+    );
+
+}
+
+/* =========================================================
+   LANCEMENT
+========================================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initApp
+    );
+
+}
+else {
+
+    initApp();
+
+}
+
+/* =========================================================
+   PROTECTION ERREURS
+========================================================= */
+
+window.addEventListener(
+    "error",
+    event => {
+
+        console.error(
+            "Ciel Live error:",
+            event.error ||
+            event.message
+        );
+
+    }
+);
+
+window.addEventListener(
+    "unhandledrejection",
+    event => {
+
+        console.error(
+            "Ciel Live promise error:",
+            event.reason
+        );
+
+    }
+);
+
+</script>
+
+  <script>
+
+/* =========================================================
+   CIEL LIVE V4.1
+   BLOC FINAL — INTERFACE AUTO-CONFIGURÉE
+========================================================= */
+
+(function () {
+
+    "use strict";
+
+    /* =====================================================
+       OUTIL CRÉATION ÉLÉMENT
+    ===================================================== */
+
+    function ensureElement(
+        id,
+        tag = "div",
+        parent = document.body
+    ) {
+
+        let element =
+            document.getElementById(id);
+
+        if (element) {
+            return element;
+        }
+
+        element =
+            document.createElement(tag);
+
+        element.id = id;
+
+        parent.appendChild(element);
+
+        return element;
+    }
+
+    /* =====================================================
+       STYLE V4.1
+    ===================================================== */
+
+    const style =
+        document.createElement("style");
+
+    style.id =
+        "ciel-live-v41-style";
+
+    style.textContent = `
+
+    :root {
+
+        --gold:
+            #ffd76a;
+
+        --gold2:
+            #ffefae;
+
+        --blue:
+            #4dc7ff;
+
+        --green:
+            #52e39a;
+
+        --red:
+            #ff667a;
+
+        --panel:
+            rgba(8, 15, 35, .82);
+
+        --border:
+            rgba(255,255,255,.14);
+
+    }
+
+    * {
+        box-sizing:
+            border-box;
+    }
+
+    html,
+    body {
+
+        width:
+            100%;
+
+        height:
+            100%;
+
+        margin:
+            0;
+
+        overflow:
+            hidden;
+
+        background:
+            #020611;
+
+        color:
+            white;
+
+        font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+
+        touch-action:
+            manipulation;
+
+    }
+
+    body {
+
+        user-select:
+            none;
+
+        -webkit-user-select:
+            none;
+
+    }
+
+    #app {
+
+        position:
+            fixed;
+
+        inset:
+            0;
+
+        overflow:
+            hidden;
+
+        background:
+            radial-gradient(
+                ellipse at center bottom,
+                #132b55 0%,
+                #07132c 42%,
+                #020611 100%
+            );
+
+    }
+
+    /* =====================================================
+       CIEL
+    ===================================================== */
+
+    #skyLayer {
+
+        position:
+            absolute;
+
+        inset:
+            0;
+
+        overflow:
+            hidden;
+
+        z-index:
+            10;
+
+        pointer-events:
+            auto;
+
+    }
+
+    #skyLayer::before {
+
+        content:
+            "";
+
+        position:
+            absolute;
+
+        inset:
+            0;
+
+        pointer-events:
+            none;
+
+        background:
+            radial-gradient(
+                circle at 50% 50%,
+                transparent 0%,
+                rgba(0,0,0,.08) 45%,
+                rgba(0,0,0,.38) 100%
+            );
+
+    }
+
+    /* =====================================================
+       ÉTOILES
+    ===================================================== */
+
+    .skyObject {
+
+        z-index:
+            20;
+
+        transform:
+            translate(-50%, -50%);
+
+        transition:
+            left .18s linear,
+            top .18s linear;
+
+        pointer-events:
+            auto;
+
+    }
+
+    .star {
+
+        width:
+            12px;
+
+        height:
+            12px;
+
+        border-radius:
+            50%;
+
+        background:
+            white;
+
+        box-shadow:
+            0 0 8px 2px
+            rgba(255,255,255,.75);
+
+        transform:
+            scale(var(--scale,1));
+
+        animation:
+            starPulse
+            3s
+            ease-in-out
+            infinite;
+
+        cursor:
+            pointer;
+
+    }
+
+    .star.major {
+
+        width:
+            16px;
+
+        height:
+            16px;
+
+        box-shadow:
+            0 0 16px 5px
+            rgba(255,255,255,.85);
+
+    }
+
+    .star.target {
+
+        width:
+            22px;
+
+        height:
+            22px;
+
+        border:
+            3px solid
+            var(--gold);
+
+        background:
+            var(--gold);
+
+        box-shadow:
+            0 0 8px 4px
+            rgba(255,215,106,.9),
+
+            0 0 28px 8px
+            rgba(255,215,106,.45);
+
+        animation:
+            targetPulse
+            1s
+            ease-in-out
+            infinite;
+
+    }
+
+    .star.small {
+
+        opacity:
+            .7;
+
+    }
+
+    .objectLabel {
+
+        white-space:
+            nowrap;
+
+        font-size:
+            12px;
+
+        font-weight:
+            700;
+
+        padding:
+            4px 7px;
+
+        border-radius:
+            8px;
+
+        background:
+            rgba(0,0,0,.55);
+
+        backdrop-filter:
+            blur(5px);
+
+        -webkit-backdrop-filter:
+            blur(5px);
+
+        pointer-events:
+            none;
+
+    }
+
+    .altitude {
+
+        display:
+            block;
+
+        margin-top:
+            2px;
+
+        opacity:
+            .65;
+
+        font-size:
+            9px;
+
+        font-weight:
+            500;
+
+    }
+
+    @keyframes starPulse {
+
+        0%,
+        100% {
+            opacity:
+                .75;
+        }
+
+        50% {
+            opacity:
+                1;
+        }
+
+    }
+
+    @keyframes targetPulse {
+
+        0%,
+        100% {
+            transform:
+                scale(1);
+        }
+
+        50% {
+            transform:
+                scale(1.3);
+        }
+
+    }
+
+    /* =====================================================
+       VISEUR CENTRAL
+    ===================================================== */
+
+    #skyLayer::after {
+
+        content:
+            "";
+
+        position:
+            absolute;
+
+        left:
+            50%;
+
+        top:
+            50%;
+
+        width:
+            44px;
+
+        height:
+            44px;
+
+        transform:
+            translate(-50%,-50%);
+
+        border:
+            2px solid
+            rgba(255,255,255,.55);
+
+        border-radius:
+            50%;
+
+        box-shadow:
+            0 0 0 1px
+            rgba(0,0,0,.3);
+
+        pointer-events:
+            none;
+
+    }
+
+    /* =====================================================
+       TOP BAR
+    ===================================================== */
+
+    #topBar {
+
+        position:
+            absolute;
+
+        top:
+            env(safe-area-inset-top, 12px);
+
+        left:
+            12px;
+
+        right:
+            12px;
+
+        min-height:
+            48px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            space-between;
+
+        gap:
+            8px;
+
+        z-index:
+            100;
+
+        padding:
+            8px 10px;
+
+        border:
+            1px solid
+            var(--border);
+
+        border-radius:
+            16px;
+
+        background:
+            rgba(4,10,25,.64);
+
+        backdrop-filter:
+            blur(14px);
+
+        -webkit-backdrop-filter:
+            blur(14px);
+
+    }
+
+    #clock {
+
+        font-size:
+            14px;
+
+        font-weight:
+            700;
+
+        letter-spacing:
+            .5px;
+
+    }
+
+    #locationText {
+
+        font-size:
+            10px;
+
+        opacity:
+            .65;
+
+    }
+
+    #orientationStatus {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        gap:
+            6px;
+
+        font-size:
+            10px;
+
+    }
+
+    #statusDot {
+
+        width:
+            8px;
+
+        height:
+            8px;
+
+        border-radius:
+            50%;
+
+        background:
+            #777;
+
+    }
+
+    #statusDot.active {
+
+        background:
+            var(--green);
+
+        box-shadow:
+            0 0 8px
+            var(--green);
+
+    }
+
+    #statusDot.error {
+
+        background:
+            var(--red);
+
+    }
+
+    /* =====================================================
+       BOUTONS
+    ===================================================== */
+
+    .cielButton {
+
+        border:
+            1px solid
+            var(--border);
+
+        background:
+            rgba(12,23,48,.86);
+
+        color:
+            white;
+
+        border-radius:
+            14px;
+
+        padding:
+            10px 13px;
+
+        font-size:
+            12px;
+
+        font-weight:
+            700;
+
+        box-shadow:
+            0 6px 20px
+            rgba(0,0,0,.25);
+
+        backdrop-filter:
+            blur(10px);
+
+        -webkit-backdrop-filter:
+            blur(10px);
+
+        cursor:
+            pointer;
+
+        transition:
+            transform .15s,
+            background .15s;
+
+    }
+
+    .cielButton:active {
+
+        transform:
+            scale(.94);
+
+    }
+
+    .cielButton.active {
+
+        border-color:
+            var(--gold);
+
+        color:
+            var(--gold);
+
+    }
+
+    /* =====================================================
+       COMMANDES BASSES
+    ===================================================== */
+
+    #bottomControls {
+
+        position:
+            absolute;
+
+        left:
+            10px;
+
+        right:
+            10px;
+
+        bottom:
+            calc(
+                env(safe-area-inset-bottom, 10px)
+                + 10px
+            );
+
+        z-index:
+            100;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        gap:
+            7px;
+
+    }
+
+    /*
+       IMPORTANT :
+       le bouton "Que puis-je voir ce soir ?"
+       est volontairement petit.
+    */
+
+    #tonightButton {
+
+        width:
+            auto;
+
+        max-width:
+            165px;
+
+        min-height:
+            38px;
+
+        padding:
+            8px 11px;
+
+        font-size:
+            11px;
+
+        opacity:
+            .92;
+
+    }
+
+    #missionButton {
+
+        min-width:
+            44px;
+
+        width:
+            44px;
+
+        height:
+            44px;
+
+        padding:
+            0;
+
+        border-radius:
+            50%;
+
+        font-size:
+            18px;
+
+    }
+
+    #arButton {
+
+        min-width:
+            48px;
+
+        height:
+            44px;
+
+        padding:
+            0 12px;
+
+        border-radius:
+            22px;
+
+    }
+
+    #satelliteButton {
+
+        min-width:
+            44px;
+
+        width:
+            44px;
+
+        height:
+            44px;
+
+        padding:
+            0;
+
+        border-radius:
+            50%;
+
+        font-size:
+            18px;
+
+    }
+
+    /* =====================================================
+       COMPAS
+    ===================================================== */
+
+    #compass {
+
+        position:
+            absolute;
+
+        top:
+            70px;
+
+        left:
+            50%;
+
+        transform:
+            translateX(-50%);
+
+        width:
+            min(310px, 78vw);
+
+        height:
+            46px;
+
+        z-index:
+            90;
+
+        overflow:
+            hidden;
+
+        border-radius:
+            14px;
+
+        background:
+            rgba(2,7,20,.48);
+
+        border:
+            1px solid
+            rgba(255,255,255,.1);
+
+        backdrop-filter:
+            blur(8px);
+
+    }
+
+    #compassTrack {
+
+        position:
+            absolute;
+
+        left:
+            50%;
+
+        top:
+            0;
+
+        height:
+            46px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        gap:
+            0;
+
+        transform:
+            translateX(-50%);
+
+        transition:
+            transform .15s linear;
+
+    }
+
+    .compassDirection {
+
+        width:
+            44px;
+
+        flex:
+            0 0 44px;
+
+        text-align:
+            center;
+
+        font-size:
+            11px;
+
+        font-weight:
+            800;
+
+        opacity:
+            .55;
+
+    }
+
+    .compassDirection.north {
+
+        color:
+            #ff7070;
+
+        opacity:
+            1;
+
+    }
+
+    #headingValue {
+
+        position:
+            absolute;
+
+        bottom:
+            2px;
+
+        left:
+            50%;
+
+        transform:
+            translateX(-50%);
+
+        font-size:
+            8px;
+
+        opacity:
+            .65;
+
+    }
+
+    /* =====================================================
+       MISSION COMPACTE
+    ===================================================== */
+
+    #mission {
+
+        position:
+            absolute;
+
+        top:
+            128px;
+
+        left:
+            50%;
+
+        width:
+            min(330px, calc(100vw - 28px));
+
+        transform:
+            translateX(-50%);
+
+        z-index:
+            110;
+
+        padding:
+            10px;
+
+        border:
+            1px solid
+            rgba(255,215,106,.28);
+
+        border-radius:
+            16px;
+
+        background:
+            rgba(7,15,32,.86);
+
+        backdrop-filter:
+            blur(14px);
+
+        -webkit-backdrop-filter:
+            blur(14px);
+
+        transition:
+            transform .25s,
+            opacity .25s;
+
+    }
+
+    #mission.hidden {
+
+        display:
+            none;
+
+    }
+
+    #missionHeader {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        gap:
+            9px;
+
+    }
+
+    #targetIcon {
+
+        width:
+            36px;
+
+        height:
+            36px;
+
+        display:
+            grid;
+
+        place-items:
+            center;
+
+        border-radius:
+            11px;
+
+        background:
+            rgba(255,215,106,.12);
+
+        font-size:
+            20px;
+
+    }
+
+    #targetName {
+
+        font-size:
+            14px;
+
+        font-weight:
+            800;
+
+    }
+
+    #targetHint {
+
+        margin-top:
+            2px;
+
+        font-size:
+            10px;
+
+        opacity:
+            .7;
+
+    }
+
+    #targetStatus {
+
+        margin-left:
+            auto;
+
+        font-size:
+            9px;
+
+        font-weight:
+            900;
+
+    }
+
+    #missionProgress {
+
+        margin-top:
+            9px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        gap:
+            8px;
+
+    }
+
+    #progressTrack {
+
+        flex:
+            1;
+
+        height:
+            6px;
+
+        overflow:
+            hidden;
+
+        border-radius:
+            99px;
+
+        background:
+            rgba(255,255,255,.12);
+
+    }
+
+    #progressBar {
+
+        width:
+            0%;
+
+        height:
+            100%;
+
+        border-radius:
+            inherit;
+
+        background:
+            linear-gradient(
+                90deg,
+                var(--gold),
+                var(--gold2)
+            );
+
+        transition:
+            width .4s ease;
+
+    }
+
+    #missionCount {
+
+        font-size:
+            10px;
+
+        font-weight:
+            800;
+
+        color:
+            var(--gold);
+
+    }
+
+    /* =====================================================
+       PANNEAUX
+    ===================================================== */
+
+    .panel {
+
+        position:
+            absolute;
+
+        left:
+            50%;
+
+        bottom:
+            75px;
+
+        width:
+            min(390px, calc(100vw - 24px));
+
+        max-height:
+            65vh;
+
+        overflow:
+            auto;
+
+        transform:
+            translate(-50%, 30px);
+
+        opacity:
+            0;
+
+        pointer-events:
+            none;
+
+        z-index:
+            300;
+
+        padding:
+            16px;
+
+        border:
+            1px solid
+            var(--border);
+
+        border-radius:
+            20px;
+
+        background:
+            var(--panel);
+
+        backdrop-filter:
+            blur(18px);
+
+        -webkit-backdrop-filter:
+            blur(18px);
+
+        transition:
+            .25s ease;
+
+    }
+
+    .panel.open {
+
+        transform:
+            translate(-50%, 0);
+
+        opacity:
+            1;
+
+        pointer-events:
+            auto;
+
+    }
+
+    .panelTitle {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            space-between;
+
+        margin-bottom:
+            12px;
+
+    }
+
+    .panelTitle strong {
+
+        font-size:
+            16px;
+
+    }
+
+    .panelClose {
+
+        width:
+            32px;
+
+        height:
+            32px;
+
+        border:
+            0;
+
+        border-radius:
+            50%;
+
+        background:
+            rgba(255,255,255,.1);
+
+        color:
+            white;
+
+        font-size:
+            16px;
+
+    }
+
+    .objectCard {
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        gap:
+            10px;
+
+        padding:
+            10px;
+
+        margin-bottom:
+            7px;
+
+        border-radius:
+            13px;
+
+        background:
+            rgba(255,255,255,.055);
+
+    }
+
+    .objectEmoji {
+
+        width:
+            38px;
+
+        height:
+            38px;
+
+        display:
+            grid;
+
+        place-items:
+            center;
+
+        border-radius:
+            11px;
+
+        background:
+            rgba(255,255,255,.06);
+
+        font-size:
+            19px;
+
+    }
+
+    .objectName {
+
+        font-size:
+            12px;
+
+        font-weight:
+            800;
+
+    }
+
+    .objectInfo {
+
+        margin-top:
+            3px;
+
+        font-size:
+            9px;
+
+        opacity:
+            .62;
+
+    }
+
+    #satelliteStatus {
+
+        margin-bottom:
+            10px;
+
+        padding:
+            8px;
+
+        border-radius:
+            10px;
+
+        background:
+            rgba(255,255,255,.05);
+
+        font-size:
+            10px;
+
+    }
+
+    #satelliteStatus.ok {
+
+        color:
+            var(--green);
+
+    }
+
+    #satelliteStatus.error {
+
+        color:
+            var(--red);
+
+    }
+
+    /* =====================================================
+       AR
+    ===================================================== */
+
+    #arVideo {
+
+        position:
+            absolute;
+
+        inset:
+            0;
+
+        width:
+            100%;
+
+        height:
+            100%;
+
+        object-fit:
+            cover;
+
+        z-index:
+            1;
+
+        display:
+            none;
+
+        background:
+            black;
+
+    }
+
+    #app.arMode #arVideo {
+
+        display:
+            block;
+
+    }
+
+    #app.arMode #skyLayer {
+
+        background:
+            transparent;
+
+        pointer-events:
+            none;
+
+    }
+
+    #app.arMode #skyLayer::before {
+
+        display:
+            none;
+
+    }
+
+    #arOverlay {
+
+        position:
+            absolute;
+
+        inset:
+            0;
+
+        z-index:
+            30;
+
+        pointer-events:
+            none;
+
+    }
+
+    .arObject {
+
+        position:
+            absolute;
+
+        transform:
+            translate(-50%,-50%);
+
+        display:
+            flex;
+
+        flex-direction:
+            column;
+
+        align-items:
+            center;
+
+        gap:
+            3px;
+
+        text-shadow:
+            0 2px 5px black;
+
+    }
+
+    .arIcon {
+
+        font-size:
+            27px;
+
+        filter:
+            drop-shadow(
+                0 0 7px
+                rgba(255,255,255,.9)
+            );
+
+    }
+
+    .arName {
+
+        padding:
+            4px 7px;
+
+        border-radius:
+            8px;
+
+        background:
+            rgba(0,0,0,.55);
+
+        font-size:
+            10px;
+
+        font-weight:
+            800;
+
+    }
+
+    /* =====================================================
+       CALIBRATION
+    ===================================================== */
+
+    #calibration {
+
+        position:
+            fixed;
+
+        inset:
+            0;
+
+        z-index:
+            500;
+
+        display:
+            none;
+
+        place-items:
+            center;
+
+        padding:
+            20px;
+
+        background:
+            rgba(0,0,0,.72);
+
+        backdrop-filter:
+            blur(8px);
+
+    }
+
+    #calibration.open {
+
+        display:
+            grid;
+
+    }
+
+    #calibrationCard {
+
+        width:
+            min(350px, 100%);
+
+        padding:
+            22px;
+
+        border-radius:
+            22px;
+
+        background:
+            #081229;
+
+        border:
+            1px solid
+            rgba(255,255,255,.15);
+
+        text-align:
+            center;
+
+    }
+
+    #calibrationCompass {
+
+        width:
+            130px;
+
+        height:
+            130px;
+
+        margin:
+            15px auto;
+
+        display:
+            grid;
+
+        place-items:
+            center;
+
+        border:
+            2px solid
+            rgba(255,255,255,.25);
+
+        border-radius:
+            50%;
+
+        font-size:
+            42px;
+
+    }
+
+    #calibrationCard p {
+
+        font-size:
+            12px;
+
+        line-height:
+            1.5;
+
+        opacity:
+            .72;
+
+    }
+
+    #calibrationConfirm {
+
+        width:
+            100%;
+
+        margin-top:
+            8px;
+
+    }
+
+    /* =====================================================
+       TOAST
+    ===================================================== */
+
+    #toast {
+
+        position:
+            fixed;
+
+        left:
+            50%;
+
+        bottom:
+            115px;
+
+        transform:
+            translate(-50%,20px);
+
+        z-index:
+            900;
+
+        padding:
+            10px 14px;
+
+        border-radius:
+            14px;
+
+        background:
+            rgba(0,0,0,.82);
+
+        border:
+            1px solid
+            rgba(255,255,255,.12);
+
+        font-size:
+            11px;
+
+        font-weight:
+            700;
+
+        opacity:
+            0;
+
+        pointer-events:
+            none;
+
+        transition:
+            .25s ease;
+
+        white-space:
+            nowrap;
+
+    }
+
+    #toast.show {
+
+        opacity:
+            1;
+
+        transform:
+            translate(-50%,0);
+
+    }
+
+    /* =====================================================
+       MODE JOUR
+    ===================================================== */
+
+    body.day #app {
+
+        background:
+            linear-gradient(
+                #3978ad,
+                #9cc8df
+            );
+
+    }
+
+    body.twilight #app {
+
+        background:
+            linear-gradient(
+                #291d49,
+                #081128
+            );
+
+    }
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (
+        max-height: 700px
+    ) {
+
+        #compass {
+
+            top:
+                62px;
+
+        }
+
+        #mission {
+
+            top:
+                112px;
+
+        }
+
+        .panel {
+
+            bottom:
+                65px;
+
+            max-height:
+                60vh;
+
+        }
+
+    }
+
+    /* =====================================================
+       LANDSCAPE
+    ===================================================== */
+
+    body.landscape #mission {
+
+        top:
+            85px;
+
+        left:
+            15px;
+
+        transform:
+            none;
+
+        width:
+            300px;
+
+    }
+
+    body.landscape #compass {
+
+        top:
+            12px;
+
+    }
+
+    body.landscape #bottomControls {
+
+        right:
+            15px;
+
+        left:
+            auto;
+
+        bottom:
+            15px;
+
+    }
+
+    `;
+
+    document.head.appendChild(
+        style
+    );
+
+    /* =====================================================
+       STRUCTURE PRINCIPALE
+    ===================================================== */
+
+    const app =
+        ensureElement(
+            "app"
+        );
+
+    /*
+       Caméra AR
+    */
+
+    const arVideo =
+        ensureElement(
+            "arVideo",
+            "video",
+            app
+        );
+
+    arVideo.autoplay =
+        true;
+
+    arVideo.playsInline =
+        true;
+
+    arVideo.muted =
+        true;
+
+    /* =====================================================
+       CIEL
+    ===================================================== */
+
+    ensureElement(
+        "skyLayer",
+        "div",
+        app
+    );
+
+    ensureElement(
+        "arOverlay",
+        "div",
+        app
+    );
+
+    /* =====================================================
+       TOP BAR
+    ===================================================== */
+
+    const topBar =
+        ensureElement(
+            "topBar",
+            "div",
+            app
+        );
+
+    topBar.innerHTML = `
 
         <div>
 
-          <span class="panel-kicker">
-            ⚙️ CONFIGURATION
-          </span>
+            <div id="clock">
+                --:--:--
+            </div>
 
-          <h2>
-            Paramètres
-          </h2>
+            <div id="locationText">
+                Localisation...
+            </div>
 
         </div>
+
+        <div id="orientationStatus">
+
+            <span id="statusDot"></span>
+
+            <span id="statusText">
+                Orientation inactive
+            </span>
+
+        </div>
+
+    `;
+
+    /* =====================================================
+       COMPAS
+    ===================================================== */
+
+    const compass =
+        ensureElement(
+            "compass",
+            "div",
+            app
+        );
+
+    compass.innerHTML = `
+
+        <div id="compassTrack">
+
+            <div class="compassDirection">
+                O
+            </div>
+
+            <div class="compassDirection">
+                NO
+            </div>
+
+            <div class="compassDirection north">
+                N
+            </div>
+
+            <div class="compassDirection">
+                NE
+            </div>
+
+            <div class="compassDirection">
+                E
+            </div>
+
+            <div class="compassDirection">
+                SE
+            </div>
+
+            <div class="compassDirection">
+                S
+            </div>
+
+            <div class="compassDirection">
+                SO
+            </div>
+
+            <div class="compassDirection">
+                O
+            </div>
+
+            <div class="compassDirection">
+                NO
+            </div>
+
+            <div class="compassDirection north">
+                N
+            </div>
+
+            <div class="compassDirection">
+                NE
+            </div>
+
+            <div class="compassDirection">
+                E
+            </div>
+
+        </div>
+
+        <div id="headingValue">
+            0°
+        </div>
+
+    `;
+
+    /* =====================================================
+       MISSION
+    ===================================================== */
+
+    const mission =
+        ensureElement(
+            "mission",
+            "div",
+            app
+        );
+
+    mission.classList.add(
+        "hidden"
+    );
+
+    mission.innerHTML = `
+
+        <div id="missionHeader">
+
+            <div id="targetIcon">
+                ⭐
+            </div>
+
+            <div>
+
+                <div id="targetName">
+                    Mission
+                </div>
+
+                <div id="targetHint">
+                    Trouve l'objet demandé
+                </div>
+
+            </div>
+
+            <div id="targetStatus">
+                À TROUVER
+            </div>
+
+        </div>
+
+        <div id="missionProgress">
+
+            <div id="progressTrack">
+
+                <div id="progressBar"></div>
+
+            </div>
+
+            <div id="missionCount">
+                0 / 5
+            </div>
+
+        </div>
+
+    `;
+
+    /* =====================================================
+       BOUTONS
+    ===================================================== */
+
+    const bottom =
+        ensureElement(
+            "bottomControls",
+            "div",
+            app
+        );
+
+    bottom.innerHTML = `
 
         <button
-          id="closeSettings"
-          class="close-button"
-          aria-label="Fermer"
+            id="orientationButton"
+            class="cielButton"
         >
-          ×
+            🧭
         </button>
 
-      </div>
+        <button
+            id="calibrationButton"
+            class="cielButton"
+        >
+            🎯
+        </button>
 
+        <button
+            id="tonightButton"
+            class="cielButton"
+        >
+            ✨ Ce soir
+        </button>
 
-      <div class="settings-list">
+        <button
+            id="missionButton"
+            class="cielButton"
+        >
+            🎯
+        </button>
 
+        <button
+            id="arButton"
+            class="cielButton"
+        >
+            📷 AR
+        </button>
 
-        <div class="setting-row">
+        <button
+            id="satelliteButton"
+            class="cielButton"
+        >
+            🛰️
+        </button>
 
-          <div>
+    `;
+
+    /* =====================================================
+       PANNEAU CE SOIR
+    ===================================================== */
+
+    const tonight =
+        ensureElement(
+            "tonightPanel",
+            "div",
+            app
+        );
+
+    tonight.className =
+        "panel";
+
+    tonight.innerHTML = `
+
+        <div class="panelTitle">
 
             <strong>
-              📍 Position
+                ✨ Que puis-je voir ce soir ?
             </strong>
 
-            <small>
-              Utiliser ma position actuelle
-            </small>
-
-          </div>
-
-          <button
-            id="refreshLocation"
-            class="secondary-button"
-          >
-            Actualiser
-          </button>
+            <button
+                class="panelClose"
+                data-close-panel
+            >
+                ×
+            </button>
 
         </div>
 
+        <div id="tonightObjects"></div>
 
-        <div class="setting-row">
+    `;
 
-          <div>
+    /* =====================================================
+       PANNEAU SATELLITES
+    ===================================================== */
+
+    const satellite =
+        ensureElement(
+            "satellitePanel",
+            "div",
+            app
+        );
+
+    satellite.className =
+        "panel";
+
+    satellite.innerHTML = `
+
+        <div class="panelTitle">
 
             <strong>
-              📱 Orientation
+                🛰️ Satellites
             </strong>
 
-            <small id="orientationSettingText">
-              Capteurs du téléphone
-            </small>
-
-          </div>
-
-          <button
-            id="enableOrientation"
-            class="secondary-button"
-          >
-            Activer
-          </button>
+            <button
+                class="panelClose"
+                data-close-panel
+            >
+                ×
+            </button>
 
         </div>
 
+        <div id="satelliteStatus">
+            Pas encore chargé
+        </div>
 
-        <div class="setting-row">
+        <div id="satelliteList"></div>
 
-          <div>
+        <button
+            id="reloadSatellites"
+            class="cielButton"
+            style="width:100%;margin-top:8px"
+        >
+            🔄 Actualiser
+        </button>
+
+    `;
+
+    /* =====================================================
+       INFOS OBJET
+    ===================================================== */
+
+    const info =
+        ensureElement(
+            "objectInfoPanel",
+            "div",
+            app
+        );
+
+    info.className =
+        "panel";
+
+    info.innerHTML = `
+
+        <div class="panelTitle">
 
             <strong>
-              🌙 Mode nuit
+                Objet céleste
             </strong>
 
-            <small>
-              Préserver la vision nocturne
-            </small>
-
-          </div>
-
-          <button
-            id="toggleNightMode"
-            class="secondary-button"
-          >
-            Activer
-          </button>
+            <button
+                id="infoClose"
+                class="panelClose"
+            >
+                ×
+            </button>
 
         </div>
 
+        <div class="objectCard">
 
-        <div class="setting-row">
+            <div
+                id="infoEmoji"
+                class="objectEmoji"
+            >
+                ⭐
+            </div>
 
-          <div>
+            <div>
 
-            <strong>
-              🔊 Audio
-            </strong>
+                <div
+                    id="infoName"
+                    class="objectName"
+                >
+                    Objet
+                </div>
 
-            <small>
-              Lecture des informations
-            </small>
+                <div
+                    id="infoDescription"
+                    class="objectInfo"
+                >
+                    Description
+                </div>
 
-          </div>
-
-          <button
-            id="toggleAudio"
-            class="secondary-button"
-          >
-            Désactivé
-          </button>
+            </div>
 
         </div>
 
-      </div>
+        <div class="objectCard">
 
-    </section>
+            <div>
 
+                <div class="objectInfo">
+                    ALTITUDE
+                </div>
 
-    <!-- =======================================================
-         TOAST
-    ======================================================== -->
+                <div
+                    id="infoAltitude"
+                    class="objectName"
+                >
+                    --°
+                </div>
 
-    <div
-      id="toast"
-      class="toast"
-      role="status"
-      aria-live="polite"
-    >
+            </div>
 
-      <span id="toastIcon">
-        ℹ️
-      </span>
+            <div>
 
-      <span id="toastMessage">
-        Information
-      </span>
+                <div class="objectInfo">
+                    AZIMUT
+                </div>
 
-    </div>
+                <div
+                    id="infoAzimuth"
+                    class="objectName"
+                >
+                    --°
+                </div>
 
+            </div>
 
-  </main>
+        </div>
 
+    `;
 
-  <!-- =========================================================
-       JAVASCRIPT
-  ========================================================== -->
+    /* =====================================================
+       CALIBRATION
+    ===================================================== */
 
-<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/satellite.js@7.0.1/dist/satellite.min.js"></script>
+    const calibration =
+        ensureElement(
+            "calibration",
+            "div",
+            document.body
+        );
 
-<script src="app.js"></script>
-<script src="satellites.js"></script>
+    calibration.innerHTML = `
 
+        <div id="calibrationCard">
 
-  <!-- =========================================================
-       FALLBACK
-  ========================================================== -->
+            <div
+                style="
+                    font-size:30px;
+                    margin-bottom:6px;
+                "
+            >
+                🧭
+            </div>
 
-  <noscript>
+            <div
+                style="
+                    font-size:18px;
+                    font-weight:800;
+                "
+            >
+                Calibration
+            </div>
 
-    <div class="noscript">
+            <div id="calibrationCompass">
+                🧭
+            </div>
 
-      🌌 Ciel Live nécessite JavaScript
-      pour fonctionner.
+            <p>
+                Pour améliorer la précision,
+                tiens ton téléphone bien à plat
+                et tourne-toi lentement vers le Nord.
+            </p>
 
-    </div>
+            <p>
+                Quand le téléphone pointe vers
+                le Nord, appuie sur le bouton.
+            </p>
 
-  </noscript>
+            <button
+                id="calibrationConfirm"
+                class="cielButton"
+            >
+                ✓ Calibrer
+            </button>
 
-</body>
-</html>
+            <button
+                id="calibrationClose"
+                class="cielButton"
+                style="
+                    width:100%;
+                    margin-top:8px;
+                    opacity:.7;
+                "
+            >
+                Annuler
+            </button>
+
+        </div>
+
+    `;
+
+    /* =====================================================
+       TOAST
+    ===================================================== */
+
+    ensureElement(
+        "toast",
+        "div",
+        document.body
+    );
+
+    /* =====================================================
+       BRANCHEMENT RELOAD SATELLITES
+    ===================================================== */
+
+    const reload =
+        document.getElementById(
+            "reloadSatellites"
+        );
+
+    if (reload) {
+
+        reload.addEventListener(
+            "click",
+            () => {
+
+                state.satelliteLoaded =
+                    false;
+
+                loadSatellites();
+
+            }
+        );
+
+    }
+
+    /* =====================================================
+       INITIALISATION APRÈS CRÉATION DOM
+    ===================================================== */
+
+    /*
+       Le Bloc 4 peut avoir déjà tenté
+       une initialisation avant la création
+       de ces éléments.
+
+       On relance donc proprement les
+       éléments critiques.
+    */
+
+    try {
+
+        initUI();
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Initialisation UI:",
+            error
+        );
+
+    }
+
+    try {
+
+        renderSky();
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Premier rendu ciel:",
+            error
+        );
+
+    }
+
+    try {
+
+        setMissionTarget();
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Mission:",
+            error
+        );
+
+    }
+
+    try {
+
+        updateDayNightMode();
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Day/night:",
+            error
+        );
+
+    }
+
+    try {
+
+        updateClock();
+
+    }
+    catch (error) {}
+
+    /* =====================================================
+       AR : ORIENTATION AVANT CAMÉRA
+    ===================================================== */
+
+    const ar =
+        document.getElementById(
+            "arButton"
+        );
+
+    if (ar) {
+
+        ar.addEventListener(
+            "click",
+            async () => {
+
+                if (
+                    !state.orientationPermission
+                ) {
+
+                    await requestOrientationPermission();
+
+                }
+
+            }
+        );
+
+    }
+
+    /* =====================================================
+       ORIENTATION : ACTIVATION AU PREMIER TOUCHER
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function firstInteraction() {
+
+            /*
+               On ne demande PAS automatiquement
+               la permission iOS.
+
+               Elle doit être déclenchée par
+               une action utilisateur.
+
+               Ici on initialise seulement
+               les capacités disponibles.
+            */
+
+            document.removeEventListener(
+                "click",
+                firstInteraction
+            );
+
+        },
+        {
+            once: true
+        }
+    );
+
+    /* =====================================================
+       AMÉLIORATION CALIBRATION VISUELLE
+    ===================================================== */
+
+    setInterval(
+        () => {
+
+            const compass =
+                document.getElementById(
+                    "calibrationCompass"
+                );
+
+            if (
+                !compass
+            ) {
+
+                return;
+
+            }
+
+            const rotation =
+                -(
+                    state.heading +
+                    state.calibrationOffset
+                );
+
+            compass.style.transform =
+                `rotate(${rotation}deg)`;
+
+        },
+        50
+    );
+
+    /* =====================================================
+       SURVEILLANCE ORIENTATION
+    ===================================================== */
+
+    setInterval(
+        () => {
+
+            if (
+                state.orientationAvailable
+            ) {
+
+                const dot =
+                    document.getElementById(
+                        "statusDot"
+                    );
+
+                const text =
+                    document.getElementById(
+                        "statusText"
+                    );
+
+                if (dot) {
+
+                    dot.classList.add(
+                        "active"
+                    );
+
+                    dot.classList.remove(
+                        "error"
+                    );
+
+                }
+
+                if (text) {
+
+                    text.textContent =
+                        "Orientation active";
+
+                }
+
+            }
+
+        },
+        1000
+    );
+
+    /* =====================================================
+       CORRECTION PITCH
+    ===================================================== */
+
+    /*
+       Sur certains iPhone, le comportement
+       de beta varie selon l'orientation
+       physique de l'écran.
+
+       Cette fonction stabilise l'expérience
+       en gardant une plage exploitable.
+    */
+
+    window.addEventListener(
+        "deviceorientation",
+        event => {
+
+            if (
+                typeof event.beta !==
+                "number"
+            ) {
+
+                return;
+
+            }
+
+            /*
+               Si le téléphone est tenu
+               presque horizontalement :
+               le ciel doit apparaître au centre.
+            */
+
+            if (
+                Math.abs(event.beta) <
+                10
+            ) {
+
+                state.pitch =
+                    0;
+
+            }
+
+        },
+        true
+    );
+
+    /* =====================================================
+       DOUBLE TAP POUR REVENIR AU CENTRE
+    ===================================================== */
+
+    let lastTap =
+        0;
+
+    document.addEventListener(
+        "touchend",
+        event => {
+
+            const now =
+                Date.now();
+
+            if (
+                now -
+                lastTap <
+                300
+            ) {
+
+                state.calibrationOffset =
+                    0;
+
+                showToast(
+                    "🧭 Orientation recentrée"
+                );
+
+            }
+
+            lastTap =
+                now;
+
+        },
+        {
+            passive: true
+        }
+    );
+
+    /* =====================================================
+       DÉMARRAGE BOUCLE DE SÉCURITÉ
+    ===================================================== */
+
+    if (
+        !window.cielLiveLoopStarted
+    ) {
+
+        window.cielLiveLoopStarted =
+            true;
+
+        requestAnimationFrame(
+            updateScene
+        );
+
+    }
+
+    /* =====================================================
+       MESSAGE FINAL
+    ===================================================== */
+
+    setTimeout(
+        () => {
+
+            showToast(
+                "🌌 Ciel Live V4 prêt !",
+                2500
+            );
+
+        },
+        800
+    );
+
+})();
+
+</script>
