@@ -4,15 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport"
       content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+
 <meta name="theme-color" content="#020611">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Mission Étoiles — V5</title>
+
+<title>Mission Étoiles — V7 Explorateur</title>
 
 <style>
 :root{
   --bg:#020611;
-  --panel:rgba(5,12,28,.82);
+  --panel:rgba(5,12,28,.91);
   --line:rgba(255,255,255,.13);
   --text:#f5f7ff;
   --muted:#9ba7c2;
@@ -35,7 +37,7 @@ html,body{
   background:var(--bg);
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
-              "Segoe UI",Roboto,Arial,sans-serif;
+  "Segoe UI",Roboto,Arial,sans-serif;
 }
 
 body{
@@ -52,31 +54,8 @@ button{
   inset:0;
   overflow:hidden;
   background:
-    radial-gradient(circle at 50% 20%,#101b3b 0,#050a19 35%,#020611 75%);
+    radial-gradient(circle at 50% 20%,#101b3b 0,#050a19 38%,#020611 78%);
 }
-
-/* =========================
-   CAMERA AR
-   ========================= */
-
-#camera{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  background:#000;
-  display:none;
-  z-index:1;
-}
-
-#camera.on{
-  display:block;
-}
-
-/* =========================
-   SKY CANVAS
-   ========================= */
 
 #sky{
   position:absolute;
@@ -84,6 +63,11 @@ button{
   width:100%;
   height:100%;
   z-index:2;
+  cursor:grab;
+}
+
+#sky:active{
+  cursor:grabbing;
 }
 
 #hud{
@@ -92,10 +76,6 @@ button{
   z-index:10;
   pointer-events:none;
 }
-
-/* =========================
-   TOP BAR
-   ========================= */
 
 .topbar{
   position:absolute;
@@ -108,20 +88,23 @@ button{
   align-items:flex-start;
 }
 
-.brand{
+.brand,
+.status{
   pointer-events:auto;
-  padding:9px 12px;
   border:1px solid var(--line);
   background:rgba(2,7,20,.55);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
+}
+
+.brand{
+  padding:9px 12px;
   border-radius:14px;
 }
 
 .brand strong{
   display:block;
   font-size:14px;
-  letter-spacing:.2px;
 }
 
 .brand span{
@@ -132,12 +115,7 @@ button{
 }
 
 .status{
-  pointer-events:auto;
   padding:8px 10px;
-  border:1px solid var(--line);
-  background:rgba(2,7,20,.55);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
   border-radius:13px;
   font-size:11px;
   color:var(--muted);
@@ -147,10 +125,6 @@ button{
 .status b{
   color:var(--green);
 }
-
-/* =========================
-   COMPASS
-   ========================= */
 
 .compass{
   position:absolute;
@@ -163,7 +137,6 @@ button{
   border-radius:50%;
   background:rgba(2,7,20,.38);
   backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -205,9 +178,26 @@ button{
   white-space:nowrap;
 }
 
-/* =========================
-   CENTER RETICLE
-   ========================= */
+.kidBanner{
+  position:absolute;
+  top:180px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:7px 13px;
+  border-radius:20px;
+  background:rgba(253,230,138,.16);
+  border:1px solid rgba(253,230,138,.38);
+  font-size:11px;
+  font-weight:700;
+  color:var(--yellow);
+  display:none;
+  backdrop-filter:blur(10px);
+  white-space:nowrap;
+}
+
+.kidBanner.show{
+  display:block;
+}
 
 .reticle{
   position:absolute;
@@ -216,7 +206,7 @@ button{
   width:44px;
   height:44px;
   transform:translate(-50%,-50%);
-  opacity:.75;
+  opacity:.65;
 }
 
 .reticle:before,
@@ -250,9 +240,125 @@ button{
   top:20px;
 }
 
-/* =========================
-   BOTTOM CONTROLS
-   ========================= */
+.mission{
+  position:absolute;
+  left:12px;
+  top:220px;
+  width:min(280px,78vw);
+  padding:12px;
+  border:1px solid rgba(125,211,252,.25);
+  background:rgba(3,9,22,.82);
+  backdrop-filter:blur(12px);
+  border-radius:14px;
+  pointer-events:auto;
+  transition:.2s ease;
+}
+
+.mission.hidden{
+  opacity:0;
+  transform:translateX(-120%);
+  pointer-events:none;
+}
+
+.missionHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.missionTitle{
+  font-size:13px;
+  font-weight:700;
+}
+
+.missionCount{
+  font-size:11px;
+  color:var(--accent);
+  font-weight:bold;
+}
+
+.progress{
+  height:6px;
+  border-radius:10px;
+  background:rgba(255,255,255,.09);
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.progressBar{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,#38bdf8,#6ee7b7);
+  transition:width .3s ease;
+}
+
+.missionTarget{
+  margin-top:8px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.missionCoords{
+  margin-top:4px;
+  font-size:10px;
+  color:var(--yellow);
+  font-weight:600;
+}
+
+.missionGuidance{
+  margin-top:5px;
+  font-size:11px;
+  color:var(--green);
+  font-weight:bold;
+}
+
+.infoBox{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.92);
+  width:min(340px,86vw);
+  padding:17px;
+  border-radius:19px;
+  border:1px solid var(--accent);
+  background:rgba(3,9,24,.94);
+  backdrop-filter:blur(20px);
+  pointer-events:none;
+  opacity:0;
+  transition:.2s ease;
+  z-index:150;
+  text-align:center;
+}
+
+.infoBox.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translate(-50%,-50%) scale(1);
+}
+
+.infoBox h3{
+  margin:0 0 7px;
+  font-size:17px;
+  color:var(--accent);
+}
+
+.infoBox p{
+  margin:4px 0;
+  white-space:pre-line;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.5;
+}
+
+.closeBtn{
+  margin-top:12px;
+  width:100%;
+  min-height:38px;
+  border-radius:10px;
+  border:0;
+  background:rgba(255,255,255,.1);
+  font-weight:bold;
+}
 
 .controls{
   pointer-events:auto;
@@ -276,7 +382,6 @@ button{
   border:1px solid var(--line);
   background:rgba(4,10,24,.72);
   backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
   border-radius:13px;
   min-height:42px;
   padding:9px 12px;
@@ -289,9 +394,10 @@ button{
   transform:scale(.97);
 }
 
-.btn.primary{
-  background:rgba(30,70,120,.8);
-  border-color:rgba(125,211,252,.32);
+.btn.active{
+  background:rgba(253,230,138,.22);
+  border-color:var(--yellow);
+  color:var(--yellow);
 }
 
 .btn.small{
@@ -309,115 +415,6 @@ button{
   font-size:18px;
 }
 
-/* =========================
-   INFO CARD
-   ========================= */
-
-.info{
-  position:absolute;
-  left:50%;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 76px);
-  transform:translateX(-50%);
-  width:min(88vw,360px);
-  padding:11px 13px;
-  border:1px solid var(--line);
-  background:rgba(3,9,22,.78);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  border-radius:15px;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .18s ease;
-}
-
-.info.show{
-  opacity:1;
-}
-
-.infoTitle{
-  font-size:14px;
-  font-weight:700;
-}
-
-.infoSub{
-  margin-top:3px;
-  font-size:11px;
-  color:var(--muted);
-  line-height:1.35;
-}
-
-/* =========================
-   MISSION
-   ========================= */
-
-.mission{
-  position:absolute;
-  left:12px;
-  top:175px;
-  width:min(260px,70vw);
-  padding:10px 12px;
-  border:1px solid rgba(125,211,252,.18);
-  background:rgba(3,9,22,.65);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border-radius:14px;
-  pointer-events:auto;
-  transition:transform .2s ease,opacity .2s ease;
-}
-
-.mission.hidden{
-  opacity:0;
-  transform:translateX(-120%);
-  pointer-events:none;
-}
-
-.missionHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.missionTitle{
-  font-size:12px;
-  font-weight:700;
-}
-
-.missionCount{
-  font-size:10px;
-  color:var(--accent);
-}
-
-.progress{
-  height:5px;
-  border-radius:10px;
-  background:rgba(255,255,255,.09);
-  overflow:hidden;
-  margin-top:8px;
-}
-
-.progressBar{
-  width:0%;
-  height:100%;
-  background:linear-gradient(90deg,#38bdf8,#6ee7b7);
-  transition:width .3s ease;
-}
-
-.missionTarget{
-  margin-top:7px;
-  font-size:11px;
-  color:#cbd5e1;
-}
-
-.missionHint{
-  margin-top:3px;
-  color:var(--muted);
-  font-size:9px;
-}
-
-/* =========================
-   PANELS
-   ========================= */
-
 .panel{
   position:absolute;
   z-index:30;
@@ -427,9 +424,8 @@ button{
   padding:14px;
   border:1px solid var(--line);
   border-radius:18px;
-  background:rgba(3,8,21,.94);
+  background:var(--panel);
   backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
   display:none;
 }
 
@@ -444,7 +440,7 @@ button{
 
 .panel p{
   margin:7px 0;
-  color:#c4cde0;
+  color:var(--muted);
   font-size:12px;
   line-height:1.45;
 }
@@ -478,9 +474,17 @@ button{
   color:var(--muted);
 }
 
-/* =========================
-   PERMISSION SCREEN
-   ========================= */
+.issTimerBox{
+  margin-bottom:10px;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(253,230,138,.08);
+  border:1px solid rgba(253,230,138,.25);
+  font-size:12px;
+  font-weight:bold;
+  text-align:center;
+  color:var(--yellow);
+}
 
 #welcome{
   position:absolute;
@@ -503,7 +507,6 @@ button{
   border:1px solid rgba(255,255,255,.12);
   background:rgba(5,12,30,.75);
   backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
 }
 
 .logo{
@@ -537,16 +540,6 @@ button{
   font-weight:800;
 }
 
-.welcomeNote{
-  margin-top:10px;
-  color:#77839d;
-  font-size:9px;
-}
-
-/* =========================
-   TOAST
-   ========================= */
-
 .toast{
   position:absolute;
   z-index:200;
@@ -555,9 +548,8 @@ button{
   transform:translate(-50%,-20px);
   padding:10px 13px;
   border-radius:12px;
-  background:rgba(3,8,20,.92);
+  background:var(--panel);
   border:1px solid var(--line);
-  color:#e5e7eb;
   font-size:11px;
   opacity:0;
   pointer-events:none;
@@ -569,10 +561,6 @@ button{
   opacity:1;
   transform:translate(-50%,0);
 }
-
-/* =========================
-   DEBUG
-   ========================= */
 
 .debug{
   position:absolute;
@@ -586,10 +574,6 @@ button{
   pointer-events:none;
   text-align:right;
 }
-
-/* =========================
-   CALIBRATION
-   ========================= */
 
 .calibration{
   position:absolute;
@@ -611,7 +595,7 @@ button{
   width:min(370px,100%);
   padding:20px;
   border-radius:20px;
-  background:#071024;
+  background:var(--panel);
   border:1px solid var(--line);
 }
 
@@ -621,23 +605,19 @@ button{
 }
 
 .calCard p{
-  color:#aeb8ce;
+  color:var(--muted);
   font-size:12px;
   line-height:1.5;
 }
 
-.calSteps{
-  margin:14px 0;
-  padding:0;
-  list-style:none;
-}
-
-.calSteps li{
-  margin:8px 0;
-  padding:9px 10px;
+.calAdjust{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:12px 0;
+  background:rgba(255,255,255,.05);
+  padding:8px 12px;
   border-radius:10px;
-  background:rgba(255,255,255,.04);
-  font-size:11px;
 }
 
 .calActions{
@@ -655,241 +635,245 @@ button{
 
 <div id="app">
 
-  <video id="camera" playsinline autoplay muted></video>
+<canvas id="sky"></canvas>
 
-  <canvas id="sky"></canvas>
+<div id="hud">
 
-  <div id="hud">
+  <div class="topbar">
 
-    <div class="topbar">
-      <div class="brand">
-        <strong>🌌 Mission Étoiles</strong>
-        <span>V5 • exploration du ciel</span>
-      </div>
-
-      <div class="status" id="status">
-        <b id="statusDot">●</b>
-        <span id="statusText">Ciel prêt</span>
-      </div>
+    <div class="brand">
+      <strong>🌌 Mission Étoiles</strong>
+      <span>V7 • Explorateur Interactif</span>
     </div>
 
-    <div class="compass">
-      <div class="ring"></div>
-      <div class="n">N</div>
-      <div class="needle" id="needle"></div>
-    </div>
-
-    <div class="heading" id="heading">
-      Orientation : —°
-    </div>
-
-    <div class="reticle">
-      <div class="dot"></div>
-    </div>
-
-    <div class="mission" id="mission">
-      <div class="missionHead">
-        <div class="missionTitle">🎯 Mission du soir</div>
-        <div class="missionCount" id="missionCount">0 / 5</div>
-      </div>
-
-      <div class="progress">
-        <div class="progressBar" id="progressBar"></div>
-      </div>
-
-      <div class="missionTarget" id="missionTarget">
-        Cherche une étoile…
-      </div>
-
-      <div class="missionHint">
-        Oriente le téléphone vers l'étoile indiquée.
-      </div>
-    </div>
-
-    <div class="debug" id="debug">
-      Capteur : —<br>
-      Az : —°<br>
-      Alt : —°
-    </div>
-
-    <div class="info" id="info">
-      <div class="infoTitle" id="infoTitle"></div>
-      <div class="infoSub" id="infoSub"></div>
-    </div>
-
-    <div class="controls">
-
-      <div class="controlGroup">
-        <button class="btn small" id="tonightBtn">
-          ✨ Ce soir
-        </button>
-
-        <button class="btn small" id="missionBtn">
-          🎯 Mission
-        </button>
-      </div>
-
-      <div class="controlGroup">
-        <button class="btn icon" id="calibrateBtn" title="Calibrer">
-          🧭
-        </button>
-
-        <button class="btn icon" id="arBtn" title="Réalité augmentée">
-          📷
-        </button>
-
-        <button class="btn icon" id="satBtn" title="Satellites">
-          🛰️
-        </button>
-
-        <button class="btn icon" id="settingsBtn" title="Réglages">
-          ⚙️
-        </button>
-      </div>
-
+    <div class="status" id="status">
+      <b id="statusDot">●</b>
+      <span id="statusText">Ciel prêt</span>
     </div>
 
   </div>
 
-  <!-- PANEL CE SOIR -->
-  <div class="panel" id="tonightPanel">
-    <button class="btn small panelClose" data-close="tonightPanel">Fermer</button>
-    <h2>✨ Que puis-je voir ce soir ?</h2>
-    <p id="tonightIntro">
-      Analyse du ciel en cours…
-    </p>
-    <div class="list" id="tonightList"></div>
+  <div class="compass">
+    <div class="ring"></div>
+    <div class="n">N</div>
+    <div class="needle" id="needle"></div>
   </div>
 
-  <!-- PANEL SATELLITES -->
-  <div class="panel" id="satPanel">
-    <button class="btn small panelClose" data-close="satPanel">Fermer</button>
-    <h2>🛰️ Satellites</h2>
-    <p id="satIntro">
-      Les données orbitales sont chargées en arrière-plan.
-    </p>
-    <div class="list" id="satList"></div>
+  <div class="heading" id="heading">
+    Orientation : —°
   </div>
 
-  <!-- PANEL REGLAGES -->
-  <div class="panel" id="settingsPanel">
-    <button class="btn small panelClose" data-close="settingsPanel">Fermer</button>
-    <h2>⚙️ Réglages</h2>
+  <div class="kidBanner" id="kidBanner">
+    🖐️ Glisse pour explorer • 🤏 Pince pour zoomer
+  </div>
 
-    <p>
-      <strong>Orientation</strong><br>
-      Le moteur V5 utilise le compas lorsqu'il est disponible et
-      l'inclinaison du téléphone pour déterminer la direction réellement
-      pointée.
+  <div class="reticle">
+    <div class="dot"></div>
+  </div>
+
+  <div class="mission" id="mission">
+
+    <div class="missionHead">
+      <div class="missionTitle">🎯 Mission</div>
+      <div class="missionCount" id="missionCount">0 / 5</div>
+    </div>
+
+    <div class="progress">
+      <div class="progressBar" id="progressBar"></div>
+    </div>
+
+    <div class="missionTarget" id="missionTarget">
+      Recherche…
+    </div>
+
+    <div class="missionCoords" id="missionCoords">
+      Position : —
+    </div>
+
+    <div class="missionGuidance" id="missionGuidance">
+      Pointe ton écran vers le ciel
+    </div>
+
+  </div>
+
+  <div class="debug" id="debug">
+    Az : —°<br>
+    Alt : —°<br>
+    Mode : —
+  </div>
+
+  <div class="infoBox" id="infoBox">
+
+    <h3 id="infoTitle">
+      Objet céleste
+    </h3>
+
+    <p id="infoDesc">
+      —
     </p>
 
-    <button class="btn primary" id="sensorBtn">
-      🧭 Réactiver les capteurs
+    <button class="closeBtn" id="infoClose">
+      Fermer
     </button>
 
-    <p>
-      <strong>Mode manuel</strong><br>
-      Si le téléphone ne fournit pas le compas, tu peux utiliser la
-      calibration pour corriger le cap.
-    </p>
-
-    <button class="btn" id="manualBtn">
-      🎮 Activer le mode manuel
-    </button>
-
-    <p id="locationText">
-      Position : recherche…
-    </p>
   </div>
 
-  <!-- CALIBRATION -->
-  <div class="calibration" id="calibration">
+  <div class="controls">
 
-    <div class="calCard">
+    <div class="controlGroup">
 
-      <h2>🧭 Calibration</h2>
-
-      <p>
-        La calibration V5 ne modifie pas l'altitude.
-        Elle corrige uniquement le décalage horizontal du compas.
-      </p>
-
-      <ul class="calSteps">
-        <li>1️⃣ Tiens le téléphone normalement.</li>
-        <li>2️⃣ Oriente le haut du téléphone vers le Nord.</li>
-        <li>3️⃣ Garde-le immobile.</li>
-        <li>4️⃣ Appuie sur « Calibrer maintenant ».</li>
-      </ul>
-
-      <div class="calActions">
-        <button class="btn" id="cancelCal">
-          Annuler
-        </button>
-
-        <button class="btn primary" id="doCal">
-          Calibrer maintenant
-        </button>
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- ECRAN INITIAL -->
-  <div id="welcome">
-
-    <div class="welcomeCard">
-
-      <div class="logo">🌌</div>
-
-      <h1>
-        Mission <span>Étoiles</span>
-      </h1>
-
-      <p>
-        Une petite carte du ciel interactive.<br>
-        Pointez simplement votre téléphone vers le ciel
-        pour découvrir les étoiles, les planètes et les satellites.
-      </p>
-
-      <button class="bigStart" id="startBtn">
-        🚀 Commencer l'exploration
+      <button class="btn small" id="kidModeBtn">
+        👶 Mode Enfant
       </button>
 
-      <div class="welcomeNote">
-        Le bouton démarre les capteurs et demande les autorisations
-        nécessaires à l'iPhone.
-      </div>
+      <button class="btn small" id="missionBtn">
+        🎯 Mission
+      </button>
+
+    </div>
+
+    <div class="controlGroup">
+
+      <button class="btn icon" id="calibrateBtn">
+        🧭
+      </button>
+
+      <button class="btn icon" id="satBtn">
+        🛰️
+      </button>
+
+      <button class="btn icon" id="settingsBtn">
+        ⚙️
+      </button>
 
     </div>
 
   </div>
 
-  <div class="toast" id="toast"></div>
+</div>
+
+
+<div class="panel" id="satPanel">
+
+  <button class="btn small panelClose" data-close="satPanel">
+    Fermer
+  </button>
+
+  <h2>🛰️ Satellites & ISS</h2>
+
+  <div class="issTimerBox" id="issTimer">
+    Recherche des satellites…
+  </div>
+
+  <div class="list" id="satList"></div>
 
 </div>
+
+
+<div class="panel" id="settingsPanel">
+
+  <button class="btn small panelClose" data-close="settingsPanel">
+    Fermer
+  </button>
+
+  <h2>⚙️ Réglages</h2>
+
+  <button class="btn" id="sensorBtn">
+    🧭 Réactiver les capteurs
+  </button>
+
+  <p id="locationText">
+    Position : recherche…
+  </p>
+
+</div>
+
+
+<div class="calibration" id="calibration">
+
+  <div class="calCard">
+
+    <h2>🧭 Calibrage</h2>
+
+    <p>
+      Oriente ton téléphone vers le Nord.
+      Ajuste ensuite l'offset si nécessaire.
+    </p>
+
+    <div class="calAdjust">
+
+      <button class="btn small" id="calMinus">
+        −5°
+      </button>
+
+      <span id="calVal">
+        Offset : 0°
+      </span>
+
+      <button class="btn small" id="calPlus">
+        +5°
+      </button>
+
+    </div>
+
+    <div class="calActions">
+
+      <button class="btn" id="cancelCal">
+        Fermer
+      </button>
+
+      <button class="btn" id="doCal">
+        Définir maintenant
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div id="welcome">
+
+  <div class="welcomeCard">
+
+    <div class="logo">
+      🌌
+    </div>
+
+    <h1>
+      Mission <span>Étoiles</span>
+    </h1>
+
+    <p>
+      Explore le ciel, découvre les constellations,
+      identifie les étoiles et pars en mission.
+    </p>
+
+    <button class="bigStart" id="startBtn">
+      🚀 Démarrer l'exploration
+    </button>
+
+  </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+</div>
+
 
 <script type="module">
 
 /* =========================================================
-   MISSION ÉTOILES V5
-   =========================================================
-   Architecture :
-   - coordonnées célestes indépendantes des capteurs
-   - conversion RA/Dec -> Alt/Az
-   - orientation téléphone -> direction regardée
-   - projection angulaire
-   - AR caméra indépendante
-   - satellites SGP4 via satellite.js
-   - données CelesTrak avec timeout + cache
-   ========================================================= */
+   BASE
+========================================================= */
 
 const $ = id => document.getElementById(id);
 
 const canvas = $("sky");
 const ctx = canvas.getContext("2d");
-
-const camera = $("camera");
 
 let W = 0;
 let H = 0;
@@ -903,198 +887,211 @@ let locationData = {
 
 let orientation = {
   az: 0,
-  alt: 90,
+  alt: 30,
   heading: null,
-  beta: 0,
-  gamma: 0,
-  alpha: 0,
-  ready: false,
-  absolute: false
+  ready: false
 };
 
-let calibrationOffset = Number(
-  localStorage.getItem("missionEtoilesV5Cal") || 0
-);
+let calibrationOffset =
+  Number(localStorage.getItem("missionEtoilesCal") || 0);
 
-let manualMode = false;
+
+/* =========================================================
+   MODE ENFANT
+========================================================= */
+
+let kidMode = false;
+
 let manualAz = 0;
-let manualAlt = 60;
+let manualAlt = 30;
 
-let arMode = false;
+let zoomLevel = 1;
+
+let activePointers = new Map();
+
+let dragStart = {
+  x:0,
+  y:0,
+  az:0,
+  alt:0
+};
+
+let pinchStartDistance = 0;
+let pinchStartZoom = 1;
+
+let movedDuringGesture = false;
+
+
+/* =========================================================
+   SATELLITES
+========================================================= */
 
 let satellites = [];
-let satellitesLoaded = false;
 let satelliteLib = null;
 let satelliteLibPromise = null;
+let issNextPass = null;
+let satelliteLoading = false;
 
-let lastSatelliteRefresh = 0;
-
-let currentTargetIndex = 0;
-
-const FOV_H = 75;
-const FOV_V = 65;
-
-/*
-  Cibles tactiles : reconstituée à chaque frame dessinée
-  avec la position écran de tout ce qui est visible
-  (étoiles, planètes, satellites). Sert au tap-to-identify.
-*/
-let frameTargets = [];
-
-/*
-  Objet actuellement sélectionné (après un tap) :
-  on garde une référence "logique" (nom ou objet satellite)
-  et on recalcule sa position à chaque frame pour dessiner
-  l'anneau de sélection, même si le ciel a bougé.
-*/
-let selectedObject = null;
-
-/*
-  Cache des positions satellites : le calcul SGP4
-  (satelliteLookAngles) est le plus coûteux du rendu.
-  On ne le recalcule qu'à intervalle réduit plutôt qu'à
-  chaque frame (~30/s), la projection écran restant, elle,
-  recalculée à chaque frame car elle dépend de l'orientation.
-*/
-let satPositionCache = new Map();
-let lastSatPositionUpdate = 0;
-const SAT_UPDATE_INTERVAL = 300;
-
-/* =========================================================
-   STARS
-   RA in hours / Dec degrees / magnitude
-   ========================================================= */
-
-const stars = [
-
-  {name:"Sirius", ra:6.7525, dec:-16.7161, mag:-1.46},
-  {name:"Canopus", ra:6.3992, dec:-52.6957, mag:-0.74},
-  {name:"Arcturus", ra:14.261, dec:19.1825, mag:-0.05},
-  {name:"Vega", ra:18.6156, dec:38.7837, mag:0.03},
-  {name:"Capella", ra:5.2782, dec:45.998, mag:0.08},
-  {name:"Rigel", ra:5.2423, dec:-8.2016, mag:0.13},
-  {name:"Procyon", ra:7.655, dec:5.225, mag:0.34},
-  {name:"Betelgeuse", ra:5.9195, dec:7.407, mag:0.42},
-  {name:"Achernar", ra:1.6286, dec:-57.2368, mag:0.46},
-  {name:"Hadar", ra:14.0637, dec:-60.373, mag:0.61},
-  {name:"Altair", ra:19.8464, dec:8.8683, mag:0.77},
-  {name:"Acrux", ra:12.4433, dec:-63.099, mag:0.77},
-  {name:"Aldebaran", ra:4.5987, dec:16.5093, mag:0.85},
-  {name:"Spica", ra:13.4199, dec:-11.1614, mag:0.98},
-  {name:"Antares", ra:16.4901, dec:-26.4319, mag:1.06},
-  {name:"Pollux", ra:7.7553, dec:28.0262, mag:1.14},
-  {name:"Fomalhaut", ra:22.9608, dec:-29.6222, mag:1.16},
-  {name:"Deneb", ra:20.6905, dec:45.2803, mag:1.25},
-  {name:"Regulus", ra:10.1395, dec:11.9672, mag:1.35},
-  {name:"Castor", ra:7.5767, dec:31.8883, mag:1.58},
-  {name:"Bellatrix", ra:5.4189, dec:6.3497, mag:1.64},
-  {name:"Alnilam", ra:5.6036, dec:-1.2019, mag:1.69},
-  {name:"Alnair", ra:22.1372, dec:-46.9609, mag:1.74},
-  {name:"Alioth", ra:12.9005, dec:55.9598, mag:1.76},
-  {name:"Dubhe", ra:11.0621, dec:61.751, mag:1.79},
-  {name:"Mirfak", ra:3.4054, dec:49.8612, mag:1.79},
-  {name:"Polaris", ra:2.5303, dec:89.2641, mag:1.98},
-  {name:"Alkaid", ra:13.7923, dec:49.3133, mag:1.86},
-  {name:"Mizar", ra:13.3988, dec:54.9254, mag:2.23},
-  {name:"Algol", ra:3.1361, dec:40.9556, mag:2.12},
-  {name:"Rasalhague", ra:17.5822, dec:12.5601, mag:2.08},
-  {name:"Denebola", ra:11.8177, dec:14.5721, mag:2.14},
-  {name:"Alphard", ra:9.4598, dec:-8.6586, mag:1.98},
-  {name:"Kochab", ra:14.8451, dec:74.1555, mag:2.08},
-  {name:"Markab", ra:23.0793, dec:15.2053, mag:2.49},
-  {name:"Scheat", ra:23.0629, dec:28.0828, mag:2.42},
-  {name:"Alpheratz", ra:0.1398, dec:29.0904, mag:2.06},
-  {name:"Mirach", ra:1.1622, dec:35.6208, mag:2.07},
-  {name:"Sadr", ra:20.3705, dec:40.2567, mag:2.23},
-  {name:"Albireo", ra:19.512, dec:27.9597, mag:3.05},
-
-  /*
-    Étoiles ajoutées : elles sont utilisées par
-    constellationLines (Grande Ourse, Orion) mais
-    étaient absentes du catalogue d'origine, ce qui
-    empêchait ces traits de s'afficher.
-  */
-  {name:"Merak", ra:11.0307, dec:56.3824, mag:2.37},
-  {name:"Phecda", ra:11.8968, dec:53.6948, mag:2.44},
-  {name:"Megrez", ra:12.257, dec:57.0326, mag:3.31},
-  {name:"Alnitak", ra:5.6793, dec:-1.9426, mag:1.74},
-  {name:"Saiph", ra:5.7959, dec:-9.6696, mag:2.07}
-];
-
-/* =========================================================
-   CONSTELLATION LINES
-   ========================================================= */
-
-const constellationLines = [
-
-  ["Dubhe","Merak"],
-  ["Merak","Phecda"],
-  ["Phecda","Megrez"],
-  ["Megrez","Alioth"],
-  ["Alioth","Mizar"],
-  ["Mizar","Alkaid"],
-
-  ["Betelgeuse","Bellatrix"],
-  ["Bellatrix","Alnilam"],
-  ["Alnilam","Alnitak"],
-  ["Alnilam","Rigel"],
-  ["Betelgeuse","Alnilam"],
-  ["Rigel","Saiph"],
-
-  ["Vega","Deneb"],
-  ["Deneb","Sadr"],
-  ["Sadr","Albireo"],
-  ["Vega","Altair"],
-  ["Altair","Deneb"],
-
-  ["Castor","Pollux"],
-
-  ["Aldebaran","Capella"],
-  ["Capella","Mirfak"],
-
-  ["Regulus","Denebola"],
-  ["Spica","Arcturus"],
-  ["Arcturus","Alioth"]
-];
 
 /* =========================================================
    MISSIONS
-   ========================================================= */
+========================================================= */
 
 const missions = [
   {
     name:"Vega",
-    text:"Trouve Véga ⭐",
-    hint:"Une des étoiles les plus brillantes du ciel d'été."
+    text:"Trouve Véga ⭐"
   },
   {
     name:"Arcturus",
-    text:"Trouve Arcturus ⭐",
-    hint:"Cherche une étoile orange très brillante."
+    text:"Trouve Arcturus ⭐"
   },
   {
     name:"Altair",
-    text:"Trouve Altaïr ⭐",
-    hint:"Elle forme le Triangle d'été."
+    text:"Trouve Altaïr ⭐"
   },
   {
     name:"Deneb",
-    text:"Trouve Deneb ⭐",
-    hint:"À l'une des extrémités du Triangle d'été."
+    text:"Trouve Deneb ⭐"
   },
   {
     name:"Sirius",
-    text:"Trouve Sirius ⭐",
-    hint:"L'étoile la plus brillante du ciel nocturne."
+    text:"Trouve Sirius ⭐"
   }
 ];
 
+let currentTargetIndex =
+  Number(localStorage.getItem("missionProgress") || 0);
+
+currentTargetIndex =
+  Math.max(0,Math.min(currentTargetIndex,missions.length));
+
+
 /* =========================================================
-   UTILS
-   ========================================================= */
+   CONSTANTES
+========================================================= */
+
+const FOV_BASE_H = 75;
+const FOV_BASE_V = 65;
 
 const DEG = Math.PI / 180;
 const RAD = 180 / Math.PI;
+
+
+/* =========================================================
+   ÉTOILES
+========================================================= */
+
+const stars = [
+
+{name:"Sirius",ra:6.7525,dec:-16.7161,mag:-1.46},
+{name:"Canopus",ra:6.3992,dec:-52.6957,mag:-0.74},
+{name:"Arcturus",ra:14.261,dec:19.1825,mag:-0.05},
+{name:"Vega",ra:18.6156,dec:38.7837,mag:0.03},
+{name:"Capella",ra:5.2782,dec:45.998,mag:0.08},
+{name:"Rigel",ra:5.2423,dec:-8.2016,mag:0.13},
+{name:"Procyon",ra:7.655,dec:5.225,mag:0.34},
+{name:"Betelgeuse",ra:5.9195,dec:7.407,mag:0.42},
+{name:"Altair",ra:19.8464,dec:8.8683,mag:0.77},
+{name:"Aldebaran",ra:4.5987,dec:16.5093,mag:0.85},
+{name:"Spica",ra:13.4199,dec:-11.1614,mag:0.98},
+{name:"Antares",ra:16.4901,dec:-26.4319,mag:1.06},
+{name:"Pollux",ra:7.7553,dec:28.0262,mag:1.14},
+{name:"Deneb",ra:20.6905,dec:45.2803,mag:1.25},
+{name:"Regulus",ra:10.1395,dec:11.9672,mag:1.35},
+{name:"Polaris",ra:2.5303,dec:89.2641,mag:1.98},
+{name:"Bellatrix",ra:5.4208,dec:6.3497,mag:1.64},
+{name:"Saiph",ra:5.7959,dec:-9.6696,mag:2.07},
+{name:"Dubhe",ra:11.0621,dec:61.7511,mag:1.79},
+{name:"Merak",ra:11.0307,dec:56.3775,mag:2.37},
+{name:"Phecda",ra:11.9006,dec:53.6947,mag:2.44},
+{name:"Megrez",ra:12.2570,dec:57.0326,mag:3.31},
+{name:"Alioth",ra:12.9004,dec:55.9598,mag:1.77},
+{name:"Mizar",ra:13.3986,dec:54.9254,mag:2.23},
+{name:"Alkaid",ra:13.7925,dec:49.3133,mag:1.85}
+
+];
+
+
+/* =========================================================
+   CONSTELLATIONS
+========================================================= */
+
+const constellations = [
+
+{
+ name:"Grande Ourse 🐻",
+ short:"Grande Ourse",
+ type:"bear",
+
+ stars:[
+ "Dubhe",
+ "Merak",
+ "Phecda",
+ "Megrez",
+ "Alioth",
+ "Mizar",
+ "Alkaid"
+ ],
+
+ lines:[
+ ["Dubhe","Merak"],
+ ["Merak","Phecda"],
+ ["Phecda","Megrez"],
+ ["Megrez","Alioth"],
+ ["Alioth","Mizar"],
+ ["Mizar","Alkaid"],
+ ["Megrez","Dubhe"]
+ ]
+
+},
+
+{
+ name:"Orion 🏹",
+ short:"Orion",
+ type:"hunter",
+
+ stars:[
+ "Betelgeuse",
+ "Bellatrix",
+ "Rigel",
+ "Saiph"
+ ],
+
+ lines:[
+ ["Betelgeuse","Bellatrix"],
+ ["Bellatrix","Rigel"],
+ ["Rigel","Saiph"],
+ ["Saiph","Betelgeuse"]
+ ]
+
+},
+
+{
+ name:"Triangle d'Été 📐",
+ short:"Triangle d'Été",
+ type:"triangle",
+
+ stars:[
+ "Vega",
+ "Deneb",
+ "Altair"
+ ],
+
+ lines:[
+ ["Vega","Deneb"],
+ ["Deneb","Altair"],
+ ["Altair","Vega"]
+ ]
+
+}
+
+];
+
+
+/* =========================================================
+   UTILITAIRES
+========================================================= */
 
 function clamp(v,a,b){
   return Math.max(a,Math.min(b,v));
@@ -1102,8 +1099,7 @@ function clamp(v,a,b){
 
 function wrap360(v){
   v %= 360;
-  if(v < 0) v += 360;
-  return v;
+  return v < 0 ? v + 360 : v;
 }
 
 function angleDiff(a,b){
@@ -1111,1453 +1107,1214 @@ function angleDiff(a,b){
 }
 
 function lerpAngle(a,b,t){
-  return wrap360(a + angleDiff(b,a)*t);
+  return wrap360(
+    a + angleDiff(b,a)*t
+  );
 }
 
-function sleep(ms){
-  return new Promise(r=>setTimeout(r,ms));
+function getCardinal(az){
+
+  const dirs=[
+    "N","NE","E","SE",
+    "S","SO","O","NO"
+  ];
+
+  return dirs[
+    Math.round(wrap360(az)/45)%8
+  ];
 }
 
-/* =========================================================
-   UI
-   ========================================================= */
+function toast(message,duration=2600){
 
-function toast(message, duration=2600){
+  const el=$("toast");
 
-  const el = $("toast");
+  el.textContent=message;
 
-  el.textContent = message;
   el.classList.add("show");
 
   clearTimeout(toast.timer);
 
-  toast.timer = setTimeout(()=>{
-    el.classList.remove("show");
-  },duration);
+  toast.timer=setTimeout(
+    ()=>el.classList.remove("show"),
+    duration
+  );
 }
 
-function setStatus(text, good=true){
+function setStatus(text,good=true){
 
-  $("statusText").textContent = text;
-  $("statusDot").style.color =
+  $("statusText").textContent=text;
+
+  $("statusDot").style.color=
     good ? "#6ee7b7" : "#fde68a";
 }
 
-function showInfo(title, sub, duration=4000){
-
-  $("infoTitle").textContent = title;
-  $("infoSub").textContent = sub;
-
-  $("info").classList.add("show");
-
-  clearTimeout(showInfo.timer);
-
-  showInfo.timer = setTimeout(()=>{
-    $("info").classList.remove("show");
-  },duration);
-}
-
-function hideInfoNow(){
-
-  clearTimeout(showInfo.timer);
-  $("info").classList.remove("show");
-}
-
-function closePanels(){
-
-  document.querySelectorAll(".panel")
-    .forEach(p=>p.classList.remove("open"));
-}
 
 /* =========================================================
-   CANVAS
-   ========================================================= */
+   RESIZE
+========================================================= */
 
 function resize(){
 
-  DPR = Math.min(window.devicePixelRatio || 1,2);
+  DPR=Math.min(
+    window.devicePixelRatio||1,
+    2
+  );
 
-  W = window.innerWidth;
-  H = window.innerHeight;
+  W=window.innerWidth;
+  H=window.innerHeight;
 
-  canvas.width = Math.floor(W*DPR);
-  canvas.height = Math.floor(H*DPR);
+  canvas.width=Math.floor(W*DPR);
+  canvas.height=Math.floor(H*DPR);
 
-  canvas.style.width = W+"px";
-  canvas.style.height = H+"px";
+  canvas.style.width=W+"px";
+  canvas.style.height=H+"px";
 
-  ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.setTransform(
+    DPR,0,0,DPR,0,0
+  );
 }
 
 window.addEventListener("resize",resize);
+
 resize();
 
-/* =========================================================
-   LOCATION
-   ========================================================= */
-
-function getLocation(){
-
-  return new Promise(resolve=>{
-
-    if(!navigator.geolocation){
-
-      resolve();
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-
-      pos=>{
-
-        locationData.lat = pos.coords.latitude;
-        locationData.lon = pos.coords.longitude;
-        locationData.height = pos.coords.altitude || 0;
-
-        $("locationText").textContent =
-          `Position : ${locationData.lat.toFixed(3)}°, ` +
-          `${locationData.lon.toFixed(3)}°`;
-
-        resolve();
-      },
-
-      ()=>{
-        $("locationText").textContent =
-          "Position : localisation approximative";
-        resolve();
-      },
-
-      {
-        enableHighAccuracy:true,
-        timeout:7000,
-        maximumAge:300000
-      }
-    );
-  });
-}
 
 /* =========================================================
-   ASTRONOMICAL TIME
-   ========================================================= */
+   ASTRONOMIE
+========================================================= */
 
 function julianDate(date=new Date()){
 
-  return date.getTime()/86400000 + 2440587.5;
+  return date.getTime()/86400000+
+         2440587.5;
 }
 
 function gmst(date=new Date()){
 
-  const jd = julianDate(date);
-  const T = (jd-2451545.0)/36525;
+  const jd=julianDate(date);
 
-  let theta =
-    280.46061837 +
-    360.98564736629*(jd-2451545) +
-    0.000387933*T*T -
-    T*T*T/38710000;
+  const T=
+    (jd-2451545)/36525;
 
-  return wrap360(theta);
+  return wrap360(
+    280.46061837+
+    360.98564736629*(jd-2451545)+
+    0.000387933*T*T
+  );
 }
 
 function lst(date=new Date()){
 
-  return wrap360(gmst(date)+locationData.lon);
+  return wrap360(
+    gmst(date)+locationData.lon
+  );
 }
 
-/* =========================================================
-   RA/DEC -> ALT/AZ
-   ========================================================= */
+function raDecToAltAz(
+  raHours,
+  decDeg,
+  date=new Date()
+){
 
-function raDecToAltAz(raHours,decDeg,date=new Date()){
+  const LST=lst(date);
 
-  const LST = lst(date);
+  const Hdeg=
+    angleDiff(
+      LST,
+      raHours*15
+    );
 
-  const Hdeg = angleDiff(LST,raHours*15);
+  const Hrad=Hdeg*DEG;
 
-  const Hrad = Hdeg*DEG;
-  const lat = locationData.lat*DEG;
-  const dec = decDeg*DEG;
+  const lat=
+    locationData.lat*DEG;
 
-  const sinAlt =
-    Math.sin(lat)*Math.sin(dec) +
-    Math.cos(lat)*Math.cos(dec)*Math.cos(Hrad);
+  const dec=
+    decDeg*DEG;
 
-  const alt =
-    Math.asin(clamp(sinAlt,-1,1))*RAD;
+  const sinAlt=
+    Math.sin(lat)*Math.sin(dec)+
+    Math.cos(lat)*Math.cos(dec)*
+    Math.cos(Hrad);
 
-  const y =
+  const alt=
+    Math.asin(
+      clamp(sinAlt,-1,1)
+    )*RAD;
+
+  const y=
     -Math.sin(Hrad)*Math.cos(dec);
 
-  const x =
-    Math.sin(dec)*Math.cos(lat) -
-    Math.cos(dec)*Math.sin(lat)*Math.cos(Hrad);
+  const x=
+    Math.sin(dec)*Math.cos(lat)-
+    Math.cos(dec)*Math.sin(lat)*
+    Math.cos(Hrad);
 
-  const az =
-    wrap360(Math.atan2(y,x)*RAD);
+  const az=
+    wrap360(
+      Math.atan2(y,x)*RAD
+    );
 
-  return {az,alt};
+  return {
+    az,
+    alt
+  };
 }
+
+
+/* =========================================================
+   VUE ACTIVE
+========================================================= */
+
+function getActiveView(){
+
+  return {
+
+    az:kidMode
+      ? manualAz
+      : orientation.az,
+
+    alt:kidMode
+      ? manualAlt
+      : orientation.alt,
+
+    fovH:
+      FOV_BASE_H/zoomLevel,
+
+    fovV:
+      FOV_BASE_V/zoomLevel
+
+  };
+}
+
 
 /* =========================================================
    ORIENTATION
-   ========================================================= */
-
-function screenAngle(){
-
-  if(screen.orientation &&
-     typeof screen.orientation.angle === "number"){
-
-    return screen.orientation.angle;
-  }
-
-  if(typeof window.orientation === "number"){
-    return window.orientation;
-  }
-
-  return 0;
-}
+========================================================= */
 
 function updateOrientationFromEvent(e){
 
-  if(e.beta == null || e.gamma == null){
-    return;
+  if(
+    kidMode ||
+    e.beta==null ||
+    e.gamma==null
+  ) return;
+
+  let rawHeading=null;
+
+  if(
+    typeof e.webkitCompassHeading==="number" &&
+    isFinite(e.webkitCompassHeading)
+  ){
+
+    rawHeading=e.webkitCompassHeading;
+
+  }else if(
+    e.absolute &&
+    e.alpha!=null
+  ){
+
+    rawHeading=
+      wrap360(360-e.alpha);
   }
 
-  const beta = Number(e.beta);
-  const gamma = Number(e.gamma);
+  let targetAlt=
+    90-e.beta;
 
-  orientation.beta = beta;
-  orientation.gamma = gamma;
-  orientation.alpha = Number(e.alpha || 0);
-  orientation.absolute = !!e.absolute;
+  if(Math.abs(e.gamma)>90){
 
-  /*
-    Géométrie :
-    - écran à plat vers le ciel => altitude ≈ +90°
-    - téléphone vertical => altitude ≈ 0°
-    - écran vers le sol => altitude < 0°
-  */
-
-  const z =
-    Math.cos(beta*DEG) *
-    Math.cos(gamma*DEG);
-
-  let alt = Math.asin(clamp(z,-1,1))*RAD;
-
-  /*
-    Le compas iOS est préférable lorsque disponible.
-  */
-
-  let heading = null;
-
-  if(typeof e.webkitCompassHeading === "number" &&
-     isFinite(e.webkitCompassHeading)){
-
-    heading = e.webkitCompassHeading;
-  }
-  else if(e.absolute && e.alpha != null){
-
-    heading = wrap360(360-e.alpha);
+    targetAlt=
+      e.beta-90;
   }
 
-  if(heading != null){
+  targetAlt=
+    clamp(targetAlt,-90,90);
 
-    /*
-      La normale de l'écran est perpendiculaire
-      au bord supérieur lorsque le téléphone est incliné.
-    */
+  let targetAz=
+    orientation.az;
 
-    const topComponent =
-      Math.sin(beta*DEG);
+  if(rawHeading!==null){
 
-    const rightComponent =
-      Math.sin(gamma*DEG);
-
-    let az;
-
-    if(Math.abs(topComponent)+Math.abs(rightComponent) < 0.03){
-
-      /*
-        Téléphone presque horizontal :
-        l'azimut est indéterminé.
-        On conserve le dernier azimut.
-      */
-
-      az = orientation.az;
-    }
-    else{
-
-      const offset =
-        180 +
-        Math.atan2(
-          rightComponent,
-          topComponent
-        )*RAD;
-
-      az = wrap360(heading + offset);
-    }
-
-    az = wrap360(az + calibrationOffset);
-
-    /*
-      Lissage anti-tremblement.
-    */
-
-    orientation.az =
-      lerpAngle(orientation.az,az,.28);
-
-    orientation.heading = heading;
+    targetAz=
+      wrap360(
+        rawHeading+
+        calibrationOffset
+      );
   }
 
-  orientation.alt =
-    orientation.alt +
-    (alt-orientation.alt)*.22;
+  orientation.az=
+    lerpAngle(
+      orientation.az,
+      targetAz,
+      .18
+    );
 
-  orientation.ready = true;
+  orientation.alt+=
+    (targetAlt-orientation.alt)*.18;
+
+  orientation.heading=
+    rawHeading;
+
+  orientation.ready=true;
 
   updateOrientationHUD();
 }
 
+
 function updateOrientationHUD(){
 
-  const az = wrap360(orientation.az);
-  const alt = orientation.alt;
+  const view=getActiveView();
 
-  $("heading").textContent =
-    `Direction ${Math.round(az)}° • Alt ${Math.round(alt)}°`;
+  $("heading").textContent=
+    `${getCardinal(view.az)} (${Math.round(view.az)}°) • Alt ${Math.round(view.alt)}°`+
+    (kidMode
+      ? ` • Zoom ${zoomLevel.toFixed(1)}x`
+      :"");
 
-  $("needle").style.transform =
-    `rotate(${az}deg)`;
+  $("needle").style.transform=
+    `rotate(${view.az}deg)`;
 
-  $("debug").innerHTML =
-    `Capteur : ${orientation.absolute ? "absolu" : "relatif"}<br>`+
-    `Az : ${Math.round(az)}°<br>`+
-    `Alt : ${Math.round(alt)}°`;
+  $("debug").innerHTML=
+    `Az : ${Math.round(view.az)}°<br>`+
+    `Alt : ${Math.round(view.alt)}°<br>`+
+    `Mode : ${kidMode?"Enfant":"Capteurs"}`;
 }
 
-/* =========================================================
-   SENSOR PERMISSIONS
-   ========================================================= */
-
-async function requestSensors(){
-
-  let granted = true;
-
-  try{
-
-    if(typeof DeviceOrientationEvent !== "undefined" &&
-       typeof DeviceOrientationEvent.requestPermission === "function"){
-
-      const result =
-        await DeviceOrientationEvent.requestPermission(true);
-
-      granted = result === "granted";
-    }
-
-  }catch(err){
-
-    console.warn("Orientation permission:",err);
-    granted = false;
-  }
-
-  try{
-
-    if(typeof DeviceMotionEvent !== "undefined" &&
-       typeof DeviceMotionEvent.requestPermission === "function"){
-
-      await DeviceMotionEvent.requestPermission();
-
-    }
-
-  }catch(err){
-
-    console.warn("Motion permission:",err);
-  }
-
-  if(granted){
-
-    window.addEventListener(
-      "deviceorientation",
-      updateOrientationFromEvent,
-      true
-    );
-
-    window.addEventListener(
-      "deviceorientationabsolute",
-      updateOrientationFromEvent,
-      true
-    );
-
-    setStatus("Capteurs actifs",true);
-
-    toast("🧭 Orientation activée");
-
-  }
-  else{
-
-    setStatus("Capteur limité",false);
-
-    toast(
-      "⚠️ Autorisation orientation refusée. Le mode manuel reste disponible.",
-      4200
-    );
-  }
-}
 
 /* =========================================================
-   CALIBRATION
-   ========================================================= */
+   MODE ENFANT — POINTER EVENTS
+========================================================= */
 
-$("calibrateBtn").addEventListener("click",()=>{
+function distanceBetweenPointers(){
 
-  $("calibration").classList.add("open");
-});
+  const pts=[...activePointers.values()];
 
-$("cancelCal").addEventListener("click",()=>{
+  if(pts.length<2)
+    return 0;
 
-  $("calibration").classList.remove("open");
-});
-
-$("doCal").addEventListener("click",()=>{
-
-  if(orientation.heading == null){
-
-    toast(
-      "⚠️ Le compas n'est pas disponible. Active d'abord les capteurs.",
-      3500
-    );
-
-    return;
-  }
-
-  /*
-    L'utilisateur pointe le haut du téléphone vers le Nord.
-    Le décalage nécessaire est donc l'opposé du cap actuel.
-  */
-
-  calibrationOffset =
-    wrap360(-orientation.az);
-
-  /*
-    On conserve une représentation signée.
-  */
-
-  if(calibrationOffset > 180){
-    calibrationOffset -= 360;
-  }
-
-  localStorage.setItem(
-    "missionEtoilesV5Cal",
-    calibrationOffset
+  return Math.hypot(
+    pts[0].x-pts[1].x,
+    pts[0].y-pts[1].y
   );
-
-  $("calibration").classList.remove("open");
-
-  toast(
-    `✅ Calibration enregistrée : ${Math.round(calibrationOffset)}°`,
-    3000
-  );
-});
-
-/* =========================================================
-   MANUAL MODE
-   ========================================================= */
-
-$("manualBtn").addEventListener("click",()=>{
-
-  manualMode = !manualMode;
-
-  if(manualMode){
-
-    toast(
-      "🎮 Mode manuel : glisse le doigt pour explorer le ciel."
-    );
-
-  }else{
-
-    toast("🧭 Mode capteurs réactivé.");
-  }
-});
-
-let manualDragging = false;
-let manualStartX = 0;
-let manualStartY = 0;
-
-/*
-  Détection de tap : indépendante du mode manuel.
-  Un tap = peu de mouvement + appui bref.
-  Sert à identifier une étoile / planète / satellite touché.
-*/
-let tapStart = null;
-let tapStartTime = 0;
-let tapMoved = false;
-
-const TAP_MOVE_THRESHOLD = 10;
-const TAP_MAX_DURATION = 450;
-
-canvas.addEventListener("pointerdown",e=>{
-
-  if(!e.isPrimary) return;
-
-  tapStart = {x:e.clientX,y:e.clientY};
-  tapStartTime = Date.now();
-  tapMoved = false;
-
-  if(!manualMode) return;
-
-  manualDragging = true;
-
-  manualStartX = e.clientX;
-  manualStartY = e.clientY;
-});
-
-canvas.addEventListener("pointermove",e=>{
-
-  if(!e.isPrimary) return;
-
-  if(tapStart){
-
-    const tdx = e.clientX-tapStart.x;
-    const tdy = e.clientY-tapStart.y;
-
-    if(Math.hypot(tdx,tdy) > TAP_MOVE_THRESHOLD){
-      tapMoved = true;
-    }
-  }
-
-  if(!manualMode || !manualDragging) return;
-
-  const dx = e.clientX-manualStartX;
-  const dy = e.clientY-manualStartY;
-
-  manualAz =
-    wrap360(manualAz-dx*.25);
-
-  manualAlt =
-    clamp(manualAlt+dy*.20,-90,90);
-
-  manualStartX = e.clientX;
-  manualStartY = e.clientY;
-});
-
-canvas.addEventListener("pointerup",e=>{
-
-  if(!e.isPrimary) return;
-
-  manualDragging = false;
-
-  const duration =
-    Date.now()-tapStartTime;
-
-  if(tapStart && !tapMoved && duration < TAP_MAX_DURATION){
-
-    handleTap(e.clientX,e.clientY);
-  }
-
-  tapStart = null;
-});
-
-canvas.addEventListener("pointercancel",()=>{
-  manualDragging = false;
-  tapStart = null;
-});
-
-/* =========================================================
-   CAMERA AR
-   ========================================================= */
-
-async function startAR(){
-
-  if(arMode){
-
-    stopAR();
-    return;
-  }
-
-  if(!navigator.mediaDevices ||
-     !navigator.mediaDevices.getUserMedia){
-
-    toast(
-      "❌ La caméra n'est pas disponible dans ce navigateur.",
-      4000
-    );
-
-    return;
-  }
-
-  try{
-
-    const stream =
-      await navigator.mediaDevices.getUserMedia({
-        video:{
-          facingMode:{ideal:"environment"},
-          width:{ideal:1920},
-          height:{ideal:1080}
-        },
-        audio:false
-      });
-
-    camera.srcObject = stream;
-
-    camera.classList.add("on");
-
-    await camera.play();
-
-    arMode = true;
-
-    $("arBtn").textContent = "✕";
-
-    setStatus("Mode AR",true);
-
-    toast("📷 Réalité augmentée activée");
-
-  }catch(err){
-
-    console.error(err);
-
-    let message =
-      "Impossible d'activer la caméra.";
-
-    if(err.name === "NotAllowedError"){
-      message =
-        "⚠️ Autorisation caméra refusée. Autorise la caméra dans Réglages > Safari.";
-    }
-
-    toast(message,5000);
-  }
 }
 
-function stopAR(){
+canvas.addEventListener(
+  "pointerdown",
+  e=>{
 
-  const stream = camera.srcObject;
+    if(!kidMode)
+      return;
 
-  if(stream){
-
-    stream.getTracks().forEach(track=>{
-      track.stop();
-    });
-  }
-
-  camera.srcObject = null;
-  camera.classList.remove("on");
-
-  arMode = false;
-
-  $("arBtn").textContent = "📷";
-
-  setStatus(
-    orientation.ready ? "Capteurs actifs" : "Ciel prêt",
-    true
-  );
-
-  toast("🌌 Retour au ciel");
-}
-
-$("arBtn").addEventListener("click",startAR);
-
-/* =========================================================
-   SATELLITES
-   ========================================================= */
-
-async function loadSatelliteLibrary(){
-
-  if(satelliteLib) return satelliteLib;
-
-  if(satelliteLibPromise){
-    return satelliteLibPromise;
-  }
-
-  satelliteLibPromise =
-    import(
-      "https://esm.sh/satellite.js@7.1.0"
-    )
-    .then(mod=>{
-
-      satelliteLib = mod;
-      return mod;
-
-    })
-    .catch(err=>{
-
-      console.error("Satellite.js:",err);
-
-      satelliteLibPromise = null;
-
-      return null;
-    });
-
-  return satelliteLibPromise;
-}
-
-async function fetchJSON(url,timeout=6500){
-
-  const controller = new AbortController();
-
-  const timer =
-    setTimeout(
-      ()=>controller.abort(),
-      timeout
+    canvas.setPointerCapture?.(
+      e.pointerId
     );
 
-  try{
-
-    const response =
-      await fetch(
-        url,
-        {
-          cache:"no-store",
-          signal:controller.signal
-        }
-      );
-
-    if(!response.ok){
-      throw new Error("HTTP "+response.status);
-    }
-
-    return await response.json();
-
-  }finally{
-
-    clearTimeout(timer);
-  }
-}
-
-function normalizeSatelliteData(data){
-
-  if(Array.isArray(data)){
-    return data;
-  }
-
-  if(data && Array.isArray(data.data)){
-    return data.data;
-  }
-
-  return [];
-}
-
-async function fetchSatelliteGroup(group){
-
-  const url =
-    `https://celestrak.org/NORAD/elements/gp.php`+
-    `?GROUP=${encodeURIComponent(group)}`+
-    `&FORMAT=JSON`;
-
-  const data =
-    await fetchJSON(url,7000);
-
-  return normalizeSatelliteData(data);
-}
-
-async function loadSatellites(){
-
-  if(Date.now()-lastSatelliteRefresh < 5*60*1000 &&
-     satellites.length){
-
-    return;
-  }
-
-  setStatus("Satellites…",false);
-
-  const lib =
-    await loadSatelliteLibrary();
-
-  if(!lib){
-
-    setStatus("Satellites indisponibles",false);
-
-    toast(
-      "⚠️ Moteur orbital indisponible. Le ciel reste fonctionnel.",
-      3500
-    );
-
-    return;
-  }
-
-  let records = [];
-
-  /*
-    Deux sources indépendantes :
-    STATIONS = ISS, Tiangong, etc.
-    VISUAL = satellites parmi les plus brillants.
-  */
-
-  const results =
-    await Promise.allSettled([
-
-      fetchSatelliteGroup("STATIONS"),
-
-      fetchSatelliteGroup("VISUAL")
-
-    ]);
-
-  for(const result of results){
-
-    if(result.status === "fulfilled"){
-
-      records.push(...result.value);
-    }
-  }
-
-  /*
-    Déduplication.
-  */
-
-  const map = new Map();
-
-  for(const r of records){
-
-    const id =
-      r.NORAD_CAT_ID ||
-      r.OBJECT_ID ||
-      r.OBJECT_NAME;
-
-    if(id && !map.has(String(id))){
-      map.set(String(id),r);
-    }
-  }
-
-  const unique =
-    [...map.values()];
-
-  const parsed = [];
-
-  for(const r of unique){
-
-    try{
-
-      const satrec =
-        lib.json2satrec(r);
-
-      parsed.push({
-        name:r.OBJECT_NAME || "Satellite",
-        id:r.NORAD_CAT_ID || null,
-        satrec
-      });
-
-    }catch(err){
-
-      console.warn(
-        "Satellite ignoré:",
-        r.OBJECT_NAME,
-        err
-      );
-    }
-  }
-
-  satellites = parsed;
-  satPositionCache.clear();
-
-  satellitesLoaded = satellites.length > 0;
-
-  lastSatelliteRefresh = Date.now();
-
-  try{
-
-    localStorage.setItem(
-      "missionEtoilesV5Satellites",
-      JSON.stringify(
-        unique.map(r=>r)
-      )
-    );
-
-  }catch{}
-
-  if(satellitesLoaded){
-
-    setStatus(
-      `${satellites.length} satellites`,
-      true
-    );
-
-    toast(
-      `🛰️ ${satellites.length} satellites chargés`,
-      2500
-    );
-
-  }else{
-
-    setStatus(
-      "Aucun satellite",
-      false
-    );
-  }
-
-  updateSatellitePanel();
-}
-
-function loadSatelliteCache(){
-
-  try{
-
-    const raw =
-      localStorage.getItem(
-        "missionEtoilesV5Satellites"
-      );
-
-    if(!raw) return;
-
-    const records =
-      JSON.parse(raw);
-
-    if(!Array.isArray(records)) return;
-
-    /*
-      La bibliothèque orbitale peut reconstruire
-      les SatRec à partir des OMM.
-    */
-
-    loadSatelliteLibrary().then(lib=>{
-
-      if(!lib) return;
-
-      satellites = [];
-      satPositionCache.clear();
-
-      for(const r of records){
-
-        try{
-
-          const satrec =
-            lib.json2satrec(r);
-
-          satellites.push({
-            name:r.OBJECT_NAME || "Satellite",
-            id:r.NORAD_CAT_ID || null,
-            satrec
-          });
-
-        }catch{}
-      }
-
-      if(satellites.length){
-
-        satellitesLoaded = true;
-
-        setStatus(
-          `${satellites.length} satellites`,
-          true
-        );
-      }
-    });
-
-  }catch{}
-}
-
-function satelliteLookAngles(sat){
-
-  if(!satelliteLib) return null;
-
-  try{
-
-    const now = new Date();
-
-    const pv =
-      satelliteLib.propagate(
-        sat.satrec,
-        now,
-        {
-          communityDecayCheckEnabled:true
-        }
-      );
-
-    if(!pv || !pv.position){
-      return null;
-    }
-
-    const gmstRad =
-      satelliteLib.gstime(now);
-
-    const observer =
+    activePointers.set(
+      e.pointerId,
       {
-        longitude:
-          satelliteLib.degreesToRadians(
-            locationData.lon
-          ),
-        latitude:
-          satelliteLib.degreesToRadians(
-            locationData.lat
-          ),
-        height:
-          locationData.height/1000
+        x:e.clientX,
+        y:e.clientY
+      }
+    );
+
+    movedDuringGesture=false;
+
+    if(activePointers.size===1){
+
+      dragStart={
+        x:e.clientX,
+        y:e.clientY,
+        az:manualAz,
+        alt:manualAlt
       };
 
-    const positionEcf =
-      satelliteLib.eciToEcf(
-        pv.position,
-        gmstRad
+    }else if(activePointers.size===2){
+
+      pinchStartDistance=
+        distanceBetweenPointers();
+
+      pinchStartZoom=
+        zoomLevel;
+    }
+
+  }
+);
+
+
+canvas.addEventListener(
+  "pointermove",
+  e=>{
+
+    if(!kidMode)
+      return;
+
+    if(!activePointers.has(e.pointerId))
+      return;
+
+    activePointers.set(
+      e.pointerId,
+      {
+        x:e.clientX,
+        y:e.clientY
+      }
+    );
+
+    if(activePointers.size===2){
+
+      const dist=
+        distanceBetweenPointers();
+
+      if(pinchStartDistance>0){
+
+        zoomLevel=
+          clamp(
+            pinchStartZoom*
+            (dist/pinchStartDistance),
+            .55,
+            4
+          );
+
+        movedDuringGesture=true;
+
+        updateOrientationHUD();
+      }
+
+      return;
+    }
+
+    if(activePointers.size!==1)
+      return;
+
+    const dx=
+      e.clientX-dragStart.x;
+
+    const dy=
+      e.clientY-dragStart.y;
+
+    if(
+      Math.abs(dx)>5 ||
+      Math.abs(dy)>5
+    ){
+
+      movedDuringGesture=true;
+    }
+
+    const view=getActiveView();
+
+    manualAz=
+      wrap360(
+        dragStart.az-
+        dx/W*view.fovH
       );
 
-    const angles =
-      satelliteLib.ecfToLookAngles(
-        observer,
-        positionEcf
+    manualAlt=
+      clamp(
+        dragStart.alt+
+        dy/H*view.fovV,
+        -85,
+        85
       );
 
-    return {
-      az:
-        wrap360(
-          angles.azimuth*RAD
-        ),
+    updateOrientationHUD();
 
-      alt:
-        angles.elevation*RAD,
-
-      range:
-        angles.rangeSat
-    };
-
-  }catch(err){
-
-    return null;
   }
-}
+);
 
-/*
-  Rafraîchit le cache de positions satellites au maximum
-  toutes les SAT_UPDATE_INTERVAL ms. C'est le calcul SGP4
-  (satelliteLookAngles) qui coûte cher, pas la projection
-  écran : on le sépare donc du rendu à 30 FPS.
-*/
-function refreshSatellitePositionCache(){
 
-  const now = Date.now();
+function releasePointer(e){
 
-  if(now-lastSatPositionUpdate < SAT_UPDATE_INTERVAL){
-    return;
-  }
-
-  lastSatPositionUpdate = now;
-
-  for(const sat of satellites){
-
-    const p =
-      satelliteLookAngles(sat);
-
-    if(p){
-      satPositionCache.set(sat,p);
-    }
-    else{
-      satPositionCache.delete(sat);
-    }
-  }
-}
-
-function getCachedSatPosition(sat){
-  return satPositionCache.get(sat) || null;
-}
-
-/* =========================================================
-   SATELLITE PANEL
-   ========================================================= */
-
-function updateSatellitePanel(){
-
-  const list = $("satList");
-
-  list.innerHTML = "";
-
-  if(!satellites.length){
-
-    list.innerHTML =
-      `<div class="item">
-        <strong>Aucun satellite chargé</strong>
-        <span>La prochaine tentative sera automatique.</span>
-      </div>`;
-
-    return;
-  }
-
-  const visible = [];
-
-  for(const sat of satellites){
-
-    const p =
-      satelliteLookAngles(sat);
-
-    if(!p) continue;
-
-    if(p.alt > 0){
-
-      visible.push({
-        sat,
-        p
-      });
-    }
-  }
-
-  visible.sort(
-    (a,b)=>b.p.alt-a.p.alt
+  activePointers.delete(
+    e.pointerId
   );
 
-  const top =
-    visible.slice(0,12);
+  if(activePointers.size<2){
 
-  if(!top.length){
+    pinchStartDistance=0;
+  }
+}
 
-    list.innerHTML =
-      `<div class="item">
-        <strong>Pas de satellite au-dessus de l'horizon</strong>
-        <span>Les données sont bien chargées.</span>
-      </div>`;
+canvas.addEventListener(
+  "pointerup",
+  releasePointer
+);
 
+canvas.addEventListener(
+  "pointercancel",
+  releasePointer
+);
+
+
+/* =========================================================
+   ZOOM SOURIS
+========================================================= */
+
+canvas.addEventListener(
+  "wheel",
+  e=>{
+
+    if(!kidMode)
+      return;
+
+    e.preventDefault();
+
+    zoomLevel=
+      clamp(
+        zoomLevel+
+        (e.deltaY<0?.2:-.2),
+        .55,
+        4
+      );
+
+    updateOrientationHUD();
+
+  },
+  {passive:false}
+);
+
+
+/* =========================================================
+   MODE ENFANT
+========================================================= */
+
+$("kidModeBtn").addEventListener(
+  "click",
+  ()=>{
+
+    kidMode=!kidMode;
+
+    $("kidModeBtn")
+      .classList
+      .toggle("active",kidMode);
+
+    $("kidBanner")
+      .classList
+      .toggle("show",kidMode);
+
+    if(kidMode){
+
+      manualAz=
+        orientation.az;
+
+      manualAlt=
+        orientation.alt;
+
+      toast(
+        "👶 Mode Enfant : glisse le ciel et pince pour zoomer.",
+        3500
+      );
+
+    }else{
+
+      toast(
+        "🧭 Navigation par capteurs réactivée.",
+        2500
+      );
+    }
+
+    updateOrientationHUD();
+  }
+);
+
+
+/* =========================================================
+   POSITION
+========================================================= */
+
+async function getLocation(){
+
+  if(!navigator.geolocation)
     return;
-  }
 
-  for(const item of top){
+  navigator.geolocation.getCurrentPosition(
 
-    const div =
-      document.createElement("div");
+    p=>{
 
-    div.className = "item";
+      locationData.lat=
+        p.coords.latitude;
 
-    div.innerHTML =
-      `<strong>🛰️ ${escapeHTML(item.sat.name)}</strong>
-       <span>
-         Az ${Math.round(item.p.az)}°
-         • Alt ${Math.round(item.p.alt)}°
-         • ${Math.round(item.p.range)} km
-       </span>`;
+      locationData.lon=
+        p.coords.longitude;
 
-    list.appendChild(div);
-  }
-}
+      locationData.height=
+        p.coords.altitude||0;
 
-function escapeHTML(str){
+      $("locationText").textContent=
+        `Position : ${locationData.lat.toFixed(2)}°, `+
+        `${locationData.lon.toFixed(2)}°`;
 
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/* =========================================================
-   SUN / MOON / PLANETS
-   ========================================================= */
-
-/*
-  Astronomy Engine est chargé séparément.
-  Si le CDN n'est pas disponible, les étoiles et satellites
-  continuent de fonctionner.
-*/
-
-let Astronomy = null;
-
-async function loadAstronomyEngine(){
-
-  try{
-
-    const mod =
-      await import(
-        "https://esm.sh/astronomy-engine@2.1.19"
+      setStatus(
+        "Position GPS active",
+        true
       );
+    },
 
-    Astronomy = mod;
+    ()=>{
+      $("locationText").textContent=
+        "Position : automatique indisponible";
+    },
 
-  }catch(err){
-
-    console.warn(
-      "Astronomy Engine indisponible",
-      err
-    );
-  }
+    {
+      enableHighAccuracy:true,
+      timeout:10000,
+      maximumAge:60000
+    }
+  );
 }
 
-function getBodyPositions(){
-
-  if(!Astronomy) return [];
-
-  const bodies = [
-    ["☀️","Soleil",Astronomy.Body.Sun],
-    ["🌙","Lune",Astronomy.Body.Moon],
-    ["☿️","Mercure",Astronomy.Body.Mercury],
-    ["♀️","Vénus",Astronomy.Body.Venus],
-    ["♂️","Mars",Astronomy.Body.Mars],
-    ["♃","Jupiter",Astronomy.Body.Jupiter],
-    ["♄","Saturne",Astronomy.Body.Saturn]
-  ];
-
-  const observer =
-    new Astronomy.Observer(
-      locationData.lat,
-      locationData.lon,
-      locationData.height/1000
-    );
-
-  const now = new Date();
-
-  const result = [];
-
-  for(const [icon,name,body] of bodies){
-
-    try{
-
-      const eq =
-        Astronomy.Equator(
-          body,
-          now,
-          observer,
-          true,
-          true
-        );
-
-      const hor =
-        Astronomy.Horizon(
-          now,
-          observer,
-          eq.ra,
-          eq.dec,
-          "normal"
-        );
-
-      result.push({
-        icon,
-        name,
-        az:wrap360(hor.azimuth),
-        alt:hor.altitude
-      });
-
-    }catch{}
-  }
-
-  return result;
-}
 
 /* =========================================================
-   SKY OBJECTS
-   ========================================================= */
+   ÉTOILES CALCULÉES UNE FOIS PAR FRAME
+========================================================= */
 
-function getStars(){
+function calculateStars(){
 
-  const now = new Date();
+  const now=new Date();
 
-  return stars.map(star=>{
-
-    const pos =
-      raDecToAltAz(
-        star.ra,
-        star.dec,
+  return stars.map(
+    s=>({
+      ...s,
+      ...raDecToAltAz(
+        s.ra,
+        s.dec,
         now
-      );
-
-    return {
-      ...star,
-      ...pos
-    };
-  });
+      )
+    })
+  );
 }
+
 
 /* =========================================================
    PROJECTION
-   ========================================================= */
+========================================================= */
 
-function project(az,alt){
+function project(
+  az,
+  alt
+){
 
-  const viewAz =
-    manualMode
-      ? manualAz
-      : orientation.az;
+  const view=getActiveView();
 
-  const viewAlt =
-    manualMode
-      ? manualAlt
-      : orientation.alt;
+  const dx=
+    angleDiff(
+      az,
+      view.az
+    );
 
-  let dx =
-    angleDiff(az,viewAz);
+  const dy=
+    alt-view.alt;
 
-  let dy =
-    alt-viewAlt;
-
-  /*
-    On ignore les objets très éloignés
-    de l'axe de visée.
-  */
-
-  if(Math.abs(dx) > FOV_H/2 + 10 ||
-     Math.abs(dy) > FOV_V/2 + 10){
+  if(
+    Math.abs(dx)>
+      view.fovH/2+15 ||
+    Math.abs(dy)>
+      view.fovV/2+15
+  ){
 
     return null;
   }
 
-  const x =
-    W/2 +
-    dx/FOV_H*W;
+  return {
 
-  const y =
-    H/2 -
-    dy/FOV_V*H;
+    x:
+      W/2+
+      (dx/view.fovH)*W,
 
-  return {x,y,dx,dy};
+    y:
+      H/2-
+      (dy/view.fovV)*H
+
+  };
 }
+
 
 /* =========================================================
-   DRAW SKY
-   ========================================================= */
+   CENTRE CONSTELLATION CORRIGÉ
+========================================================= */
 
-function drawBackground(){
+function getConstellationCenter(
+  constel,
+  starMap
+){
 
-  if(arMode){
+  const points=
+    constel.stars
+      .map(n=>starMap.get(n))
+      .filter(Boolean);
 
-    ctx.clearRect(0,0,W,H);
-
-    /*
-      On ne dessine pas de fond opaque :
-      la caméra reste visible.
-    */
-
-    return;
-  }
-
-  const gradient =
-    ctx.createRadialGradient(
-      W*.5,
-      H*.35,
-      0,
-      W*.5,
-      H*.5,
-      Math.max(W,H)
-    );
-
-  gradient.addColorStop(0,"rgba(18,31,69,.75)");
-  gradient.addColorStop(.45,"rgba(4,10,27,.9)");
-  gradient.addColorStop(1,"rgba(1,3,10,1)");
-
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0,0,W,H);
-}
-
-function drawHorizon(){
-
-  const p =
-    project(orientation.az,0);
-
-  if(!p) return;
+  if(!points.length)
+    return null;
 
   /*
-    L'horizon n'est pas toujours horizontal
-    lorsque le téléphone est incliné.
-    Ici on le garde volontairement discret.
+    Moyenne circulaire de l'azimut.
+    Évite l'erreur lorsque les étoiles
+    sont de part et d'autre de 0°.
   */
 
-  const y = H/2 +
-    orientation.alt/FOV_V*H;
+  let sx=0;
+  let sy=0;
+  let alt=0;
 
-  if(y < -50 || y > H+50) return;
+  for(const s of points){
+
+    sx+=Math.cos(s.az*DEG);
+    sy+=Math.sin(s.az*DEG);
+    alt+=s.alt;
+  }
+
+  return {
+
+    az:
+      wrap360(
+        Math.atan2(sy,sx)*RAD
+      ),
+
+    alt:
+      alt/points.length
+  };
+}
+
+
+/* =========================================================
+   FILIGRANES ARTISTIQUES
+========================================================= */
+
+function drawBearWatermark(points){
+
+  if(points.length<4)
+    return;
+
+  const xs=points.map(p=>p.x);
+  const ys=points.map(p=>p.y);
+
+  const minX=Math.min(...xs);
+  const maxX=Math.max(...xs);
+  const minY=Math.min(...ys);
+  const maxY=Math.max(...ys);
+
+  const cx=(minX+maxX)/2;
+  const cy=(minY+maxY)/2;
+
+  const w=(maxX-minX)*.75;
+  const h=(maxY-minY)*.65;
 
   ctx.save();
 
-  ctx.strokeStyle =
-    "rgba(125,211,252,.16)";
+  ctx.translate(cx,cy);
 
-  ctx.setLineDash([4,7]);
-  ctx.lineWidth = 1;
+  ctx.fillStyle=
+    "rgba(125,211,252,.045)";
+
+  ctx.strokeStyle=
+    "rgba(125,211,252,.18)";
+
+  ctx.lineWidth=2;
+
+  /*
+    Silhouette stylisée d'une ourse.
+  */
 
   ctx.beginPath();
-  ctx.moveTo(0,y);
-  ctx.lineTo(W,y);
+
+  ctx.ellipse(
+    0,
+    8,
+    w*.45,
+    h*.32,
+    -.15,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.beginPath();
+
+  ctx.arc(
+    -w*.40,
+    -h*.08,
+    h*.18,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+  ctx.stroke();
+
+  /* museau */
+
+  ctx.beginPath();
+
+  ctx.arc(
+    -w*.52,
+    -h*.03,
+    h*.07,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  /* oreilles */
+
+  ctx.beginPath();
+
+  ctx.arc(
+    -w*.47,
+    -h*.23,
+    h*.06,
+    0,
+    Math.PI*2
+  );
+
+  ctx.arc(
+    -w*.31,
+    -h*.23,
+    h*.06,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  /* pattes */
+
+  for(
+    const x of [
+      -.28,-.05,.18,.38
+    ]
+  ){
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      x*w,
+      h*.25,
+      w*.07,
+      h*.22,
+      0,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+
+function drawHunterWatermark(points){
+
+  if(points.length<4)
+    return;
+
+  const xs=points.map(p=>p.x);
+  const ys=points.map(p=>p.y);
+
+  const minX=Math.min(...xs);
+  const maxX=Math.max(...xs);
+  const minY=Math.min(...ys);
+  const maxY=Math.max(...ys);
+
+  const cx=(minX+maxX)/2;
+  const cy=(minY+maxY)/2;
+
+  const h=maxY-minY;
+
+  ctx.save();
+
+  ctx.translate(cx,cy);
+
+  ctx.strokeStyle=
+    "rgba(253,230,138,.18)";
+
+  ctx.fillStyle=
+    "rgba(253,230,138,.035)";
+
+  ctx.lineWidth=2;
+
+  /*
+    Corps
+  */
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    0,
+    0,
+    h*.22,
+    h*.42,
+    0,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+  ctx.stroke();
+
+  /* tête */
+
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    -h*.49,
+    h*.12,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+  ctx.stroke();
+
+  /* bras */
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -h*.18,
+    -h*.15
+  );
+
+  ctx.lineTo(
+    -h*.43,
+    h*.05
+  );
+
+  ctx.moveTo(
+    h*.18,
+    -h*.15
+  );
+
+  ctx.lineTo(
+    h*.43,
+    h*.05
+  );
+
+  /* jambes */
+
+  ctx.moveTo(
+    -.08*h,
+    .32*h
+  );
+
+  ctx.lineTo(
+    -.25*h,
+    .58*h
+  );
+
+  ctx.moveTo(
+    .08*h,
+    .32*h
+  );
+
+  ctx.lineTo(
+    .25*h,
+    .58*h
+  );
+
+  /* épée */
+
+  ctx.moveTo(
+    h*.12,
+    -.1*h
+  );
+
+  ctx.lineTo(
+    h*.38,
+    -.65*h
+  );
+
   ctx.stroke();
 
   ctx.restore();
 }
 
-function drawStars(){
 
-  const visibleStars =
-    getStars();
+function drawTriangleWatermark(points){
 
-  /*
-    Constellations
-  */
+  if(points.length!==3)
+    return;
 
-  const byName =
-    new Map(
-      visibleStars.map(s=>[s.name,s])
-    );
+  const cx=
+    points.reduce(
+      (a,p)=>a+p.x,0
+    )/3;
+
+  const cy=
+    points.reduce(
+      (a,p)=>a+p.y,0
+    )/3;
 
   ctx.save();
 
-  ctx.strokeStyle =
-    arMode
-      ? "rgba(125,211,252,.55)"
-      : "rgba(125,211,252,.20)";
+  ctx.strokeStyle=
+    "rgba(110,231,183,.18)";
 
-  ctx.lineWidth = 1;
+  ctx.fillStyle=
+    "rgba(110,231,183,.025)";
 
-  for(const [a,b] of constellationLines){
+  ctx.lineWidth=2;
 
-    const s1 = byName.get(a);
-    const s2 = byName.get(b);
+  ctx.beginPath();
 
-    if(!s1 || !s2) continue;
+  ctx.moveTo(
+    points[0].x,
+    points[0].y
+  );
 
-    const p1 = project(s1.az,s1.alt);
-    const p2 = project(s2.az,s2.alt);
+  ctx.lineTo(
+    points[1].x,
+    points[1].y
+  );
 
-    if(!p1 || !p2) continue;
+  ctx.lineTo(
+    points[2].x,
+    points[2].y
+  );
 
-    ctx.beginPath();
-    ctx.moveTo(p1.x,p1.y);
-    ctx.lineTo(p2.x,p2.y);
-    ctx.stroke();
-  }
+  ctx.closePath();
 
-  ctx.restore();
+  ctx.fill();
+  ctx.stroke();
 
   /*
-    Etoiles
+    Grand triangle lumineux
   */
 
-  for(const star of visibleStars){
+  ctx.beginPath();
 
-    if(star.alt < -2) continue;
+  ctx.arc(
+    cx,
+    cy,
+    Math.min(W,H)*.11,
+    0,
+    Math.PI*2
+  );
 
-    const p =
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+
+/* =========================================================
+   CONSTELLATIONS
+========================================================= */
+
+function drawConstellations(starMap){
+
+  for(
+    const constel of constellations
+  ){
+
+    const projected=
+      constel.stars
+        .map(
+          n=>{
+
+            const s=
+              starMap.get(n);
+
+            if(!s)
+              return null;
+
+            const p=
+              project(
+                s.az,
+                s.alt
+              );
+
+            if(!p)
+              return null;
+
+            return {
+              ...p,
+              name:n
+            };
+          }
+        )
+        .filter(Boolean);
+
+    /*
+      Filigrane
+    */
+
+    if(
+      constel.type==="bear"
+    ){
+
+      drawBearWatermark(
+        projected
+      );
+
+    }else if(
+      constel.type==="hunter"
+    ){
+
+      drawHunterWatermark(
+        projected
+      );
+
+    }else{
+
+      drawTriangleWatermark(
+        projected
+      );
+    }
+
+
+    /*
+      Lignes
+    */
+
+    ctx.save();
+
+    ctx.strokeStyle=
+      "rgba(125,211,252,.38)";
+
+    ctx.lineWidth=1.2;
+
+    ctx.setLineDash([4,4]);
+
+    for(
+      const [a,b]
+      of constel.lines
+    ){
+
+      const A=
+        starMap.get(a);
+
+      const B=
+        starMap.get(b);
+
+      if(!A||!B)
+        continue;
+
+      const pA=
+        project(A.az,A.alt);
+
+      const pB=
+        project(B.az,B.alt);
+
+      if(!pA||!pB)
+        continue;
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        pA.x,pA.y
+      );
+
+      ctx.lineTo(
+        pB.x,pB.y
+      );
+
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+
+    /*
+      Centre + nom
+    */
+
+    const center=
+      getConstellationCenter(
+        constel,
+        starMap
+      );
+
+    if(
+      center &&
+      center.alt>0
+    ){
+
+      const p=
+        project(
+          center.az,
+          center.alt
+        );
+
+      if(p){
+
+        ctx.save();
+
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+
+        ctx.font=
+          "bold 13px sans-serif";
+
+        ctx.fillStyle=
+          "rgba(125,211,252,.92)";
+
+        ctx.shadowBlur=10;
+        ctx.shadowColor=
+          "rgba(56,189,248,.8)";
+
+        ctx.fillText(
+          constel.name,
+          p.x,
+          p.y
+        );
+
+        ctx.restore();
+      }
+    }
+  }
+}
+
+
+/* =========================================================
+   ÉTOILES
+========================================================= */
+
+function drawStars(starList){
+
+  for(
+    const star of starList
+  ){
+
+    if(star.alt<0)
+      continue;
+
+    const p=
       project(
         star.az,
         star.alt
       );
 
-    if(!p) continue;
+    if(!p)
+      continue;
 
-    const radius =
-      clamp(
-        3.8-star.mag*.75,
-        1.2,
-        5.2
+    const radius=
+      Math.max(
+        1.5,
+        4.5-star.mag*.5
       );
-
-    const alpha =
-      star.alt < 0
-        ? .22
-        : 1;
-
-    frameTargets.push({
-      type:"star",
-      name:star.name,
-      mag:star.mag,
-      alt:star.alt,
-      az:star.az,
-      x:p.x,
-      y:p.y,
-      hit:22
-    });
 
     ctx.save();
 
-    ctx.globalAlpha = alpha;
+    /*
+      Halo
+    */
 
-    ctx.shadowBlur =
-      radius > 2.5 ? 10 : 4;
+    if(star.mag<1){
 
-    ctx.shadowColor =
-      "rgba(255,255,255,.85)";
+      ctx.shadowBlur=
+        12;
 
-    ctx.fillStyle =
-      "#ffffff";
+      ctx.shadowColor=
+        "rgba(255,255,255,.8)";
+    }
+
+    ctx.fillStyle="#fff";
 
     ctx.beginPath();
+
     ctx.arc(
       p.x,
       p.y,
@@ -2568,834 +2325,1378 @@ function drawStars(){
 
     ctx.fill();
 
-    ctx.restore();
-
     /*
-      Noms uniquement pour les étoiles importantes
-      ou très proches du centre.
+      Nom
     */
 
-    const important =
-      star.mag < 1.2 ||
-      Math.abs(p.dx) < 8 &&
-      Math.abs(p.dy) < 8;
+    ctx.shadowBlur=0;
 
-    if(important){
+    ctx.font=
+      "10px sans-serif";
 
-      ctx.save();
-
-      ctx.font =
-        "10px -apple-system,BlinkMacSystemFont,sans-serif";
-
-      ctx.fillStyle =
-        arMode
-          ? "rgba(255,255,255,.95)"
-          : "rgba(225,235,255,.88)";
-
-      ctx.fillText(
-        star.name,
-        p.x+7,
-        p.y-7
-      );
-
-      ctx.restore();
-    }
-  }
-}
-
-/* =========================================================
-   DRAW PLANETS
-   ========================================================= */
-
-function drawBodies(){
-
-  const bodies =
-    getBodyPositions();
-
-  for(const body of bodies){
-
-    if(body.alt < -1) continue;
-
-    const p =
-      project(
-        body.az,
-        body.alt
-      );
-
-    if(!p) continue;
-
-    frameTargets.push({
-      type:"body",
-      name:body.name,
-      icon:body.icon,
-      alt:body.alt,
-      az:body.az,
-      x:p.x,
-      y:p.y,
-      hit:28
-    });
-
-    ctx.save();
-
-    const r =
-      body.name === "Lune" ? 7 : 5;
-
-    ctx.shadowBlur = 14;
-    ctx.shadowColor =
-      "rgba(255,240,180,.8)";
-
-    ctx.fillStyle =
-      body.name === "Lune"
-        ? "#f3f4f6"
-        : "#fde68a";
-
-    ctx.beginPath();
-    ctx.arc(
-      p.x,
-      p.y,
-      r,
-      0,
-      Math.PI*2
-    );
-    ctx.fill();
-
-    ctx.font =
-      "11px -apple-system,BlinkMacSystemFont,sans-serif";
-
-    ctx.fillStyle =
-      "#fff7d6";
+    ctx.fillStyle=
+      "rgba(255,255,255,.82)";
 
     ctx.fillText(
-      `${body.icon} ${body.name}`,
-      p.x+9,
-      p.y+4
+      star.name,
+      p.x+7,
+      p.y-5
     );
 
     ctx.restore();
   }
 }
 
+
 /* =========================================================
-   DRAW SATELLITES
-   ========================================================= */
+   SATELLITES
+========================================================= */
+
+async function loadSatelliteLibrary(){
+
+  if(satelliteLib)
+    return satelliteLib;
+
+  if(satelliteLibPromise)
+    return satelliteLibPromise;
+
+  satelliteLibPromise=
+    import(
+      "https://esm.sh/satellite.js@7.1.0"
+    )
+    .then(
+      m=>{
+        satelliteLib=m;
+        return m;
+      }
+    );
+
+  return satelliteLibPromise;
+}
+
+
+async function loadSatellites(){
+
+  if(satelliteLoading)
+    return;
+
+  satelliteLoading=true;
+
+  $("issTimer").textContent=
+    "🛰️ Chargement des données orbitales…";
+
+  try{
+
+    const lib=
+      await loadSatelliteLibrary();
+
+    /*
+      Timeout réseau.
+      L'application ne reste jamais bloquée.
+    */
+
+    const controller=
+      new AbortController();
+
+    const timeout=
+      setTimeout(
+        ()=>controller.abort(),
+        10000
+      );
+
+    const response=
+      await fetch(
+        "https://celestrak.org/NORAD/elements/gp.php?GROUP=STATIONS&FORMAT=JSON",
+        {
+          signal:controller.signal,
+          cache:"no-store"
+        }
+      );
+
+    clearTimeout(timeout);
+
+    if(!response.ok)
+      throw new Error(
+        "CelesTrak HTTP "+response.status
+      );
+
+    const data=
+      await response.json();
+
+    if(!Array.isArray(data))
+      throw new Error(
+        "Réponse orbitale invalide"
+      );
+
+    satellites=
+      data
+        .filter(
+          r=>
+            r.TLE_LINE1 &&
+            r.TLE_LINE2
+        )
+        .map(
+          r=>({
+
+            name:
+              r.OBJECT_NAME||"Satellite",
+
+            norad:
+              r.NORAD_CAT_ID,
+
+            isISS:
+              String(
+                r.NORAD_CAT_ID
+              )==="25544" ||
+              /ISS|ZARYA/i.test(
+                r.OBJECT_NAME||""
+              ),
+
+            satrec:
+              lib.json2satrec(r)
+
+          })
+        );
+
+    /*
+      Limite raisonnable
+    */
+
+    satellites=
+      satellites.slice(
+        0,
+        80
+      );
+
+    const iss=
+      satellites.find(
+        s=>s.isISS
+      );
+
+    if(iss){
+
+      setStatus(
+        `${satellites.length} satellites`,
+        true
+      );
+
+      findNextISSPass();
+
+    }else{
+
+      setStatus(
+        "Satellites chargés",
+        true
+      );
+    }
+
+    renderSatelliteList();
+
+  }catch(error){
+
+    console.warn(
+      "Satellites indisponibles :",
+      error
+    );
+
+    satellites=[];
+
+    $("issTimer").textContent=
+      "⚠️ Données satellites temporairement indisponibles.";
+
+    $("satList").innerHTML=
+      `
+      <div class="item">
+        <strong>Connexion orbitale indisponible</strong>
+        <span>
+          Le ciel et les étoiles restent totalement fonctionnels.
+          Appuie à nouveau sur 🛰️ plus tard.
+        </span>
+      </div>
+      `;
+
+  }finally{
+
+    satelliteLoading=false;
+  }
+}
+
+
+/* =========================================================
+   LOOK ANGLES SATELLITE
+========================================================= */
+
+function getSatLookAngles(
+  sat,
+  date=new Date()
+){
+
+  if(!satelliteLib)
+    return null;
+
+  try{
+
+    const pv=
+      satelliteLib.propagate(
+        sat.satrec,
+        date
+      );
+
+    if(
+      !pv ||
+      !pv.position
+    )
+      return null;
+
+    const gmstRad=
+      satelliteLib.gstime(
+        date
+      );
+
+    const observer={
+      longitude:
+        locationData.lon*DEG,
+
+      latitude:
+        locationData.lat*DEG,
+
+      height:
+        locationData.height/1000
+    };
+
+    const positionEcf=
+      satelliteLib.eciToEcf(
+        pv.position,
+        gmstRad
+      );
+
+    const angles=
+      satelliteLib.ecfToLookAngles(
+        observer,
+        positionEcf
+      );
+
+    return {
+
+      az:
+        wrap360(
+          angles.azimuth*RAD
+        ),
+
+      alt:
+        angles.elevation*RAD,
+
+      range:
+        angles.rangeSat
+
+    };
+
+  }catch{
+
+    return null;
+  }
+}
+
+
+/* =========================================================
+   AFFICHAGE SATELLITES
+========================================================= */
 
 function drawSatellites(){
 
-  if(!satellites.length) return;
+  for(
+    const sat of satellites
+  ){
 
-  /*
-    Le calcul SGP4 (position orbitale) est throttlé ;
-    seule la projection écran (dépendante de l'orientation
-    du téléphone) est recalculée à chaque frame.
-  */
-  refreshSatellitePositionCache();
+    const look=
+      getSatLookAngles(sat);
 
-  /*
-    On limite le nombre d'objets calculés
-    pour garder une animation fluide sur iPhone.
-  */
+    if(
+      !look ||
+      look.alt<0
+    )
+      continue;
 
-  let count = 0;
-
-  for(const sat of satellites){
-
-    if(count > 120) break;
-
-    const pSat =
-      getCachedSatPosition(sat);
-
-    if(!pSat) continue;
-
-    if(pSat.alt < 0) continue;
-
-    const p =
+    const p=
       project(
-        pSat.az,
-        pSat.alt
+        look.az,
+        look.alt
       );
 
-    if(!p) continue;
-
-    count++;
-
-    frameTargets.push({
-      type:"satellite",
-      name:sat.name,
-      ref:sat,
-      range:pSat.range,
-      alt:pSat.alt,
-      az:pSat.az,
-      x:p.x,
-      y:p.y,
-      hit:26
-    });
-
-    const isISS =
-      /ISS|ZARYA/i.test(sat.name);
+    if(!p)
+      continue;
 
     ctx.save();
 
-    ctx.shadowBlur =
-      isISS ? 12 : 7;
+    if(sat.isISS){
 
-    ctx.shadowColor =
-      isISS
-        ? "#6ee7b7"
-        : "#7dd3fc";
+      ctx.shadowBlur=18;
+      ctx.shadowColor=
+        "#fde68a";
 
-    ctx.fillStyle =
-      isISS
-        ? "#6ee7b7"
-        : "#7dd3fc";
+      ctx.fillStyle=
+        "#fde68a";
 
-    ctx.beginPath();
+      ctx.beginPath();
 
-    ctx.arc(
-      p.x,
-      p.y,
-      isISS ? 4 : 2.5,
-      0,
-      Math.PI*2
-    );
+      ctx.arc(
+        p.x,
+        p.y,
+        6,
+        0,
+        Math.PI*2
+      );
 
-    ctx.fill();
+      ctx.fill();
 
-    ctx.font =
-      "9px -apple-system,BlinkMacSystemFont,sans-serif";
+      ctx.shadowBlur=0;
 
-    ctx.fillStyle =
-      isISS
-        ? "#d1fae5"
-        : "#bae6fd";
+      ctx.font=
+        "bold 11px sans-serif";
 
-    ctx.fillText(
-      isISS ? "🛰️ ISS" : "🛰️",
-      p.x+6,
-      p.y+3
-    );
+      ctx.fillStyle=
+        "#fde68a";
+
+      ctx.fillText(
+        "🛸 ISS",
+        p.x+10,
+        p.y+4
+      );
+
+    }else{
+
+      ctx.fillStyle=
+        "#7dd3fc";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        p.x,
+        p.y,
+        2.5,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+    }
 
     ctx.restore();
   }
 }
 
+
 /* =========================================================
-   TAP-TO-IDENTIFY
-   ========================================================= */
+   LISTE SATELLITES
+========================================================= */
 
-/*
-  Touché sur le ciel (étoile / planète / satellite) :
-  on cherche, parmi ce qui a été dessiné à la dernière frame
-  (frameTargets), l'objet le plus proche du point touché.
-*/
-function handleTap(x,y){
+function renderSatelliteList(){
 
-  if(!frameTargets.length){
+  const list=
+    $("satList");
+
+  if(!satellites.length){
+
+    list.innerHTML=
+      `
+      <div class="item">
+        <strong>Aucun satellite disponible</strong>
+      </div>
+      `;
+
     return;
   }
 
-  let best = null;
-  let bestDist = Infinity;
+  list.innerHTML=
+    satellites
+      .slice(0,20)
+      .map(
+        s=>
+        `
+        <div class="item">
+          <strong>
+            ${s.isISS?"🛸 ":"🛰️ "}
+            ${escapeHTML(s.name)}
+          </strong>
+          <span>
+            NORAD : ${s.norad}
+          </span>
+        </div>
+        `
+      )
+      .join("");
+}
 
-  for(const t of frameTargets){
 
-    const d =
-      Math.hypot(t.x-x,t.y-y);
+function escapeHTML(value){
 
-    if(d < t.hit && d < bestDist){
-      bestDist = d;
-      best = t;
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* =========================================================
+   ISS
+========================================================= */
+
+function findNextISSPass(){
+
+  const iss=
+    satellites.find(
+      s=>s.isISS
+    );
+
+  if(!iss)
+    return;
+
+  const now=
+    new Date();
+
+  let previousAlt=-90;
+
+  issNextPass=null;
+
+  for(
+    let i=0;
+    i<1440;
+    i++
+  ){
+
+    const date=
+      new Date(
+        now.getTime()+
+        i*60000
+      );
+
+    const look=
+      getSatLookAngles(
+        iss,
+        date
+      );
+
+    if(!look)
+      continue;
+
+    if(
+      previousAlt<=0 &&
+      look.alt>5
+    ){
+
+      issNextPass=date;
+
+      break;
+    }
+
+    previousAlt=look.alt;
+  }
+}
+
+
+function updateISSCountdown(){
+
+  const el=
+    $("issTimer");
+
+  const iss=
+    satellites.find(
+      s=>s.isISS
+    );
+
+  if(!iss){
+
+    if(!satelliteLoading)
+      el.textContent=
+        "🛰️ Aucune donnée ISS disponible.";
+
+    return;
+  }
+
+  const current=
+    getSatLookAngles(
+      iss
+    );
+
+  if(
+    current &&
+    current.alt>0
+  ){
+
+    el.textContent=
+      "🟢 L'ISS EST VISIBLE MAINTENANT";
+
+    el.style.color=
+      "var(--green)";
+
+    return;
+  }
+
+  el.style.color=
+    "var(--yellow)";
+
+  if(
+    !issNextPass ||
+    issNextPass<new Date()
+  ){
+
+    findNextISSPass();
+  }
+
+  if(issNextPass){
+
+    const diff=
+      Math.max(
+        0,
+        Math.floor(
+          (issNextPass-new Date())/
+          1000
+        )
+      );
+
+    const hrs=
+      Math.floor(
+        diff/3600
+      );
+
+    const mins=
+      Math.floor(
+        (diff%3600)/60
+      );
+
+    const secs=
+      diff%60;
+
+    el.textContent=
+      `⏱️ Prochain passage ISS : `+
+      `${String(hrs).padStart(2,"0")}h `+
+      `${String(mins).padStart(2,"0")}m `+
+      `${String(secs).padStart(2,"0")}s`;
+  }
+}
+
+
+/* =========================================================
+   IDENTIFICATION DES OBJETS
+========================================================= */
+
+function findObjectAt(
+  x,
+  y
+){
+
+  const threshold=28;
+
+  /*
+    1 — ISS
+  */
+
+  for(
+    const sat of satellites
+  ){
+
+    const look=
+      getSatLookAngles(sat);
+
+    if(
+      !look ||
+      look.alt<0
+    )
+      continue;
+
+    const p=
+      project(
+        look.az,
+        look.alt
+      );
+
+    if(!p)
+      continue;
+
+    if(
+      Math.hypot(
+        p.x-x,
+        p.y-y
+      )<=
+      (sat.isISS?35:threshold)
+    ){
+
+      return {
+        type:
+          sat.isISS
+            ?"iss"
+            :"satellite",
+
+        object:sat,
+        look
+      };
     }
   }
 
-  if(!best){
 
-    /*
-      Tap dans le vide : on efface la sélection en cours
-      plutôt que de laisser un anneau obsolète affiché.
-    */
+  /*
+    2 — Étoiles
+  */
 
-    selectedObject = null;
-    hideInfoNow();
+  const currentStars=
+    calculateStars();
 
-    return;
+  for(
+    const star of currentStars
+  ){
+
+    if(star.alt<0)
+      continue;
+
+    const p=
+      project(
+        star.az,
+        star.alt
+      );
+
+    if(!p)
+      continue;
+
+    const radius=
+      Math.max(
+        20,
+        5-star.mag
+      );
+
+    if(
+      Math.hypot(
+        p.x-x,
+        p.y-y
+      )<=radius
+    ){
+
+      return {
+        type:"star",
+        object:star
+      };
+    }
   }
 
-  selectObject(best);
-}
 
-function selectObject(target){
+  /*
+    3 — Constellations
+  */
 
-  let title = "";
-  let sub = "";
+  const starMap=
+    new Map(
+      currentStars.map(
+        s=>[s.name,s]
+      )
+    );
 
-  if(target.type === "star"){
+  for(
+    const c of constellations
+  ){
 
-    selectedObject = {
-      type:"star",
-      name:target.name,
-      until:Date.now()+6000
-    };
+    const center=
+      getConstellationCenter(
+        c,
+        starMap
+      );
 
-    title = `⭐ ${target.name}`;
+    if(!center)
+      continue;
 
-    sub =
-      `Magnitude ${target.mag.toFixed(2)} `+
-      `• Alt ${Math.round(target.alt)}°`;
-  }
-  else if(target.type === "body"){
+    const p=
+      project(
+        center.az,
+        center.alt
+      );
 
-    selectedObject = {
-      type:"body",
-      name:target.name,
-      until:Date.now()+6000
-    };
+    if(!p)
+      continue;
 
-    title = `${target.icon} ${target.name}`;
+    if(
+      Math.hypot(
+        p.x-x,
+        p.y-y
+      )<=35
+    ){
 
-    sub =
-      `Az ${Math.round(target.az)}° `+
-      `• Alt ${Math.round(target.alt)}°`;
-  }
-  else if(target.type === "satellite"){
-
-    selectedObject = {
-      type:"satellite",
-      name:target.name,
-      ref:target.ref,
-      until:Date.now()+6000
-    };
-
-    title = `🛰️ ${target.name}`;
-
-    sub =
-      target.range
-        ? `Distance ${Math.round(target.range)} km `+
-          `• Alt ${Math.round(target.alt)}°`
-        : `Alt ${Math.round(target.alt)}° `+
-          `• Az ${Math.round(target.az)}°`;
-  }
-  else{
-    return;
-  }
-
-  showInfo(title,sub,6000);
-
-  toast(`👆 ${title}`,1800);
-}
-
-/*
-  Retrouve la position céleste actuelle (az/alt) de l'objet
-  sélectionné, pour dessiner l'anneau au bon endroit même
-  quand le ciel (ou le satellite) a bougé depuis le tap.
-*/
-function locateSelected(){
-
-  if(!selectedObject) return null;
-
-  const now = new Date();
-
-  if(selectedObject.type === "star"){
-
-    const s =
-      stars.find(st=>st.name===selectedObject.name);
-
-    if(!s) return null;
-
-    const pos =
-      raDecToAltAz(s.ra,s.dec,now);
-
-    return {az:pos.az,alt:pos.alt};
-  }
-
-  if(selectedObject.type === "body"){
-
-    const b =
-      getBodyPositions()
-        .find(bd=>bd.name===selectedObject.name);
-
-    if(!b) return null;
-
-    return {az:b.az,alt:b.alt};
-  }
-
-  if(selectedObject.type === "satellite"){
-
-    const p =
-      satelliteLookAngles(selectedObject.ref);
-
-    if(!p) return null;
-
-    return {az:p.az,alt:p.alt};
+      return {
+        type:"constellation",
+        object:c
+      };
+    }
   }
 
   return null;
 }
 
-function drawSelection(){
 
-  if(!selectedObject) return;
+function showObjectInfo(result){
 
-  if(Date.now() > selectedObject.until){
-    selectedObject = null;
+  if(!result)
+    return;
+
+  if(result.type==="iss"){
+
+    showInfoBox(
+      "🛸 Station Spatiale Internationale",
+      `ISS — NORAD 25544
+
+Direction :
+${getCardinal(result.look.az)} (${Math.round(result.look.az)}°)
+
+Altitude :
+${Math.round(result.look.alt)}°
+
+Distance :
+${Math.round(result.look.range)} km`
+    );
+
     return;
   }
 
-  const loc = locateSelected();
 
-  if(!loc){
-    selectedObject = null;
+  if(result.type==="satellite"){
+
+    showInfoBox(
+      "🛰️ "+result.object.name,
+      `Satellite artificiel
+
+NORAD :
+${result.object.norad}
+
+Direction :
+${getCardinal(result.look.az)} (${Math.round(result.look.az)}°)
+
+Altitude :
+${Math.round(result.look.alt)}°
+
+Distance :
+${Math.round(result.look.range)} km`
+    );
+
     return;
   }
 
-  const p =
-    project(loc.az,loc.alt);
 
-  if(!p) return;
+  if(result.type==="star"){
 
-  const pulse =
-    15+Math.sin(Date.now()/220)*3;
+    const s=
+      result.object;
 
-  ctx.save();
+    showInfoBox(
+      "⭐ "+s.name,
+      `Étoile brillante
 
-  ctx.strokeStyle = "#fde68a";
-  ctx.lineWidth = 2;
-  ctx.shadowBlur = 8;
-  ctx.shadowColor = "rgba(253,230,138,.8)";
+Magnitude :
+${s.mag}
 
-  ctx.beginPath();
-  ctx.arc(p.x,p.y,pulse,0,Math.PI*2);
-  ctx.stroke();
+Direction :
+${getCardinal(s.az)} (${Math.round(s.az)}°)
 
-  ctx.restore();
+Altitude :
+${Math.round(s.alt)}°`
+    );
+
+    return;
+  }
+
+
+  if(result.type==="constellation"){
+
+    const c=
+      result.object;
+
+    showInfoBox(
+      "🌌 "+c.short,
+      `Constellation représentée par ${c.stars.length} étoiles.
+
+Étoiles principales :
+${c.stars.join(", ")}`
+    );
+  }
 }
 
+
+function showInfoBox(
+  title,
+  description
+){
+
+  $("infoTitle").textContent=
+    title;
+
+  $("infoDesc").textContent=
+    description;
+
+  $("infoBox")
+    .classList
+    .add("show");
+}
+
+
 /* =========================================================
-   DRAW
-   ========================================================= */
+   TOUCHER / CLIC
+========================================================= */
 
-let lastFrame = 0;
+canvas.addEventListener(
+  "pointerup",
+  e=>{
 
-function draw(now=0){
+    /*
+      En mode enfant, un glissement
+      ne doit jamais déclencher
+      l'identification.
+    */
 
-  /*
-    Limitation à environ 30 FPS :
-    suffisant pour l'observation et plus doux
-    pour la batterie de l'iPhone.
-  */
+    if(
+      kidMode &&
+      movedDuringGesture
+    )
+      return;
 
-  if(now-lastFrame < 33){
+    const rect=
+      canvas.getBoundingClientRect();
 
-    requestAnimationFrame(draw);
+    const x=
+      e.clientX-rect.left;
+
+    const y=
+      e.clientY-rect.top;
+
+    const result=
+      findObjectAt(x,y);
+
+    if(result){
+
+      showObjectInfo(
+        result
+      );
+
+      return;
+    }
+
+    /*
+      Clic vide :
+      fermeture de la fiche
+    */
+
+    $("infoBox")
+      .classList
+      .remove("show");
+
+  }
+);
+
+
+/* =========================================================
+   MISSIONS
+========================================================= */
+
+function updateMissionUI(){
+
+  $("missionCount").textContent=
+    `${currentTargetIndex} / ${missions.length}`;
+
+  $("progressBar").style.width=
+    `${currentTargetIndex/missions.length*100}%`;
+}
+
+function updateMissionGuidance(
+  starMap
+){
+
+  updateMissionUI();
+
+  if(
+    currentTargetIndex>=missions.length
+  ){
+
+    $("missionTarget").textContent=
+      "🏆 Toutes les missions sont accomplies !";
+
+    $("missionCoords").textContent="";
+    $("missionGuidance").textContent=
+      "Félicitations explorateur !";
+
     return;
   }
 
-  lastFrame = now;
-
-  /*
-    Reconstituée à chaque frame rendue : c'est cette liste
-    que handleTap() consulte pour savoir ce qui a été touché.
-  */
-  frameTargets = [];
-
-  drawBackground();
-
-  if(!arMode){
-
-    drawHorizon();
-
-  }
-
-  drawStars();
-
-  drawBodies();
-
-  drawSatellites();
-
-  drawSelection();
-
-  checkMission();
-
-  requestAnimationFrame(draw);
-}
-
-/* =========================================================
-   MISSION PROGRESS
-   ========================================================= */
-
-function updateMission(){
-
-  const mission =
+  const mission=
     missions[currentTargetIndex];
 
-  const done =
-    currentTargetIndex;
+  const target=
+    starMap.get(
+      mission.name
+    );
 
-  const total =
-    missions.length;
+  if(!target)
+    return;
 
-  $("missionCount").textContent =
-    `${done} / ${total}`;
+  $("missionTarget").textContent=
+    mission.text;
 
-  $("progressBar").style.width =
-    `${done/total*100}%`;
+  if(target.alt<0){
 
-  if(mission){
+    $("missionCoords").textContent=
+      `Sous l'horizon • ${getCardinal(target.az)}`;
 
-    $("missionTarget").textContent =
-      mission.text;
-  }
-  else{
+    $("missionGuidance").textContent=
+      "🌙 Cette étoile n'est pas encore levée.";
 
-    $("missionTarget").textContent =
-      "🏆 Mission terminée !";
-
-    $("progressBar").style.width = "100%";
-  }
-}
-
-function checkMission(){
-
-  if(currentTargetIndex >= missions.length){
     return;
   }
 
-  const target =
-    stars.find(
-      s=>s.name===missions[currentTargetIndex].name
+  $("missionCoords").textContent=
+    `Direction : ${getCardinal(target.az)} `+
+    `(${Math.round(target.az)}°) • `+
+    `Alt : ${Math.round(target.alt)}°`;
+
+  const view=
+    getActiveView();
+
+  const diffAz=
+    angleDiff(
+      target.az,
+      view.az
     );
 
-  if(!target) return;
+  const diffAlt=
+    target.alt-view.alt;
 
-  const now =
-    new Date();
+  if(
+    Math.abs(diffAz)<4 &&
+    Math.abs(diffAlt)<4
+  ){
 
-  const pos =
-    raDecToAltAz(
-      target.ra,
-      target.dec,
-      now
-    );
+    $("missionGuidance").textContent=
+      "🎯 CIBLE EN VUE !";
 
-  if(pos.alt < 0) return;
+    if(!target.missionFound){
 
-  const currentAz =
-    manualMode
-      ? manualAz
-      : orientation.az;
+      target.missionFound=true;
 
-  const currentAlt =
-    manualMode
-      ? manualAlt
-      : orientation.alt;
+      currentTargetIndex++;
 
-  const dAz =
-    Math.abs(
-      angleDiff(
-        pos.az,
-        currentAz
+      localStorage.setItem(
+        "missionProgress",
+        currentTargetIndex
+      );
+
+      updateMissionUI();
+
+      toast(
+        `⭐ Bravo ! Tu as trouvé ${target.name} !`,
+        3200
+      );
+    }
+
+    return;
+  }
+
+  let text="";
+
+  if(Math.abs(diffAz)>5){
+
+    text+=
+      diffAz>0
+        ? `👉 Tourne à droite ${Math.abs(Math.round(diffAz))}°`
+        : `👈 Tourne à gauche ${Math.abs(Math.round(diffAz))}°`;
+  }
+
+  if(Math.abs(diffAlt)>5){
+
+    if(text)
+      text+=" • ";
+
+    text+=
+      diffAlt>0
+        ? `👆 Lève ${Math.abs(Math.round(diffAlt))}°`
+        : `👇 Baisse ${Math.abs(Math.round(diffAlt))}°`;
+  }
+
+  $("missionGuidance").textContent=
+    text;
+}
+
+
+/* =========================================================
+   BOUCLE DE RENDU
+========================================================= */
+
+function draw(){
+
+  ctx.clearRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+  ctx.fillStyle=
+    "#020611";
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+
+  /*
+    Une seule génération
+    astronomique par frame.
+  */
+
+  const currentStars=
+    calculateStars();
+
+  const starMap=
+    new Map(
+      currentStars.map(
+        s=>[s.name,s]
       )
     );
 
-  const dAlt =
-    Math.abs(
-      pos.alt-currentAlt
+
+  drawConstellations(
+    starMap
+  );
+
+  drawStars(
+    currentStars
+  );
+
+  drawSatellites();
+
+  updateMissionGuidance(
+    starMap
+  );
+
+  updateISSCountdown();
+
+  requestAnimationFrame(
+    draw
+  );
+}
+
+
+/* =========================================================
+   CAPTEURS
+========================================================= */
+
+async function requestSensors(){
+
+  try{
+
+    if(
+      typeof DeviceOrientationEvent!=="undefined" &&
+      typeof DeviceOrientationEvent.requestPermission==="function"
+    ){
+
+      const result=
+        await DeviceOrientationEvent.requestPermission();
+
+      if(result!=="granted"){
+
+        setStatus(
+          "Mode manuel disponible",
+          false
+        );
+
+        toast(
+          "🧭 Capteurs refusés : utilise le Mode Enfant.",
+          3500
+        );
+
+        return;
+      }
+    }
+
+    window.removeEventListener(
+      "deviceorientation",
+      updateOrientationFromEvent,
+      true
     );
 
-  if(dAz < 5 && dAlt < 5){
-
-    const name =
-      target.name;
-
-    currentTargetIndex++;
-
-    updateMission();
-
-    showInfo(
-      `🎉 ${name} trouvée !`,
-      currentTargetIndex >= missions.length
-        ? "Bravo ! Mission complète."
-        : `Prochaine cible : ${missions[currentTargetIndex].name}`
+    window.addEventListener(
+      "deviceorientation",
+      updateOrientationFromEvent,
+      true
     );
 
-    toast(
-      `⭐ ${name} trouvée !`,
-      2800
+    setStatus(
+      "Capteurs actifs",
+      true
+    );
+
+  }catch(error){
+
+    console.warn(
+      "Capteurs :",
+      error
+    );
+
+    setStatus(
+      "Mode manuel disponible",
+      false
     );
   }
 }
 
-updateMission();
 
 /* =========================================================
-   CE SOIR
-   ========================================================= */
+   CALIBRATION
+========================================================= */
 
-function updateTonight(){
+function updateCalibrationUI(){
 
-  const list =
-    $("tonightList");
+  $("calVal").textContent=
+    `Offset : ${calibrationOffset}°`;
+}
 
-  list.innerHTML = "";
+$("calibrateBtn").addEventListener(
+  "click",
+  ()=>{
 
-  const now =
-    new Date();
+    updateCalibrationUI();
 
-  const starsTonight =
-    getStars()
-      .filter(s=>s.alt>10)
-      .sort((a,b)=>a.mag-b.mag)
-      .slice(0,10);
+    $("calibration")
+      .classList
+      .add("open");
+  }
+);
 
-  if(starsTonight.length){
+$("cancelCal").addEventListener(
+  "click",
+  ()=>{
+    $("calibration")
+      .classList
+      .remove("open");
+  }
+);
 
-    for(const star of starsTonight){
+$("calMinus").addEventListener(
+  "click",
+  ()=>{
 
-      const item =
-        document.createElement("div");
+    calibrationOffset=
+      wrap360(
+        calibrationOffset-5
+      );
 
-      item.className = "item";
+    if(calibrationOffset>180)
+      calibrationOffset-=360;
 
-      item.innerHTML =
-        `<strong>⭐ ${escapeHTML(star.name)}</strong>
-         <span>
-           Az ${Math.round(star.az)}°
-           • Alt ${Math.round(star.alt)}°
-           • magnitude ${star.mag.toFixed(1)}
-         </span>`;
+    localStorage.setItem(
+      "missionEtoilesCal",
+      calibrationOffset
+    );
 
-      list.appendChild(item);
+    updateCalibrationUI();
+  }
+);
+
+$("calPlus").addEventListener(
+  "click",
+  ()=>{
+
+    calibrationOffset=
+      wrap360(
+        calibrationOffset+5
+      );
+
+    if(calibrationOffset>180)
+      calibrationOffset-=360;
+
+    localStorage.setItem(
+      "missionEtoilesCal",
+      calibrationOffset
+    );
+
+    updateCalibrationUI();
+  }
+);
+
+$("doCal").addEventListener(
+  "click",
+  ()=>{
+
+    /*
+      Le Nord affiché actuellement
+      devient la référence 0°.
+    */
+
+    if(
+      orientation.heading!=null
+    ){
+
+      calibrationOffset=
+        wrap360(
+          -orientation.heading
+        );
+
+      if(calibrationOffset>180)
+        calibrationOffset-=360;
+
+      localStorage.setItem(
+        "missionEtoilesCal",
+        calibrationOffset
+      );
+
+      updateCalibrationUI();
+
+      toast(
+        "🧭 Nord recalibré.",
+        2500
+      );
+
+    }else{
+
+      toast(
+        "Tourne d'abord le téléphone pour activer la boussole.",
+        3000
+      );
     }
   }
+);
 
-  const bodies =
-    getBodyPositions()
-      .filter(b=>b.alt>0);
-
-  for(const body of bodies){
-
-    const item =
-      document.createElement("div");
-
-    item.className = "item";
-
-    item.innerHTML =
-      `<strong>${body.icon} ${body.name}</strong>
-       <span>
-         Az ${Math.round(body.az)}°
-         • Alt ${Math.round(body.alt)}°
-       </span>`;
-
-    list.prepend(item);
-  }
-
-  $("tonightIntro").textContent =
-    `Voici les objets les plus intéressants actuellement au-dessus de l'horizon.`;
-}
 
 /* =========================================================
-   BUTTONS
-   ========================================================= */
+   PANNEAUX
+========================================================= */
 
-$("tonightBtn").addEventListener("click",()=>{
+function closePanels(){
 
-  closePanels();
+  document
+    .querySelectorAll(".panel")
+    .forEach(
+      p=>p.classList.remove("open")
+    );
+}
 
-  updateTonight();
+$("satBtn").addEventListener(
+  "click",
+  ()=>{
 
-  $("tonightPanel").classList.add("open");
-});
+    closePanels();
 
-$("missionBtn").addEventListener("click",()=>{
+    $("satPanel")
+      .classList
+      .add("open");
 
-  $("mission").classList.toggle("hidden");
-});
-
-$("satBtn").addEventListener("click",async()=>{
-
-  closePanels();
-
-  $("satPanel").classList.add("open");
-
-  updateSatellitePanel();
-
-  /*
-    Actualisation uniquement lorsque le panneau
-    est demandé : pas de blocage de l'application.
-  */
-
-  if(
-    !satellites.length ||
-    Date.now()-lastSatelliteRefresh > 5*60*1000
-  ){
-
-    await loadSatellites();
-
-    updateSatellitePanel();
+    if(!satellites.length)
+      loadSatellites();
   }
-});
+);
 
-$("settingsBtn").addEventListener("click",()=>{
+$("settingsBtn").addEventListener(
+  "click",
+  ()=>{
 
-  closePanels();
+    closePanels();
 
-  $("settingsPanel").classList.add("open");
-});
+    $("settingsPanel")
+      .classList
+      .add("open");
+  }
+);
+
+$("missionBtn").addEventListener(
+  "click",
+  ()=>{
+
+    $("mission")
+      .classList
+      .toggle("hidden");
+  }
+);
+
+document
+  .querySelectorAll("[data-close]")
+  .forEach(
+    button=>{
+
+      button.addEventListener(
+        "click",
+        ()=>{
+          $(button.dataset.close)
+            .classList
+            .remove("open");
+        }
+      );
+    }
+);
+
+$("infoClose").addEventListener(
+  "click",
+  ()=>{
+    $("infoBox")
+      .classList
+      .remove("show");
+  }
+);
 
 $("sensorBtn").addEventListener(
   "click",
   requestSensors
 );
 
-document.querySelectorAll("[data-close]")
-  .forEach(btn=>{
-
-    btn.addEventListener("click",()=>{
-
-      $(btn.dataset.close)
-        .classList.remove("open");
-    });
-  });
 
 /* =========================================================
-   START
-   ========================================================= */
-
-async function startApp(){
-
-  $("startBtn").disabled = true;
-  $("startBtn").textContent =
-    "🌌 Préparation…";
-
-  /*
-    Important :
-    la demande des capteurs intervient immédiatement
-    depuis le clic utilisateur.
-  */
-
-  await requestSensors();
-
-  await getLocation();
-
-  /*
-    Les moteurs astronomiques sont chargés
-    sans bloquer l'interface.
-  */
-
-  loadAstronomyEngine();
-
-  /*
-    Les satellites sont également chargés
-    sans bloquer le ciel.
-  */
-
-  loadSatelliteCache();
-
-  /*
-    Une tentative en arrière-plan après le démarrage.
-  */
-
-  setTimeout(
-    ()=>{
-      loadSatellites();
-    },
-    1200
-  );
-
-  $("welcome").style.display = "none";
-
-  setStatus(
-    orientation.ready
-      ? "Ciel actif"
-      : "Ciel prêt",
-    true
-  );
-
-  toast(
-    "🌌 Ciel prêt — pointe ton téléphone vers le ciel",
-    3500
-  );
-
-  $("startBtn").disabled = false;
-  $("startBtn").textContent =
-    "🚀 Commencer l'exploration";
-}
+   DÉMARRAGE
+========================================================= */
 
 $("startBtn").addEventListener(
   "click",
-  startApp
-);
+  async ()=>{
 
-/* =========================================================
-   PERIODIC SATELLITE UPDATE
-   ========================================================= */
+    $("welcome").style.display=
+      "none";
 
-setInterval(()=>{
+    toast(
+      "🌌 Préparation du ciel…",
+      1800
+    );
 
-  if(
-    satellites.length &&
-    Date.now()-lastSatelliteRefresh > 10*60*1000
-  ){
+    /*
+      GPS + capteurs ne doivent
+      jamais bloquer le lancement.
+    */
+
+    getLocation();
+
+    await requestSensors();
+
+    /*
+      Chargement satellite en arrière-plan.
+      L'application ne l'attend PAS.
+    */
 
     loadSatellites();
-  }
 
-},60000);
+    updateMissionUI();
 
-/* =========================================================
-   PERIODIC UI UPDATE
-   ========================================================= */
-
-setInterval(()=>{
-
-  if(
-    $("satPanel").classList.contains("open")
-  ){
-
-    updateSatellitePanel();
-  }
-
-},5000);
-
-/* =========================================================
-   INITIAL FALLBACK ORIENTATION
-   ========================================================= */
-
-function initializeFallbackOrientation(){
-
-  /*
-    Au démarrage, on considère le téléphone
-    à plat vers le ciel.
-    Cela permet de dessiner immédiatement
-    le ciel sans attendre le premier événement capteur.
-  */
-
-  orientation.az = 0;
-  orientation.alt = 90;
-  orientation.ready = false;
-
-  updateOrientationHUD();
-}
-
-initializeFallbackOrientation();
-
-/* =========================================================
-   VISIBILITY
-   ========================================================= */
-
-document.addEventListener(
-  "visibilitychange",
-  ()=>{
-    if(document.hidden && arMode){
-      stopAR();
-    }
+    toast(
+      "🌌 Ciel prêt !",
+      2200
+    );
   }
 );
 
-/* =========================================================
-   START RENDER LOOP
-   ========================================================= */
 
-requestAnimationFrame(draw);
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+updateMissionUI();
+
+updateOrientationHUD();
+
+requestAnimationFrame(
+  draw
+);
 
 </script>
 
