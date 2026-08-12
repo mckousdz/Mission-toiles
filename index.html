@@ -7,12 +7,12 @@
 <meta name="theme-color" content="#020611">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Mission Étoiles — V5</title>
+<title>Mission Étoiles — V5.1</title>
 
 <style>
 :root{
   --bg:#020611;
-  --panel:rgba(5,12,28,.82);
+  --panel:rgba(5,12,28,.85);
   --line:rgba(255,255,255,.13);
   --text:#f5f7ff;
   --muted:#9ba7c2;
@@ -67,17 +67,12 @@ button{
   position:fixed;
   inset:0;
   overflow:hidden;
-  background:
-    radial-gradient(circle at 50% 20%,#101b3b 0,#050a19 35%,#020611 75%);
+  background: radial-gradient(circle at 50% 20%,#101b3b 0,#050a19 35%,#020611 75%);
 }
 
 body.night-mode #app {
   background: radial-gradient(circle at 50% 20%,#200000 0,#0a0000 35%,#020000 75%);
 }
-
-/* =========================
-   CAMERA AR
-   ========================= */
 
 #camera{
   position:absolute;
@@ -90,13 +85,7 @@ body.night-mode #app {
   z-index:1;
 }
 
-#camera.on{
-  display:block;
-}
-
-/* =========================
-   SKY CANVAS
-   ========================= */
+#camera.on{ display:block; }
 
 #sky{
   position:absolute;
@@ -112,10 +101,6 @@ body.night-mode #app {
   z-index:10;
   pointer-events:none;
 }
-
-/* =========================
-   TOP BAR
-   ========================= */
 
 .topbar{
   position:absolute;
@@ -138,18 +123,8 @@ body.night-mode #app {
   border-radius:14px;
 }
 
-.brand strong{
-  display:block;
-  font-size:14px;
-  letter-spacing:.2px;
-}
-
-.brand span{
-  display:block;
-  margin-top:2px;
-  color:var(--muted);
-  font-size:10px;
-}
+.brand strong{ display:block; font-size:14px; }
+.brand span{ display:block; margin-top:2px; color:var(--muted); font-size:10px; }
 
 .status{
   pointer-events:auto;
@@ -164,13 +139,7 @@ body.night-mode #app {
   text-align:right;
 }
 
-.status b{
-  color:var(--green);
-}
-
-/* =========================
-   COMPASS
-   ========================= */
+.status b{ color:var(--green); }
 
 .compass{
   position:absolute;
@@ -225,10 +194,6 @@ body.night-mode #app {
   white-space:nowrap;
 }
 
-/* =========================
-   CENTER RETICLE
-   ========================= */
-
 .reticle{
   position:absolute;
   left:50%;
@@ -239,26 +204,14 @@ body.night-mode #app {
   opacity:.75;
 }
 
-.reticle:before,
-.reticle:after{
+.reticle:before, .reticle:after{
   content:"";
   position:absolute;
   background:rgba(255,255,255,.65);
 }
 
-.reticle:before{
-  width:1px;
-  height:44px;
-  left:21px;
-  top:0;
-}
-
-.reticle:after{
-  height:1px;
-  width:44px;
-  left:0;
-  top:21px;
-}
+.reticle:before{ width:1px; height:44px; left:21px; top:0; }
+.reticle:after{ height:1px; width:44px; left:0; top:21px; }
 
 .reticle .dot{
   position:absolute;
@@ -269,10 +222,6 @@ body.night-mode #app {
   left:20px;
   top:20px;
 }
-
-/* =========================
-   BOTTOM CONTROLS
-   ========================= */
 
 .controls{
   pointer-events:auto;
@@ -286,11 +235,7 @@ body.night-mode #app {
   gap:8px;
 }
 
-.controlGroup{
-  display:flex;
-  gap:7px;
-  align-items:center;
-}
+.controlGroup{ display:flex; gap:7px; align-items:center; }
 
 .btn{
   border:1px solid var(--line);
@@ -306,33 +251,10 @@ body.night-mode #app {
   cursor:pointer;
 }
 
-.btn:active{
-  transform:scale(.97);
-}
-
-.btn.primary{
-  background:rgba(30,70,120,.8);
-  border-color:rgba(125,211,252,.32);
-}
-
-.btn.small{
-  min-height:38px;
-  padding:8px 10px;
-  font-size:11px;
-}
-
-.btn.icon{
-  width:42px;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-}
-
-/* =========================
-   INFO CARD
-   ========================= */
+.btn:active{ transform:scale(.97); }
+.btn.primary{ background:rgba(30,70,120,.8); border-color:rgba(125,211,252,.32); }
+.btn.small{ min-height:38px; padding:8px 10px; font-size:11px; }
+.btn.icon{ width:42px; padding:0; display:flex; align-items:center; justify-content:center; font-size:18px; }
 
 .info{
   position:absolute;
@@ -351,34 +273,19 @@ body.night-mode #app {
   transition:opacity .18s ease;
 }
 
-.info.show{
-  opacity:1;
-}
+.info.show{ opacity:1; }
+.infoTitle{ font-size:14px; font-weight:700; }
+.infoSub{ margin-top:3px; font-size:11px; color:var(--muted); line-height:1.35; }
 
-.infoTitle{
-  font-size:14px;
-  font-weight:700;
-}
-
-.infoSub{
-  margin-top:3px;
-  font-size:11px;
-  color:var(--muted);
-  line-height:1.35;
-}
-
-/* =========================
-   MISSION
-   ========================= */
-
+/* MISSION PANEL DYNAMIQUE */
 .mission{
   position:absolute;
   left:12px;
   top:175px;
-  width:min(260px,70vw);
-  padding:10px 12px;
-  border:1px solid rgba(125,211,252,.18);
-  background:rgba(3,9,22,.65);
+  width:min(280px,80vw);
+  padding:12px;
+  border:1px solid rgba(125,211,252,.25);
+  background:rgba(3,9,22,.82);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
   border-radius:14px;
@@ -386,58 +293,15 @@ body.night-mode #app {
   transition:transform .2s ease,opacity .2s ease;
 }
 
-.mission.hidden{
-  opacity:0;
-  transform:translateX(-120%);
-  pointer-events:none;
-}
-
-.missionHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.missionTitle{
-  font-size:12px;
-  font-weight:700;
-}
-
-.missionCount{
-  font-size:10px;
-  color:var(--accent);
-}
-
-.progress{
-  height:5px;
-  border-radius:10px;
-  background:rgba(255,255,255,.09);
-  overflow:hidden;
-  margin-top:8px;
-}
-
-.progressBar{
-  width:0%;
-  height:100%;
-  background:linear-gradient(90deg,#38bdf8,#6ee7b7);
-  transition:width .3s ease;
-}
-
-.missionTarget{
-  margin-top:7px;
-  font-size:11px;
-  color:#cbd5e1;
-}
-
-.missionHint{
-  margin-top:3px;
-  color:var(--muted);
-  font-size:9px;
-}
-
-/* =========================
-   PANELS
-   ========================= */
+.mission.hidden{ opacity:0; transform:translateX(-120%); pointer-events:none; }
+.missionHead{ display:flex; justify-content:space-between; align-items:center; }
+.missionTitle{ font-size:13px; font-weight:700; }
+.missionCount{ font-size:11px; color:var(--accent); font-weight:bold; }
+.progress{ height:5px; border-radius:10px; background:rgba(255,255,255,.09); overflow:hidden; margin-top:8px; }
+.progressBar{ width:0%; height:100%; background:linear-gradient(90deg,#38bdf8,#6ee7b7); transition:width .3s ease; }
+.missionTarget{ margin-top:8px; font-size:12px; font-weight:700; color:#fff; }
+.missionCoords{ margin-top:4px; font-size:11px; color:var(--yellow); font-weight:600; }
+.missionGuidance{ margin-top:4px; font-size:11px; color:var(--green); font-weight:bold; }
 
 .panel{
   position:absolute;
@@ -454,55 +318,14 @@ body.night-mode #app {
   display:none;
 }
 
-.panel.open{
-  display:block;
-}
-
-.panel h2{
-  margin:0 0 8px;
-  font-size:17px;
-}
-
-.panel p{
-  margin:7px 0;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.45;
-}
-
-.panelClose{
-  float:right;
-}
-
-.list{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-  margin-top:10px;
-}
-
-.item{
-  padding:9px 10px;
-  border-radius:11px;
-  background:rgba(255,255,255,.045);
-  border:1px solid rgba(255,255,255,.06);
-  cursor:pointer;
-}
-
-.item strong{
-  font-size:12px;
-}
-
-.item span{
-  display:block;
-  margin-top:3px;
-  font-size:10px;
-  color:var(--muted);
-}
-
-/* =========================
-   PERMISSION SCREEN
-   ========================= */
+.panel.open{ display:block; }
+.panel h2{ margin:0 0 8px; font-size:17px; }
+.panel p{ margin:7px 0; color:var(--muted); font-size:12px; line-height:1.45; }
+.panelClose{ float:right; }
+.list{ display:flex; flex-direction:column; gap:7px; margin-top:10px; }
+.item{ padding:9px 10px; border-radius:11px; background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.06); cursor:pointer; }
+.item strong{ font-size:12px; }
+.item span{ display:block; margin-top:3px; font-size:10px; color:var(--muted); }
 
 #welcome{
   position:absolute;
@@ -512,9 +335,7 @@ body.night-mode #app {
   align-items:center;
   justify-content:center;
   padding:25px;
-  background:
-    radial-gradient(circle at 50% 25%,rgba(40,80,160,.35),transparent 38%),
-    linear-gradient(180deg,#030817,#01030b);
+  background: radial-gradient(circle at 50% 25%,rgba(40,80,160,.35),transparent 38%), linear-gradient(180deg,#030817,#01030b);
 }
 
 .welcomeCard{
@@ -528,149 +349,30 @@ body.night-mode #app {
   -webkit-backdrop-filter:blur(18px);
 }
 
-.logo{
-  font-size:48px;
-  margin-bottom:8px;
-}
-
-.welcomeCard h1{
-  margin:0;
-  font-size:26px;
-}
-
-.welcomeCard h1 span{
-  color:#7dd3fc;
-}
-
-.welcomeCard p{
-  color:#aeb8ce;
-  font-size:12px;
-  line-height:1.55;
-  margin:10px 0 18px;
-}
-
-.bigStart{
-  width:100%;
-  min-height:48px;
-  border:0;
-  border-radius:15px;
-  background:linear-gradient(135deg,#2563eb,#0891b2);
-  font-size:14px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.welcomeNote{
-  margin-top:10px;
-  color:#77839d;
-  font-size:9px;
-}
-
-/* =========================
-   TOAST
-   ========================= */
+.logo{ font-size:48px; margin-bottom:8px; }
+.welcomeCard h1{ margin:0; font-size:26px; }
+.welcomeCard h1 span{ color:#7dd3fc; }
+.welcomeCard p{ color:#aeb8ce; font-size:12px; line-height:1.55; margin:10px 0 18px; }
+.bigStart{ width:100%; min-height:48px; border:0; border-radius:15px; background:linear-gradient(135deg,#2563eb,#0891b2); font-size:14px; font-weight:800; cursor:pointer; }
 
 .toast{
-  position:absolute;
-  z-index:200;
-  left:50%;
-  top:calc(env(safe-area-inset-top,0px) + 15px);
-  transform:translate(-50%,-20px);
-  padding:10px 13px;
-  border-radius:12px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  color:var(--text);
-  font-size:11px;
-  opacity:0;
-  pointer-events:none;
-  transition:.2s ease;
-  white-space:nowrap;
+  position:absolute; z-index:200; left:50%; top:calc(env(safe-area-inset-top,0px) + 15px);
+  transform:translate(-50%,-20px); padding:10px 13px; border-radius:12px;
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  font-size:11px; opacity:0; pointer-events:none; transition:.2s ease; white-space:nowrap;
 }
+.toast.show{ opacity:1; transform:translate(-50%,0); }
 
-.toast.show{
-  opacity:1;
-  transform:translate(-50%,0);
-}
+.debug{ position:absolute; right:10px; top:175px; padding:7px 8px; border-radius:10px; background:rgba(0,0,0,.35); color:#9ca3af; font:9px/1.4 monospace; pointer-events:none; text-align:right; }
 
-/* =========================
-   DEBUG
-   ========================= */
-
-.debug{
-  position:absolute;
-  right:10px;
-  top:175px;
-  padding:7px 8px;
-  border-radius:10px;
-  background:rgba(0,0,0,.35);
-  color:#9ca3af;
-  font:9px/1.4 monospace;
-  pointer-events:none;
-  text-align:right;
-}
-
-/* =========================
-   CALIBRATION
-   ========================= */
-
-.calibration{
-  position:absolute;
-  z-index:50;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:25px;
-  background:rgba(1,4,12,.82);
-  backdrop-filter:blur(10px);
-}
-
-.calibration.open{
-  display:flex;
-}
-
-.calCard{
-  width:min(370px,100%);
-  padding:20px;
-  border-radius:20px;
-  background:var(--panel);
-  border:1px solid var(--line);
-}
-
-.calCard h2{
-  margin:0 0 8px;
-  font-size:19px;
-}
-
-.calCard p{
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.5;
-}
-
-.calSteps{
-  margin:14px 0;
-  padding:0;
-  list-style:none;
-}
-
-.calSteps li{
-  margin:8px 0;
-  padding:9px 10px;
-  border-radius:10px;
-  background:rgba(255,255,255,.04);
-  font-size:11px;
-}
-
-.calActions{
-  display:flex;
-  gap:8px;
-}
-
-.calActions .btn{
-  flex:1;
-}
+.calibration{ position:absolute; z-index:50; inset:0; display:none; align-items:center; justify-content:center; padding:25px; background:rgba(1,4,12,.82); backdrop-filter:blur(10px); }
+.calibration.open{ display:flex; }
+.calCard{ width:min(370px,100%); padding:20px; border-radius:20px; background:var(--panel); border:1px solid var(--line); }
+.calCard h2{ margin:0 0 8px; font-size:19px; }
+.calCard p{ color:var(--muted); font-size:12px; line-height:1.5; }
+.calActions{ display:flex; gap:8px; margin-top:12px; }
+.calActions .btn{ flex:1; }
+.calAdjust{ display:flex; justify-content:space-between; align-items:center; margin:12px 0; background:rgba(255,255,255,.05); padding:8px 12px; border-radius:10px; }
 </style>
 </head>
 
@@ -679,7 +381,6 @@ body.night-mode #app {
 <div id="app">
 
   <video id="camera" playsinline autoplay muted></video>
-
   <canvas id="sky"></canvas>
 
   <div id="hud">
@@ -687,9 +388,8 @@ body.night-mode #app {
     <div class="topbar">
       <div class="brand">
         <strong>🌌 Mission Étoiles</strong>
-        <span>V5 • exploration du ciel</span>
+        <span>V5.1 • orientation & ISS</span>
       </div>
-
       <div class="status" id="status">
         <b id="statusDot">●</b>
         <span id="statusText">Ciel prêt</span>
@@ -702,194 +402,91 @@ body.night-mode #app {
       <div class="needle" id="needle"></div>
     </div>
 
-    <div class="heading" id="heading">
-      Orientation : —°
-    </div>
+    <div class="heading" id="heading">Orientation : —°</div>
 
-    <div class="reticle">
-      <div class="dot"></div>
-    </div>
+    <div class="reticle"><div class="dot"></div></div>
 
+    <!-- MISSION HUD AMÉLIORÉ -->
     <div class="mission" id="mission">
       <div class="missionHead">
-        <div class="missionTitle">🎯 Mission du soir</div>
+        <div class="missionTitle">🎯 Mission en cours</div>
         <div class="missionCount" id="missionCount">0 / 5</div>
       </div>
-
-      <div class="progress">
-        <div class="progressBar" id="progressBar"></div>
-      </div>
-
-      <div class="missionTarget" id="missionTarget">
-        Cherche une étoile…
-      </div>
-
-      <div class="missionHint">
-        Oriente le téléphone vers l'étoile indiquée.
-      </div>
+      <div class="progress"><div class="progressBar" id="progressBar"></div></div>
+      <div class="missionTarget" id="missionTarget">Recherche de l'étoile…</div>
+      <div class="missionCoords" id="missionCoords">Position : —</div>
+      <div class="missionGuidance" id="missionGuidance">Pointe ton écran vers le ciel</div>
     </div>
 
-    <div class="debug" id="debug">
-      Capteur : —<br>
-      Az : —°<br>
-      Alt : —°
-    </div>
-
-    <div class="info" id="info">
-      <div class="infoTitle" id="infoTitle"></div>
-      <div class="infoSub" id="infoSub"></div>
-    </div>
+    <div class="debug" id="debug">Capteur : —<br>Az : —°<br>Alt : —°</div>
+    <div class="info" id="info"><div class="infoTitle" id="infoTitle"></div><div class="infoSub" id="infoSub"></div></div>
 
     <div class="controls">
-
       <div class="controlGroup">
-        <button class="btn small" id="tonightBtn">
-          ✨ Ce soir
-        </button>
-
-        <button class="btn small" id="missionBtn">
-          🎯 Mission
-        </button>
+        <button class="btn small" id="tonightBtn">✨ Ce soir</button>
+        <button class="btn small" id="missionBtn">🎯 Mission</button>
       </div>
 
       <div class="controlGroup">
-        <button class="btn icon" id="nightModeBtn" title="Mode vision nocturne">
-          🔴
-        </button>
-
-        <button class="btn icon" id="calibrateBtn" title="Calibrer">
-          🧭
-        </button>
-
-        <button class="btn icon" id="arBtn" title="Réalité augmentée">
-          📷
-        </button>
-
-        <button class="btn icon" id="satBtn" title="Satellites">
-          🛰️
-        </button>
-
-        <button class="btn icon" id="settingsBtn" title="Réglages">
-          ⚙️
-        </button>
+        <button class="btn icon" id="nightModeBtn" title="Mode Nuit">🔴</button>
+        <button class="btn icon" id="calibrateBtn" title="Ajuster la boussole">🧭</button>
+        <button class="btn icon" id="arBtn" title="Caméra AR">📷</button>
+        <button class="btn icon" id="satBtn" title="Satellites & ISS">🛰️</button>
+        <button class="btn icon" id="settingsBtn" title="Réglages">⚙️</button>
       </div>
-
     </div>
 
   </div>
 
-  <!-- PANEL CE SOIR -->
   <div class="panel" id="tonightPanel">
     <button class="btn small panelClose" data-close="tonightPanel">Fermer</button>
-    <h2>✨ Que puis-je voir ce soir ?</h2>
-    <p id="tonightIntro">
-      Analyse du ciel en cours…
-    </p>
+    <h2>✨ Visibles ce soir</h2>
+    <p id="tonightIntro">Analyse du ciel...</p>
     <div class="list" id="tonightList"></div>
   </div>
 
-  <!-- PANEL SATELLITES -->
   <div class="panel" id="satPanel">
     <button class="btn small panelClose" data-close="satPanel">Fermer</button>
-    <h2>🛰️ Satellites</h2>
-    <p id="satIntro">
-      Les données orbitales sont chargées en arrière-plan.
-    </p>
+    <h2>🛰️ Satellites & ISS</h2>
+    <p id="satIntro">Chargement des données satellites...</p>
     <div class="list" id="satList"></div>
   </div>
 
-  <!-- PANEL REGLAGES -->
   <div class="panel" id="settingsPanel">
     <button class="btn small panelClose" data-close="settingsPanel">Fermer</button>
     <h2>⚙️ Réglages</h2>
-
-    <p>
-      <strong>Orientation</strong><br>
-      Le moteur V5 utilise le compas lorsqu'il est disponible et
-      l'inclinaison du téléphone pour déterminer la direction réellement
-      pointée.
-    </p>
-
-    <button class="btn primary" id="sensorBtn">
-      🧭 Réactiver les capteurs
-    </button>
-
-    <p>
-      <strong>Mode manuel</strong><br>
-      Si le téléphone ne fournit pas le compas, tu peux utiliser la
-      calibration pour corriger le cap.
-    </p>
-
-    <button class="btn" id="manualBtn">
-      🎮 Activer le mode manuel
-    </button>
-
-    <p id="locationText">
-      Position : recherche…
-    </p>
+    <p><strong>Orientation boussole</strong><br>Si la boussole dévie, utilise le bouton 🧭 pour corriger l'angle manuel.</p>
+    <button class="btn primary" id="sensorBtn">🧭 Réactiver les capteurs</button>
+    <button class="btn" id="manualBtn" style="margin-top:8px;">🎮 Mode manuel tactile</button>
+    <p id="locationText" style="margin-top:12px;">Position : recherche…</p>
   </div>
 
-  <!-- CALIBRATION -->
+  <!-- CALIBRATION MANUELLE BOUSSOLE -->
   <div class="calibration" id="calibration">
-
     <div class="calCard">
-
-      <h2>🧭 Calibration</h2>
-
-      <p>
-        La calibration V5 ne modifie pas l'altitude.
-        Elle corrige uniquement le décalage horizontal du compas.
-      </p>
-
-      <ul class="calSteps">
-        <li>1️⃣ Tiens le téléphone normalement.</li>
-        <li>2️⃣ Oriente le haut du téléphone vers le Nord.</li>
-        <li>3️⃣ Garde-le immobile.</li>
-        <li>4️⃣ Appuie sur « Calibrer maintenant ».</li>
-      </ul>
+      <h2>🧭 Calibrage Boussole</h2>
+      <p>Oriente le haut de ton téléphone vers le <strong>Nord physique</strong>, puis valide. Tu peux aussi ajuster avec les boutons ±5°.</p>
+      
+      <div class="calAdjust">
+        <button class="btn small" id="calMinus">-5°</button>
+        <span id="calVal">Offset : 0°</span>
+        <button class="btn small" id="calPlus">+5°</button>
+      </div>
 
       <div class="calActions">
-        <button class="btn" id="cancelCal">
-          Annuler
-        </button>
-
-        <button class="btn primary" id="doCal">
-          Calibrer maintenant
-        </button>
+        <button class="btn" id="cancelCal">Fermer</button>
+        <button class="btn primary" id="doCal">Définir comme Nord (0°)</button>
       </div>
-
     </div>
-
   </div>
 
-  <!-- ECRAN INITIAL -->
   <div id="welcome">
-
     <div class="welcomeCard">
-
       <div class="logo">🌌</div>
-
-      <h1>
-        Mission <span>Étoiles</span>
-      </h1>
-
-      <p>
-        Une carte du ciel interactive.<br>
-        Pointez simplement votre téléphone vers le ciel
-        pour découvrir les étoiles, les planètes et les satellites.
-      </p>
-
-      <button class="bigStart" id="startBtn">
-        🚀 Commencer l'exploration
-      </button>
-
-      <div class="welcomeNote">
-        Le bouton démarre les capteurs et demande les autorisations
-        nécessaires à l'appareil.
-      </div>
-
+      <h1>Mission <span>Étoiles</span></h1>
+      <p>Explore le ciel en temps réel. Pointe ton smartphone pour repérer les étoiles, planètes et la Station Spatiale ISS !</p>
+      <button class="bigStart" id="startBtn">🚀 Démarrer l'exploration</button>
     </div>
-
   </div>
 
   <div class="toast" id="toast"></div>
@@ -899,58 +496,33 @@ body.night-mode #app {
 <script type="module">
 
 const $ = id => document.getElementById(id);
-
 const canvas = $("sky");
 const ctx = canvas.getContext("2d");
-
 const camera = $("camera");
 
-let W = 0;
-let H = 0;
-let DPR = 1;
+let W = 0, H = 0, DPR = 1;
 
-let locationData = {
-  lat: 48.98,
-  lon: 2.25,
-  height: 0
-};
+let locationData = { lat: 48.98, lon: 2.25, height: 0 };
+let orientation = { az: 0, alt: 90, heading: null, alpha: 0, beta: 0, gamma: 0, ready: false };
 
-let orientation = {
-  az: 0,
-  alt: 90,
-  heading: null,
-  beta: 0,
-  gamma: 0,
-  alpha: 0,
-  ready: false,
-  absolute: false
-};
-
-let calibrationOffset = Number(
-  localStorage.getItem("missionEtoilesV5Cal") || 0
-);
+let calibrationOffset = Number(localStorage.getItem("missionEtoilesV5Cal") || 0);
 
 let manualMode = false;
-let manualAz = 0;
-let manualAlt = 60;
-
+let manualAz = 0, manualAlt = 60;
 let arMode = false;
 
 let satellites = [];
-let satellitesLoaded = false;
 let satelliteLib = null;
 let satelliteLibPromise = null;
-
-let lastSatelliteRefresh = 0;
 
 let currentTargetIndex = 0;
 let selectedObject = null;
 
-const FOV_H = 75;
-const FOV_V = 65;
+const FOV_H = 75, FOV_V = 65;
+const DEG = Math.PI / 180, RAD = 180 / Math.PI;
 
 /* =========================================================
-   STARS
+   ÉTOILES & MISSIONS
    ========================================================= */
 
 const stars = [
@@ -962,74 +534,41 @@ const stars = [
   {name:"Rigel", ra:5.2423, dec:-8.2016, mag:0.13},
   {name:"Procyon", ra:7.655, dec:5.225, mag:0.34},
   {name:"Betelgeuse", ra:5.9195, dec:7.407, mag:0.42},
-  {name:"Achernar", ra:1.6286, dec:-57.2368, mag:0.46},
-  {name:"Hadar", ra:14.0637, dec:-60.373, mag:0.61},
   {name:"Altair", ra:19.8464, dec:8.8683, mag:0.77},
-  {name:"Acrux", ra:12.4433, dec:-63.099, mag:0.77},
   {name:"Aldebaran", ra:4.5987, dec:16.5093, mag:0.85},
   {name:"Spica", ra:13.4199, dec:-11.1614, mag:0.98},
   {name:"Antares", ra:16.4901, dec:-26.4319, mag:1.06},
   {name:"Pollux", ra:7.7553, dec:28.0262, mag:1.14},
-  {name:"Fomalhaut", ra:22.9608, dec:-29.6222, mag:1.16},
   {name:"Deneb", ra:20.6905, dec:45.2803, mag:1.25},
   {name:"Regulus", ra:10.1395, dec:11.9672, mag:1.35},
-  {name:"Castor", ra:7.5767, dec:31.8883, mag:1.58},
-  {name:"Bellatrix", ra:5.4189, dec:6.3497, mag:1.64},
-  {name:"Alnilam", ra:5.6036, dec:-1.2019, mag:1.69},
-  {name:"Alnair", ra:22.1372, dec:-46.9609, mag:1.74},
-  {name:"Alioth", ra:12.9005, dec:55.9598, mag:1.76},
-  {name:"Dubhe", ra:11.0621, dec:61.751, mag:1.79},
-  {name:"Mirfak", ra:3.4054, dec:49.8612, mag:1.79},
-  {name:"Polaris", ra:2.5303, dec:89.2641, mag:1.98},
-  {name:"Alkaid", ra:13.7923, dec:49.3133, mag:1.86},
-  {name:"Mizar", ra:13.3988, dec:54.9254, mag:2.23},
-  {name:"Algol", ra:3.1361, dec:40.9556, mag:2.12},
-  {name:"Rasalhague", ra:17.5822, dec:12.5601, mag:2.08},
-  {name:"Denebola", ra:11.8177, dec:14.5721, mag:2.14},
-  {name:"Alphard", ra:9.4598, dec:-8.6586, mag:1.98},
-  {name:"Kochab", ra:14.8451, dec:74.1555, mag:2.08},
-  {name:"Markab", ra:23.0793, dec:15.2053, mag:2.49},
-  {name:"Scheat", ra:23.0629, dec:28.0828, mag:2.42},
-  {name:"Alpheratz", ra:0.1398, dec:29.0904, mag:2.06},
-  {name:"Mirach", ra:1.1622, dec:35.6208, mag:2.07},
-  {name:"Sadr", ra:20.3705, dec:40.2567, mag:2.23},
-  {name:"Albireo", ra:19.512, dec:27.9597, mag:3.05}
+  {name:"Polaris", ra:2.5303, dec:89.2641, mag:1.98}
 ];
 
 const constellationLines = [
-  ["Dubhe","Merak"], ["Merak","Phecda"], ["Phecda","Megrez"],
-  ["Megrez","Alioth"], ["Alioth","Mizar"], ["Mizar","Alkaid"],
-  ["Betelgeuse","Bellatrix"], ["Bellatrix","Alnilam"], ["Alnilam","Alnitak"],
-  ["Alnilam","Rigel"], ["Betelgeuse","Alnilam"], ["Rigel","Saiph"],
-  ["Vega","Deneb"], ["Deneb","Sadr"], ["Sadr","Albireo"],
-  ["Vega","Altair"], ["Altair","Deneb"], ["Castor","Pollux"],
-  ["Aldebaran","Capella"], ["Capella","Mirfak"], ["Regulus","Denebola"],
-  ["Spica","Arcturus"], ["Arcturus","Alioth"]
+  ["Betelgeuse","Rigel"], ["Vega","Deneb"], ["Deneb","Altair"], ["Altair","Vega"]
 ];
 
 const missions = [
-  {name:"Vega", text:"Trouve Véga ⭐", hint:"Une des étoiles les plus brillantes du ciel d'été."},
-  {name:"Arcturus", text:"Trouve Arcturus ⭐", hint:"Cherche une étoile orange très brillante."},
-  {name:"Altair", text:"Trouve Altaïr ⭐", hint:"Elle forme le Triangle d'été."},
-  {name:"Deneb", text:"Trouve Deneb ⭐", hint:"À l'une des extrémités du Triangle d'été."},
-  {name:"Sirius", text:"Trouve Sirius ⭐", hint:"L'étoile la plus brillante du ciel nocturne."}
+  {name:"Vega", text:"Trouve Véga ⭐"},
+  {name:"Arcturus", text:"Trouve Arcturus ⭐"},
+  {name:"Altair", text:"Trouve Altaïr ⭐"},
+  {name:"Deneb", text:"Trouve Deneb ⭐"},
+  {name:"Sirius", text:"Trouve Sirius ⭐"}
 ];
 
 /* =========================================================
-   UTILS
+   UTILS & MATHS
    ========================================================= */
-
-const DEG = Math.PI / 180;
-const RAD = 180 / Math.PI;
 
 function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
 function wrap360(v){ v %= 360; return v < 0 ? v + 360 : v; }
 function angleDiff(a,b){ return ((a-b+540)%360)-180; }
 function lerpAngle(a,b,t){ return wrap360(a + angleDiff(b,a)*t); }
 
-/* =========================================================
-   UI & MESSAGES
-   ========================================================= */
+function getCardinal(az){
+  const dirs = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+  return dirs[Math.round(az / 45) % 8];
+}
 
 function toast(message, duration=2600){
   const el = $("toast");
@@ -1052,58 +591,27 @@ function showInfo(title, sub){
   showInfo.timer = setTimeout(()=>{ $("info").classList.remove("show"); }, 5000);
 }
 
-function closePanels(){
-  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("open"));
-}
-
-/* =========================================================
-   CANVAS
-   ========================================================= */
+function closePanels(){ document.querySelectorAll(".panel").forEach(p=>p.classList.remove("open")); }
 
 function resize(){
   DPR = Math.min(window.devicePixelRatio || 1, 2);
-  W = window.innerWidth;
-  H = window.innerHeight;
-  canvas.width = Math.floor(W*DPR);
-  canvas.height = Math.floor(H*DPR);
-  canvas.style.width = W+"px";
-  canvas.style.height = H+"px";
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.floor(W*DPR); canvas.height = Math.floor(H*DPR);
+  canvas.style.width = W+"px"; canvas.style.height = H+"px";
   ctx.setTransform(DPR,0,0,DPR,0,0);
 }
-
 window.addEventListener("resize", resize);
 resize();
 
 /* =========================================================
-   LOCATION & ASTRONOMY MATHS
+   ASTRONOMY MATHS
    ========================================================= */
-
-function getLocation(){
-  return new Promise(resolve=>{
-    if(!navigator.geolocation){ resolve(); return; }
-    navigator.geolocation.getCurrentPosition(
-      pos=>{
-        locationData.lat = pos.coords.latitude;
-        locationData.lon = pos.coords.longitude;
-        locationData.height = pos.coords.altitude || 0;
-        $("locationText").textContent = `Position : ${locationData.lat.toFixed(3)}°, ${locationData.lon.toFixed(3)}°`;
-        resolve();
-      },
-      ()=>{
-        $("locationText").textContent = "Position : localisation approximative";
-        resolve();
-      },
-      { enableHighAccuracy:true, timeout:7000, maximumAge:300000 }
-    );
-  });
-}
 
 function julianDate(date=new Date()){ return date.getTime()/86400000 + 2440587.5; }
 function gmst(date=new Date()){
   const jd = julianDate(date);
   const T = (jd-2451545.0)/36525;
-  let theta = 280.46061837 + 360.98564736629*(jd-2451545) + 0.000387933*T*T - T*T*T/38710000;
-  return wrap360(theta);
+  return wrap360(280.46061837 + 360.98564736629*(jd-2451545) + 0.000387933*T*T);
 }
 function lst(date=new Date()){ return wrap360(gmst(date)+locationData.lon); }
 
@@ -1125,48 +633,41 @@ function raDecToAltAz(raHours,decDeg,date=new Date()){
 }
 
 /* =========================================================
-   ORIENTATION
+   ORIENTATION ET BOUSSOLE CORRIGÉE
    ========================================================= */
+
+function getScreenAngle() {
+  return (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+}
 
 function updateOrientationFromEvent(e){
   if(e.beta == null || e.gamma == null) return;
 
-  const beta = Number(e.beta);
-  const gamma = Number(e.gamma);
+  const beta = e.beta;
+  const gamma = e.gamma;
+  const screenAngle = getScreenAngle();
 
-  orientation.beta = beta;
-  orientation.gamma = gamma;
-  orientation.alpha = Number(e.alpha || 0);
-  orientation.absolute = !!e.absolute;
+  let rawHeading = null;
+  if(typeof e.webkitCompassHeading === "number" && isFinite(e.webkitCompassHeading)){
+    rawHeading = e.webkitCompassHeading;
+  } else if(e.absolute && e.alpha != null){
+    rawHeading = wrap360(360 - e.alpha);
+  }
 
+  // Calcul dynamique de l'altitude du téléphone
   const z = Math.cos(beta*DEG) * Math.cos(gamma*DEG);
   let alt = Math.asin(clamp(z,-1,1))*RAD;
 
-  let heading = null;
-  if(typeof e.webkitCompassHeading === "number" && isFinite(e.webkitCompassHeading)){
-    heading = e.webkitCompassHeading;
-  } else if(e.absolute && e.alpha != null){
-    heading = wrap360(360-e.alpha);
+  let az = orientation.az;
+  if(rawHeading !== null){
+    let orientedHeading = rawHeading + screenAngle;
+    az = wrap360(orientedHeading + calibrationOffset);
   }
 
-  if(heading != null){
-    const topComponent = Math.sin(beta*DEG);
-    const rightComponent = Math.sin(gamma*DEG);
-    let az;
-
-    if(Math.abs(topComponent)+Math.abs(rightComponent) < 0.03){
-      az = orientation.az;
-    } else {
-      const offset = 180 + Math.atan2(rightComponent, topComponent)*RAD;
-      az = wrap360(heading + offset);
-    }
-
-    az = wrap360(az + calibrationOffset);
-    orientation.az = lerpAngle(orientation.az, az, .28);
-    orientation.heading = heading;
-  }
-
-  orientation.alt = orientation.alt + (alt-orientation.alt)*.22;
+  // Filtrage passe-bas (lissage des mouvements)
+  orientation.az = lerpAngle(orientation.az, az, 0.15);
+  orientation.alt = orientation.alt + (alt - orientation.alt) * 0.15;
+  orientation.heading = rawHeading;
   orientation.ready = true;
 
   updateOrientationHUD();
@@ -1175,265 +676,85 @@ function updateOrientationFromEvent(e){
 function updateOrientationHUD(){
   const az = wrap360(orientation.az);
   const alt = orientation.alt;
-
-  $("heading").textContent = `Direction ${Math.round(az)}° • Alt ${Math.round(alt)}°`;
+  $("heading").textContent = `${getCardinal(az)} (${Math.round(az)}°) • Alt ${Math.round(alt)}°`;
   $("needle").style.transform = `rotate(${az}deg)`;
-  $("debug").innerHTML = `Capteur : ${orientation.absolute ? "absolu" : "relatif"}<br>Az : ${Math.round(az)}°<br>Alt : ${Math.round(alt)}°`;
+  $("debug").innerHTML = `Az : ${Math.round(az)}°<br>Alt : ${Math.round(alt)}°<br>Calib : ${Math.round(calibrationOffset)}°`;
 }
 
 async function requestSensors(){
-  let granted = true;
   try{
     if(typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function"){
-      const result = await DeviceOrientationEvent.requestPermission(true);
-      granted = result === "granted";
+      const res = await DeviceOrientationEvent.requestPermission();
+      if(res !== "granted") return;
     }
-  }catch(err){ granted = false; }
-
-  if(granted){
     window.addEventListener("deviceorientation", updateOrientationFromEvent, true);
-    window.addEventListener("deviceorientationabsolute", updateOrientationFromEvent, true);
     setStatus("Capteurs actifs", true);
-    toast("🧭 Orientation activée");
-  } else {
-    setStatus("Capteur limité", false);
-    toast("⚠️ Autorisation refusée. Mode manuel utilisable.", 4200);
-  }
+  }catch(err){}
 }
 
-/* =========================================================
-   CALIBRATION & MODES
-   ========================================================= */
+/* CALIBRAGE MANUEL BOUSSOLE */
+function updateCalibUI(){
+  $("calVal").textContent = `Offset : ${Math.round(calibrationOffset)}°`;
+}
 
-$("calibrateBtn").addEventListener("click", ()=>{ $("calibration").classList.add("open"); });
+$("calibrateBtn").addEventListener("click", ()=>{ updateCalibUI(); $("calibration").classList.add("open"); });
 $("cancelCal").addEventListener("click", ()=>{ $("calibration").classList.remove("open"); });
+$("calPlus").addEventListener("click", ()=>{ calibrationOffset = wrap360(calibrationOffset + 5); updateCalibUI(); localStorage.setItem("missionEtoilesV5Cal", calibrationOffset); });
+$("calMinus").addEventListener("click", ()=>{ calibrationOffset = wrap360(calibrationOffset - 5); updateCalibUI(); localStorage.setItem("missionEtoilesV5Cal", calibrationOffset); });
 
 $("doCal").addEventListener("click", ()=>{
-  if(orientation.heading == null){
-    toast("⚠️ Compas non disponible. Active d'abord les capteurs.", 3500);
-    return;
-  }
-  calibrationOffset = wrap360(-orientation.az);
-  if(calibrationOffset > 180) calibrationOffset -= 360;
-  localStorage.setItem("missionEtoilesV5Cal", calibrationOffset);
-  $("calibration").classList.remove("open");
-  toast(`✅ Calibration enregistrée : ${Math.round(calibrationOffset)}°`, 3000);
-});
-
-$("nightModeBtn").addEventListener("click", ()=>{
-  document.body.classList.toggle("night-mode");
-  const isNight = document.body.classList.contains("night-mode");
-  toast(isNight ? "🔴 Mode vision nocturne activé" : "🌌 Mode standard");
-});
-
-$("manualBtn").addEventListener("click", ()=>{
-  manualMode = !manualMode;
-  toast(manualMode ? "🎮 Mode manuel activé." : "🧭 Mode capteurs réactivé.");
-});
-
-let manualDragging = false;
-let manualStartX = 0, manualStartY = 0;
-let dragMoved = false;
-
-canvas.addEventListener("pointerdown", e=>{
-  if(!manualMode) return;
-  manualDragging = true;
-  dragMoved = false;
-  manualStartX = e.clientX;
-  manualStartY = e.clientY;
-});
-
-canvas.addEventListener("pointermove", e=>{
-  if(!manualMode || !manualDragging) return;
-  const dx = e.clientX - manualStartX;
-  const dy = e.clientY - manualStartY;
-  if(Math.hypot(dx, dy) > 5) dragMoved = true;
-  manualAz = wrap360(manualAz - dx*.25);
-  manualAlt = clamp(manualAlt + dy*.20, -90, 90);
-  manualStartX = e.clientX;
-  manualStartY = e.clientY;
-});
-
-canvas.addEventListener("pointerup", ()=> { manualDragging = false; });
-
-/* =========================================================
-   INTERACTION TACTILE (TOUCHER UN OBJET)
-   ========================================================= */
-
-canvas.addEventListener("click", e => {
-  if (manualMode && dragMoved) return;
-
-  const rect = canvas.getBoundingClientRect();
-  const clickX = e.clientX - rect.left;
-  const clickY = e.clientY - rect.top;
-
-  let closest = null;
-  let minDist = 35; // Rayon de tolérance tactile (px)
-
-  // 1. Étoiles
-  getStars().forEach(s => {
-    if (s.alt < -2) return;
-    const p = project(s.az, s.alt);
-    if (!p) return;
-    const d = Math.hypot(p.x - clickX, p.y - clickY);
-    if (d < minDist) {
-      minDist = d;
-      closest = { type: "⭐ Étoile", name: s.name, mag: s.mag, az: s.az, alt: s.alt };
-    }
-  });
-
-  // 2. Planètes / Lune / Soleil
-  getBodyPositions().forEach(b => {
-    if (b.alt < -1) return;
-    const p = project(b.az, b.alt);
-    if (!p) return;
-    const d = Math.hypot(p.x - clickX, p.y - clickY);
-    if (d < minDist) {
-      minDist = d;
-      closest = { type: "🪐 Astre", name: `${b.icon} ${b.name}`, az: b.az, alt: b.alt };
-    }
-  });
-
-  // 3. Satellites
-  for (const sat of satellites) {
-    const pSat = satelliteLookAngles(sat);
-    if (!pSat || pSat.alt < 0) continue;
-    const p = project(pSat.az, pSat.alt);
-    if (!p) continue;
-    const d = Math.hypot(p.x - clickX, p.y - clickY);
-    if (d < minDist) {
-      minDist = d;
-      closest = { type: "🛰️ Satellite", name: sat.name, az: pSat.az, alt: pSat.alt, range: pSat.range };
-      break;
-    }
-  }
-
-  if (closest) {
-    selectedObject = closest;
-    let sub = `Az ${Math.round(closest.az)}° • Alt ${Math.round(closest.alt)}°`;
-    if (closest.mag !== undefined) sub += ` • Mag ${closest.mag.toFixed(1)}`;
-    if (closest.range !== undefined) sub += ` • Dist ${Math.round(closest.range)} km`;
-    
-    showInfo(`${closest.type} : ${closest.name}`, sub);
-    toast(`🎯 Cible : ${closest.name}`);
+  if(orientation.heading != null){
+    calibrationOffset = wrap360(-orientation.heading);
+    localStorage.setItem("missionEtoilesV5Cal", calibrationOffset);
+    updateCalibUI();
+    toast(`🧭 Nord réinitialisé à l'orientation actuelle !`);
   } else {
-    selectedObject = null;
+    toast(`⚠️ Boussole automatique indisponible.`);
   }
+  $("calibration").classList.remove("open");
 });
 
 /* =========================================================
-   CAMERA AR & SATELLITES
+   SATELLITES & ISS SPECIALE
    ========================================================= */
-
-async function startAR(){
-  if(arMode){ stopAR(); return; }
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    toast("❌ La caméra n'est pas disponible.", 4000);
-    return;
-  }
-  try{
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:{ideal:"environment"}, width:{ideal:1920}, height:{ideal:1080} },
-      audio:false
-    });
-    camera.srcObject = stream;
-    camera.classList.add("on");
-    await camera.play();
-    arMode = true;
-    $("arBtn").textContent = "✕";
-    setStatus("Mode AR", true);
-    toast("📷 Réalité augmentée activée");
-  }catch(err){
-    toast("⚠️ Autorisation caméra refusée.", 4000);
-  }
-}
-
-function stopAR(){
-  const stream = camera.srcObject;
-  if(stream){ stream.getTracks().forEach(track=>track.stop()); }
-  camera.srcObject = null;
-  camera.classList.remove("on");
-  arMode = false;
-  $("arBtn").textContent = "📷";
-  setStatus(orientation.ready ? "Capteurs actifs" : "Ciel prêt", true);
-  toast("🌌 Retour au ciel");
-}
-
-$("arBtn").addEventListener("click", startAR);
 
 async function loadSatelliteLibrary(){
   if(satelliteLib) return satelliteLib;
   if(satelliteLibPromise) return satelliteLibPromise;
-  satelliteLibPromise = import("https://esm.sh/satellite.js@7.1.0")
-    .then(mod => { satelliteLib = mod; return mod; })
-    .catch(() => null);
+  satelliteLibPromise = import("https://esm.sh/satellite.js@7.1.0").then(m => { satelliteLib = m; return m; });
   return satelliteLibPromise;
 }
 
-async function fetchJSON(url, timeout=6500){
-  const controller = new AbortController();
-  const timer = setTimeout(()=>controller.abort(), timeout);
-  try{
-    const res = await fetch(url, { cache:"no-store", signal:controller.signal });
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    return await res.json();
-  }finally{ clearTimeout(timer); }
-}
-
 async function loadSatellites(){
-  if(Date.now()-lastSatelliteRefresh < 5*60*1000 && satellites.length) return;
-  setStatus("Satellites…", false);
   const lib = await loadSatelliteLibrary();
-  if(!lib){ setStatus("Satellites indisponibles", false); return; }
+  if(!lib) return;
 
-  let records = [];
-  const results = await Promise.allSettled([
-    fetchJSON("https://celestrak.org/NORAD/elements/gp.php?GROUP=STATIONS&FORMAT=JSON", 7000),
-    fetchJSON("https://celestrak.org/NORAD/elements/gp.php?GROUP=VISUAL&FORMAT=JSON", 7000)
-  ]);
-
-  for(const res of results){
-    if(res.status === "fulfilled"){
-      const data = Array.isArray(res.value) ? res.value : (res.value?.data || []);
-      records.push(...data);
-    }
+  try{
+    const res = await fetch("https://celestrak.org/NORAD/elements/gp.php?GROUP=STATIONS&FORMAT=JSON");
+    const data = await res.json();
+    satellites = data.map(r => ({
+      name: r.OBJECT_NAME,
+      norad: r.NORAD_CAT_ID,
+      isISS: r.NORAD_CAT_ID === 25544 || /ISS|ZARYA/i.test(r.OBJECT_NAME),
+      satrec: lib.json2satrec(r)
+    }));
+    setStatus(`${satellites.length} Satellites & ISS`, true);
+  }catch(e){
+    setStatus("Erreur Satellites", false);
   }
-
-  const map = new Map();
-  for(const r of records){
-    const id = r.NORAD_CAT_ID || r.OBJECT_ID || r.OBJECT_NAME;
-    if(id && !map.has(String(id))) map.set(String(id), r);
-  }
-
-  const parsed = [];
-  for(const r of map.values()){
-    try{
-      parsed.push({ name: r.OBJECT_NAME || "Satellite", id: r.NORAD_CAT_ID || null, satrec: lib.json2satrec(r) });
-    }catch{}
-  }
-
-  satellites = parsed;
-  satellitesLoaded = satellites.length > 0;
-  lastSatelliteRefresh = Date.now();
-
-  if(satellitesLoaded){
-    setStatus(`${satellites.length} satellites`, true);
-    toast(`🛰️ ${satellites.length} satellites chargés`);
-  }
-  updateSatellitePanel();
 }
 
 function satelliteLookAngles(sat){
   if(!satelliteLib) return null;
   try{
     const now = new Date();
-    const pv = satelliteLib.propagate(sat.satrec, now, { communityDecayCheckEnabled:true });
+    const pv = satelliteLib.propagate(sat.satrec, now);
     if(!pv || !pv.position) return null;
     const gmstRad = satelliteLib.gstime(now);
     const observer = {
-      longitude: satelliteLib.degreesToRadians(locationData.lon),
-      latitude: satelliteLib.degreesToRadians(locationData.lat),
-      height: locationData.height/1000
+      longitude: locationData.lon * DEG,
+      latitude: locationData.lat * DEG,
+      height: locationData.height / 1000
     };
     const positionEcf = satelliteLib.eciToEcf(pv.position, gmstRad);
     const angles = satelliteLib.ecfToLookAngles(observer, positionEcf);
@@ -1444,73 +765,27 @@ function satelliteLookAngles(sat){
 function updateSatellitePanel(){
   const list = $("satList");
   list.innerHTML = "";
-  if(!satellites.length){
-    list.innerHTML = `<div class="item"><strong>Aucun satellite chargé</strong></div>`;
-    return;
-  }
-  const visible = [];
-  for(const sat of satellites){
-    const p = satelliteLookAngles(sat);
-    if(p && p.alt > 0) visible.push({ sat, p });
-  }
-  visible.sort((a,b)=>b.p.alt-a.p.alt);
-  const top = visible.slice(0, 12);
+  const visible = satellites.map(s => ({ sat: s, p: satelliteLookAngles(s) })).filter(x => x.p && x.p.alt > 0);
+  visible.sort((a,b) => (b.sat.isISS ? 1000 : b.p.alt) - (a.sat.isISS ? 1000 : a.p.alt));
 
-  for(const item of top){
+  for(const item of visible){
     const div = document.createElement("div");
     div.className = "item";
-    div.innerHTML = `<strong>🛰️ ${escapeHTML(item.sat.name)}</strong>
-                     <span>Az ${Math.round(item.p.az)}° • Alt ${Math.round(item.p.alt)}° • ${Math.round(item.p.range)} km</span>`;
+    div.style.borderColor = item.sat.isISS ? "var(--yellow)" : "rgba(255,255,255,.06)";
+    div.innerHTML = `<strong>${item.sat.isISS ? "🛸 ISS (Station Spatiale)" : "🛰️ " + item.sat.name}</strong>
+                     <span>Cap ${getCardinal(item.p.az)} (${Math.round(item.p.az)}°) • Alt ${Math.round(item.p.alt)}° • Dist ${Math.round(item.p.range)} km</span>`;
     div.onclick = () => {
-      selectedObject = { type: "🛰️ Satellite", name: item.sat.name, az: item.p.az, alt: item.p.alt, range: item.p.range };
-      showInfo(`🛰️ Satellite : ${item.sat.name}`, `Az ${Math.round(item.p.az)}° • Alt ${Math.round(item.p.alt)}°`);
+      selectedObject = { type: item.sat.isISS ? "🛸 Station ISS" : "🛰️ Satellite", name: item.sat.name, az: item.p.az, alt: item.p.alt };
+      showInfo(item.sat.name, `Cap ${getCardinal(item.p.az)} (${Math.round(item.p.az)}°) • Alt ${Math.round(item.p.alt)}°`);
       closePanels();
     };
     list.appendChild(div);
   }
 }
 
-function escapeHTML(str){
-  return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-}
-
 /* =========================================================
-   ASTRONOMY ENGINE & BODIES
+   AFFICHAGE ET RENDU CANVA
    ========================================================= */
-
-let Astronomy = null;
-async function loadAstronomyEngine(){
-  try{
-    Astronomy = await import("https://esm.sh/astronomy-engine@2.1.19");
-  }catch{}
-}
-
-function getBodyPositions(){
-  if(!Astronomy) return [];
-  const bodies = [
-    ["☀️","Soleil",Astronomy.Body.Sun], ["🌙","Lune",Astronomy.Body.Moon],
-    ["☿️","Mercure",Astronomy.Body.Mercury], ["♀️","Vénus",Astronomy.Body.Venus],
-    ["♂️","Mars",Astronomy.Body.Mars], ["♃","Jupiter",Astronomy.Body.Jupiter],
-    ["♄","Saturne",Astronomy.Body.Saturn]
-  ];
-  const observer = new Astronomy.Observer(locationData.lat, locationData.lon, locationData.height/1000);
-  const now = new Date();
-  const res = [];
-
-  for(const [icon,name,body] of bodies){
-    try{
-      const eq = Astronomy.Equator(body, now, observer, true, true);
-      const hor = Astronomy.Horizon(now, observer, eq.ra, eq.dec, "normal");
-      res.push({ icon, name, az: wrap360(hor.azimuth), alt: hor.altitude });
-    }catch{}
-  }
-  return res;
-}
-
-function getStars(){
-  const now = new Date();
-  return stars.map(s => ({ ...s, ...raDecToAltAz(s.ra, s.dec, now) }));
-}
 
 function project(az, alt){
   const viewAz = manualMode ? manualAz : orientation.az;
@@ -1522,253 +797,176 @@ function project(az, alt){
   return { x: W/2 + dx/FOV_H*W, y: H/2 - dy/FOV_V*H, dx, dy };
 }
 
-/* =========================================================
-   RENDER ENGINE
-   ========================================================= */
+function getStars(){
+  const now = new Date();
+  return stars.map(s => ({ ...s, ...raDecToAltAz(s.ra, s.dec, now) }));
+}
 
 function drawBackground(){
   if(arMode){ ctx.clearRect(0,0,W,H); return; }
-  const gradient = ctx.createRadialGradient(W*.5, H*.35, 0, W*.5, H*.5, Math.max(W,H));
-  gradient.addColorStop(0, "rgba(18,31,69,.75)");
-  gradient.addColorStop(.45, "rgba(4,10,27,.9)");
-  gradient.addColorStop(1, "rgba(1,3,10,1)");
-  ctx.fillStyle = gradient;
+  ctx.fillStyle = "#020611";
   ctx.fillRect(0,0,W,H);
-}
-
-function drawHorizon(){
-  const y = H/2 + orientation.alt/FOV_V*H;
-  if(y < -50 || y > H+50) return;
-  ctx.save();
-  ctx.strokeStyle = "rgba(125,211,252,.16)";
-  ctx.setLineDash([4,7]);
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
-  ctx.restore();
 }
 
 function drawStars(){
   const visibleStars = getStars();
-  const byName = new Map(visibleStars.map(s=>[s.name,s]));
-
-  ctx.save();
-  ctx.strokeStyle = arMode ? "rgba(125,211,252,.55)" : "rgba(125,211,252,.20)";
-  ctx.lineWidth = 1;
-
-  for(const [a,b] of constellationLines){
-    const s1 = byName.get(a), s2 = byName.get(b);
-    if(!s1 || !s2) continue;
-    const p1 = project(s1.az, s1.alt), p2 = project(s2.az, s2.alt);
-    if(!p1 || !p2) continue;
-    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-  }
-  ctx.restore();
-
   for(const star of visibleStars){
-    if(star.alt < -2) continue;
+    if(star.alt < 0) continue;
     const p = project(star.az, star.alt);
     if(!p) continue;
 
-    const radius = clamp(3.8-star.mag*.75, 1.2, 5.2);
     ctx.save();
-    ctx.globalAlpha = star.alt < 0 ? .22 : 1;
-    ctx.shadowBlur = radius > 2.5 ? 10 : 4;
-    ctx.shadowColor = "rgba(255,255,255,.85)";
     ctx.fillStyle = "#ffffff";
-    ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI*2); ctx.fill();
-    ctx.restore();
-
-    if(star.mag < 1.2 || (Math.abs(p.dx) < 8 && Math.abs(p.dy) < 8)){
-      ctx.save();
-      ctx.font = "10px -apple-system,BlinkMacSystemFont,sans-serif";
-      ctx.fillStyle = arMode ? "rgba(255,255,255,.95)" : "rgba(225,235,255,.88)";
-      ctx.fillText(star.name, p.x+7, p.y-7);
-      ctx.restore();
-    }
-  }
-}
-
-function drawBodies(){
-  for(const body of getBodyPositions()){
-    if(body.alt < -1) continue;
-    const p = project(body.az, body.alt);
-    if(!p) continue;
-
-    ctx.save();
-    const r = body.name === "Lune" ? 7 : 5;
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = "rgba(255,240,180,.8)";
-    ctx.fillStyle = body.name === "Lune" ? "#f3f4f6" : "#fde68a";
-    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2); ctx.fill();
-    ctx.font = "11px -apple-system,BlinkMacSystemFont,sans-serif";
-    ctx.fillStyle = "#fff7d6";
-    ctx.fillText(`${body.icon} ${body.name}`, p.x+9, p.y+4);
+    ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(1.5, 4 - star.mag*0.5), 0, Math.PI*2); ctx.fill();
+    ctx.font = "10px sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,.8)";
+    ctx.fillText(star.name, p.x + 6, p.y - 4);
     ctx.restore();
   }
 }
 
-function drawSatellites(){
-  if(!satellites.length) return;
-  let count = 0;
-
+function drawSatellitesAndISS(){
   for(const sat of satellites){
-    if(count > 120) break;
     const pSat = satelliteLookAngles(sat);
     if(!pSat || pSat.alt < 0) continue;
     const p = project(pSat.az, pSat.alt);
     if(!p) continue;
 
-    count++;
-    const isISS = /ISS|ZARYA/i.test(sat.name);
     ctx.save();
-    ctx.shadowBlur = isISS ? 12 : 7;
-    ctx.shadowColor = isISS ? "#6ee7b7" : "#7dd3fc";
-    ctx.fillStyle = isISS ? "#6ee7b7" : "#7dd3fc";
-    ctx.beginPath(); ctx.arc(p.x, p.y, isISS ? 4 : 2.5, 0, Math.PI*2); ctx.fill();
-    ctx.font = "9px -apple-system,BlinkMacSystemFont,sans-serif";
-    ctx.fillStyle = isISS ? "#d1fae5" : "#bae6fd";
-    ctx.fillText(isISS ? "🛰️ ISS" : "🛰️", p.x+6, p.y+3);
+    if(sat.isISS){
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = "#fde68a";
+      ctx.fillStyle = "#fde68a";
+      ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill();
+      ctx.font = "bold 12px sans-serif";
+      ctx.fillStyle = "#fde68a";
+      ctx.fillText("🛸 ISS (Station Spatiale)", p.x + 10, p.y + 4);
+    } else {
+      ctx.fillStyle = "#7dd3fc";
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI*2); ctx.fill();
+    }
     ctx.restore();
   }
 }
 
-function drawSelection(){
-  if(!selectedObject) return;
-  const p = project(selectedObject.az, selectedObject.alt);
-  if(!p) return;
+/* =========================================================
+   GUIDAGE ET CONSIGNES DYNAMIQUES DE MISSION
+   ========================================================= */
 
-  ctx.save();
-  ctx.strokeStyle = "#fb7185";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, 18, 0, Math.PI * 2);
-  ctx.stroke();
+function updateMissionGuidance(){
+  if(currentTargetIndex >= missions.length){
+    $("missionTarget").textContent = "🏆 Toutes les missions sont accomplies !";
+    $("missionCoords").textContent = "";
+    $("missionGuidance").textContent = "Félicitations !";
+    return;
+  }
 
-  ctx.font = "bold 11px -apple-system,BlinkMacSystemFont,sans-serif";
-  ctx.fillStyle = "#fb7185";
-  ctx.fillText(selectedObject.name, p.x + 22, p.y + 4);
-  ctx.restore();
+  const currentMission = missions[currentTargetIndex];
+  const targetStar = getStars().find(s => s.name === currentMission.name);
+
+  if(!targetStar){ return; }
+
+  $("missionTarget").textContent = currentMission.text;
+
+  if(targetStar.alt < 0){
+    $("missionCoords").textContent = `Sous l'horizon (${getCardinal(targetStar.az)}, ${Math.round(targetStar.az)}°)`;
+    $("missionGuidance").textContent = "⚠️ Cette étoile n'est pas encore levée.";
+    return;
+  }
+
+  $("missionCoords").textContent = `Direction : ${getCardinal(targetStar.az)} (${Math.round(targetStar.az)}°) • Alt : ${Math.round(targetStar.alt)}°`;
+
+  const curAz = manualMode ? manualAz : orientation.az;
+  const curAlt = manualMode ? manualAlt : orientation.alt;
+
+  const diffAz = angleDiff(targetStar.az, curAz);
+  const diffAlt = targetStar.alt - curAlt;
+
+  let guidanceText = "";
+
+  if(Math.abs(diffAz) <= 5 && Math.abs(diffAlt) <= 5){
+    guidanceText = "🎯 Cible en vue ! Stabilise l'appareil.";
+  } else {
+    let azDirection = diffAz > 0 ? `👉 Tourne à droite (${Math.abs(Math.round(diffAz))}°)` : `👈 Tourne à gauche (${Math.abs(Math.round(diffAz))}°)`;
+    let altDirection = diffAlt > 0 ? `👆 Lève (${Math.abs(Math.round(diffAlt))}°)` : `👇 Baisse (${Math.abs(Math.round(diffAlt))}°)`;
+
+    if(Math.abs(diffAz) > 5 && Math.abs(diffAlt) > 5){
+      guidanceText = `${azDirection} • ${altDirection}`;
+    } else if(Math.abs(diffAz) > 5){
+      guidanceText = azDirection;
+    } else {
+      guidanceText = altDirection;
+    }
+  }
+
+  $("missionGuidance").textContent = guidanceText;
+
+  // Validation automatique
+  if(Math.abs(diffAz) < 4 && Math.abs(diffAlt) < 4){
+    const starName = targetStar.name;
+    currentTargetIndex++;
+    $("missionCount").textContent = `${currentTargetIndex} / ${missions.length}`;
+    $("progressBar").style.width = `${(currentTargetIndex / missions.length) * 100}%`;
+    toast(`⭐ Bravo ! Tu as trouvé ${starName} !`);
+  }
 }
 
-let lastFrame = 0;
-function draw(now=0){
-  if(now-lastFrame < 33){ requestAnimationFrame(draw); return; }
-  lastFrame = now;
-
+function draw(){
   drawBackground();
-  if(!arMode) drawHorizon();
   drawStars();
-  drawBodies();
-  drawSatellites();
-  drawSelection();
-  checkMission();
-
+  drawSatellitesAndISS();
+  updateMissionGuidance();
   requestAnimationFrame(draw);
 }
 
 /* =========================================================
-   MISSIONS & PANELS
+   INITIALISATION
    ========================================================= */
 
-function updateMission(){
-  const mission = missions[currentTargetIndex];
-  const done = currentTargetIndex, total = missions.length;
-
-  $("missionCount").textContent = `${done} / ${total}`;
-  $("progressBar").style.width = `${done/total*100}%`;
-
-  if(mission){
-    $("missionTarget").textContent = mission.text;
-  } else {
-    $("missionTarget").textContent = "🏆 Mission terminée !";
-    $("progressBar").style.width = "100%";
+async function getLocation(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(p => {
+      locationData.lat = p.coords.latitude;
+      locationData.lon = p.coords.longitude;
+      $("locationText").textContent = `Position : ${locationData.lat.toFixed(2)}°, ${locationData.lon.toFixed(2)}°`;
+    });
   }
 }
 
-function checkMission(){
-  if(currentTargetIndex >= missions.length) return;
-  const target = stars.find(s=>s.name===missions[currentTargetIndex].name);
-  if(!target) return;
-
-  const pos = raDecToAltAz(target.ra, target.dec, new Date());
-  if(pos.alt < 0) return;
-
-  const currentAz = manualMode ? manualAz : orientation.az;
-  const currentAlt = manualMode ? manualAlt : orientation.alt;
-
-  if(Math.abs(angleDiff(pos.az, currentAz)) < 5 && Math.abs(pos.alt-currentAlt) < 5){
-    const name = target.name;
-    currentTargetIndex++;
-    updateMission();
-    showInfo(`🎉 ${name} trouvée !`, currentTargetIndex >= missions.length ? "Bravo ! Mission complète." : `Prochaine cible : ${missions[currentTargetIndex].name}`);
-    toast(`⭐ ${name} trouvée !`, 2800);
-  }
-}
-
-updateMission();
-
-function updateTonight(){
-  const list = $("tonightList");
-  list.innerHTML = "";
-  const starsTonight = getStars().filter(s=>s.alt>10).sort((a,b)=>a.mag-b.mag).slice(0,10);
-
-  for(const star of starsTonight){
-    const item = document.createElement("div");
-    item.className = "item";
-    item.innerHTML = `<strong>⭐ ${escapeHTML(star.name)}</strong><span>Az ${Math.round(star.az)}° • Alt ${Math.round(star.alt)}° • mag ${star.mag.toFixed(1)}</span>`;
-    item.onclick = () => {
-      selectedObject = { type: "⭐ Étoile", name: star.name, mag: star.mag, az: star.az, alt: star.alt };
-      showInfo(`⭐ Étoile : ${star.name}`, `Az ${Math.round(star.az)}° • Alt ${Math.round(star.alt)}°`);
-      closePanels();
-    };
-    list.appendChild(item);
-  }
-
-  for(const body of getBodyPositions().filter(b=>b.alt>0)){
-    const item = document.createElement("div");
-    item.className = "item";
-    item.innerHTML = `<strong>${body.icon} ${body.name}</strong><span>Az ${Math.round(body.az)}° • Alt ${Math.round(body.alt)}°</span>`;
-    item.onclick = () => {
-      selectedObject = { type: "🪐 Astre", name: `${body.icon} ${body.name}`, az: body.az, alt: body.alt };
-      showInfo(`🪐 Astre : ${body.name}`, `Az ${Math.round(body.az)}° • Alt ${Math.round(body.alt)}°`);
-      closePanels();
-    };
-    list.prepend(item);
-  }
-  $("tonightIntro").textContent = `Voici les objets célestes les plus remarquables actuellement visibles.`;
-}
-
-$("tonightBtn").addEventListener("click", ()=>{ closePanels(); updateTonight(); $("tonightPanel").classList.add("open"); });
-$("missionBtn").addEventListener("click", ()=>{ $("mission").classList.toggle("hidden"); });
-$("satBtn").addEventListener("click", async()=>{ closePanels(); $("satPanel").classList.add("open"); updateSatellitePanel(); if(!satellites.length) await loadSatellites(); });
-$("settingsBtn").addEventListener("click", ()=>{ closePanels(); $("settingsPanel").classList.add("open"); });
-$("sensorBtn").addEventListener("click", requestSensors);
-document.querySelectorAll("[data-close]").forEach(btn=>{ btn.addEventListener("click", ()=>{ $(btn.dataset.close).classList.remove("open"); }); });
-
-/* =========================================================
-   INITIALIZATION
-   ========================================================= */
-
-async function startApp(){
-  $("startBtn").disabled = true;
-  $("startBtn").textContent = "🌌 Préparation…";
+$("startBtn").addEventListener("click", async ()=>{
   await requestSensors();
   await getLocation();
-  loadAstronomyEngine();
-  setTimeout(()=>loadSatellites(), 1200);
-
+  loadSatellites();
   $("welcome").style.display = "none";
-  setStatus(orientation.ready ? "Ciel actif" : "Ciel prêt", true);
-  toast("🌌 Ciel prêt — pointe ton téléphone vers le haut", 3500);
+  toast("🌌 Ciel prêt ! Aligne la cible en suivant le guidage.", 3500);
+});
+
+$("tonightBtn").addEventListener("click", ()=>{ closePanels(); updateTonightList(); $("tonightPanel").classList.add("open"); });
+$("satBtn").addEventListener("click", ()=>{ closePanels(); updateSatellitePanel(); $("satPanel").classList.add("open"); });
+$("settingsBtn").addEventListener("click", ()=>{ closePanels(); $("settingsPanel").classList.add("open"); });
+$("missionBtn").addEventListener("click", ()=>{ $("mission").classList.toggle("hidden"); });
+
+function updateTonightList(){
+  const list = $("tonightList");
+  list.innerHTML = "";
+  const visible = getStars().filter(s => s.alt > 5).sort((a,b)=>a.mag-b.mag);
+  for(const s of visible){
+    const d = document.createElement("div");
+    d.className = "item";
+    d.innerHTML = `<strong>⭐ ${s.name}</strong><span>Cap ${getCardinal(s.az)} (${Math.round(s.az)}°) • Alt ${Math.round(s.alt)}°</span>`;
+    d.onclick = () => {
+      selectedObject = s;
+      showInfo(s.name, `Cap ${getCardinal(s.az)} (${Math.round(s.az)}°) • Alt ${Math.round(s.alt)}°`);
+      closePanels();
+    };
+    list.appendChild(d);
+  }
 }
 
-$("startBtn").addEventListener("click", startApp);
+document.querySelectorAll("[data-close]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{ $(btn.dataset.close).classList.remove("open"); });
+});
 
-orientation.az = 0; orientation.alt = 90; orientation.ready = false;
-updateOrientationHUD();
-
-document.addEventListener("visibilitychange", ()=>{ if(document.hidden && arMode) stopAR(); });
 requestAnimationFrame(draw);
 
 </script>
