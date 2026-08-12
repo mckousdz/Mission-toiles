@@ -2646,8 +2646,39 @@
         "hidden"
       );
 
+  }/* =======================================================
+   PUBLIC API FOR SATELLITES
+======================================================= */
+
+window.CielSkyState = {
+
+  getLocation() {
+
+    return {
+      latitude:
+        state.location.latitude,
+
+      longitude:
+        state.location.longitude
+    };
+
+  },
+
+  getOrientation() {
+
+    return {
+      heading:
+        state.orientation.heading,
+
+      altitude:
+        state.orientation.altitude
+    };
+
   }
 
+};
+
+   
 
   /* =======================================================
      EVENT LISTENERS
