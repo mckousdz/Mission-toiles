@@ -101,6 +101,26 @@
 
   function getLocation() {
 
+  if (
+    window.CielSkyState &&
+    typeof window.CielSkyState.getLocation ===
+      "function"
+  ) {
+
+    return window.CielSkyState.getLocation();
+
+  }
+
+  return {
+
+    latitude: 43.7102,
+
+    longitude: 7.2620
+
+  };
+
+}
+
     /*
       Read application state
       from the main app when available.
