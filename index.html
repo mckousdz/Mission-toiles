@@ -1,1 +1,851 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
+  <meta name="theme-color" content="#020617">
+
+  <meta
+    name="description"
+    content="Ciel Live V4 — Explore le ciel, les étoiles, les planètes et les satellites."
+  >
+
+  <title>🌌 Ciel Live V4</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- =========================================================
+       APPLICATION
+  ========================================================== -->
+
+  <main id="app">
+
+    <!-- =======================================================
+         HEADER
+    ======================================================== -->
+
+    <header class="top-bar">
+
+      <div class="brand">
+
+        <div class="brand-icon">
+          🌌
+        </div>
+
+        <div class="brand-text">
+          <strong>Ciel Live</strong>
+          <span>V4</span>
+        </div>
+
+      </div>
+
+      <div class="header-actions">
+
+        <button
+          id="nightModeButton"
+          class="icon-button"
+          aria-label="Mode nuit"
+          title="Mode nuit"
+        >
+          🌙
+        </button>
+
+        <button
+          id="settingsButton"
+          class="icon-button"
+          aria-label="Paramètres"
+          title="Paramètres"
+        >
+          ⚙️
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- =======================================================
+         STATUS
+    ======================================================== -->
+
+    <section class="status-bar">
+
+      <div class="status-item">
+
+        <span
+          id="locationStatusIcon"
+          class="status-dot"
+        ></span>
+
+        <span id="locationStatus">
+          Position en attente
+        </span>
+
+      </div>
+
+      <div class="status-item">
+
+        <span
+          id="orientationStatusIcon"
+          class="status-dot"
+        ></span>
+
+        <span id="orientationStatus">
+          Orientation inactive
+        </span>
+
+      </div>
+
+      <div class="status-item">
+
+        <span
+          id="timeStatus"
+        >
+          --:--
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         SKY VIEW
+    ======================================================== -->
+
+    <section
+      id="skyView"
+      class="sky-view"
+      aria-label="Carte interactive du ciel"
+    >
+
+      <!-- Canvas principal -->
+      <canvas id="skyCanvas"></canvas>
+
+
+      <!-- Point cardinal -->
+      <div
+        id="directionIndicator"
+        class="direction-indicator"
+      >
+        <span id="directionLetter">N</span>
+      </div>
+
+
+      <!-- Centre de visée -->
+      <div
+        id="aimReticle"
+        class="aim-reticle"
+      >
+        <div></div>
+      </div>
+
+
+      <!-- Indication orientation -->
+      <div
+        id="orientationHint"
+        class="orientation-hint"
+      >
+        <span>📱</span>
+        <strong>Pointe ton téléphone vers le ciel</strong>
+        <small>Active l'orientation pour explorer</small>
+      </div>
+
+
+      <!-- Loading -->
+      <div
+        id="skyLoading"
+        class="sky-loading"
+      >
+
+        <div class="loading-star">
+          ✦
+        </div>
+
+        <strong>
+          Préparation du ciel...
+        </strong>
+
+        <span>
+          Calcul des astres
+        </span>
+
+      </div>
+
+
+      <!-- Informations objet sélectionné -->
+      <article
+        id="objectCard"
+        class="object-card hidden"
+      >
+
+        <button
+          id="closeObjectCard"
+          class="close-button"
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+
+        <div
+          id="objectEmoji"
+          class="object-emoji"
+        >
+          ⭐
+        </div>
+
+        <div class="object-info">
+
+          <span
+            id="objectType"
+            class="object-type"
+          >
+            ÉTOILE
+          </span>
+
+          <h2 id="objectName">
+            Sirius
+          </h2>
+
+          <p id="objectDescription">
+            L'étoile la plus brillante du ciel nocturne.
+          </p>
+
+          <div class="object-data">
+
+            <span>
+              <small>AZIMUT</small>
+              <strong id="objectAzimuth">--°</strong>
+            </span>
+
+            <span>
+              <small>HAUTEUR</small>
+              <strong id="objectAltitude">--°</strong>
+            </span>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- =======================================================
+         MAIN ACTION
+    ======================================================== -->
+
+    <section class="main-action">
+
+      <button
+        id="tonightButton"
+        class="primary-button"
+      >
+
+        <span class="primary-icon">
+          🔭
+        </span>
+
+        <span>
+          <strong>Que puis-je voir ce soir ?</strong>
+          <small>Découvre les merveilles visibles</small>
+        </span>
+
+        <span class="button-arrow">
+          →
+        </span>
+
+      </button>
+
+    </section>
+
+
+    <!-- =======================================================
+         QUICK ACTIONS
+    ======================================================== -->
+
+    <section class="quick-actions">
+
+      <button
+        id="starsButton"
+        class="quick-card"
+      >
+
+        <span class="quick-icon">
+          ⭐
+        </span>
+
+        <strong>
+          Étoiles
+        </strong>
+
+        <small>
+          Explorer
+        </small>
+
+      </button>
+
+
+      <button
+        id="planetsButton"
+        class="quick-card"
+      >
+
+        <span class="quick-icon">
+          🪐
+        </span>
+
+        <strong>
+          Planètes
+        </strong>
+
+        <small>
+          Explorer
+        </small>
+
+      </button>
+
+
+      <button
+        id="satellitesButton"
+        class="quick-card"
+      >
+
+        <span class="quick-icon">
+          🛰️
+        </span>
+
+        <strong>
+          Satellites
+        </strong>
+
+        <small>
+          En direct
+        </small>
+
+      </button>
+
+
+      <button
+        id="missionsButton"
+        class="quick-card mission-card"
+      >
+
+        <span class="quick-icon">
+          🎯
+        </span>
+
+        <strong>
+          Missions
+        </strong>
+
+        <small>
+          Pour jouer
+        </small>
+
+      </button>
+
+    </section>
+
+
+    <!-- =======================================================
+         TONIGHT PANEL
+    ======================================================== -->
+
+    <section
+      id="tonightPanel"
+      class="bottom-panel hidden"
+    >
+
+      <div class="panel-header">
+
+        <div>
+
+          <span class="panel-kicker">
+            🌙 CE SOIR
+          </span>
+
+          <h2>
+            Que peut-on observer ?
+          </h2>
+
+        </div>
+
+        <button
+          id="closeTonight"
+          class="close-button"
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        id="tonightContent"
+        class="tonight-content"
+      >
+
+        <!-- Généré par app.js -->
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         SATELLITE PANEL
+    ======================================================== -->
+
+    <section
+      id="satellitePanel"
+      class="bottom-panel hidden"
+    >
+
+      <div class="panel-header">
+
+        <div>
+
+          <span class="panel-kicker">
+            🛰️ EN DIRECT
+          </span>
+
+          <h2>
+            Satellites visibles
+          </h2>
+
+        </div>
+
+        <button
+          id="closeSatellites"
+          class="close-button"
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        id="satelliteStatus"
+        class="panel-status"
+      >
+        Chargement des données orbitales...
+      </div>
+
+
+      <div
+        id="satelliteList"
+        class="satellite-list"
+      >
+
+        <!-- Généré par satellites.js -->
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         PLANETS PANEL
+    ======================================================== -->
+
+    <section
+      id="planetPanel"
+      class="bottom-panel hidden"
+    >
+
+      <div class="panel-header">
+
+        <div>
+
+          <span class="panel-kicker">
+            🪐 SYSTÈME SOLAIRE
+          </span>
+
+          <h2>
+            Les planètes
+          </h2>
+
+        </div>
+
+        <button
+          id="closePlanets"
+          class="close-button"
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        id="planetList"
+        class="planet-list"
+      >
+
+        <!-- Généré par app.js -->
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         MISSIONS PANEL
+    ======================================================== -->
+
+    <section
+      id="missionPanel"
+      class="bottom-panel hidden"
+    >
+
+      <div class="panel-header">
+
+        <div>
+
+          <span class="panel-kicker">
+            🎯 MISSION DU SOIR
+          </span>
+
+          <h2>
+            À toi de jouer !
+          </h2>
+
+        </div>
+
+        <button
+          id="closeMissions"
+          class="close-button"
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="mission-progress">
+
+        <div class="mission-progress-top">
+
+          <span>
+            Progression
+          </span>
+
+          <strong id="missionProgressText">
+            0 / 4
+          </strong>
+
+        </div>
+
+        <div class="progress-bar">
+
+          <div
+            id="missionProgressBar"
+            class="progress-fill"
+            style="width: 0%"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="missionList"
+        class="mission-list"
+      >
+
+        <!-- Généré par app.js -->
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         PERMISSION / START SCREEN
+    ======================================================== -->
+
+    <div
+      id="startOverlay"
+      class="start-overlay"
+    >
+
+      <div class="start-card">
+
+        <div class="start-logo">
+          🌌
+        </div>
+
+        <span class="version-label">
+          CIEL LIVE V4
+        </span>
+
+        <h1>
+          Explore le ciel
+        </h1>
+
+        <p>
+          Transforme ton téléphone en véritable
+          carte interactive du ciel.
+        </p>
+
+
+        <div class="start-features">
+
+          <div>
+            <span>📍</span>
+            <strong>Ta position</strong>
+          </div>
+
+          <div>
+            <span>📱</span>
+            <strong>Orientation</strong>
+          </div>
+
+          <div>
+            <span>⭐</span>
+            <strong>Étoiles</strong>
+          </div>
+
+          <div>
+            <span>🪐</span>
+            <strong>Planètes</strong>
+          </div>
+
+          <div>
+            <span>🛰️</span>
+            <strong>Satellites</strong>
+          </div>
+
+        </div>
+
+
+        <button
+          id="startButton"
+          class="start-button"
+        >
+
+          <span>
+            🚀
+          </span>
+
+          Démarrer l'exploration
+
+        </button>
+
+
+        <small class="privacy-note">
+          Les capteurs sont utilisés uniquement
+          pour orienter la carte du ciel.
+        </small>
+
+      </div>
+
+    </div>
+
+
+    <!-- =======================================================
+         SETTINGS PANEL
+    ======================================================== -->
+
+    <section
+      id="settingsPanel"
+      class="bottom-panel hidden"
+    >
+
+      <div class="panel-header">
+
+        <div>
+
+          <span class="panel-kicker">
+            ⚙️ CONFIGURATION
+          </span>
+
+          <h2>
+            Paramètres
+          </h2>
+
+        </div>
+
+        <button
+          id="closeSettings"
+          class="close-button"
+          aria-label="Fermer"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="settings-list">
+
+
+        <div class="setting-row">
+
+          <div>
+
+            <strong>
+              📍 Position
+            </strong>
+
+            <small>
+              Utiliser ma position actuelle
+            </small>
+
+          </div>
+
+          <button
+            id="refreshLocation"
+            class="secondary-button"
+          >
+            Actualiser
+          </button>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+
+            <strong>
+              📱 Orientation
+            </strong>
+
+            <small id="orientationSettingText">
+              Capteurs du téléphone
+            </small>
+
+          </div>
+
+          <button
+            id="enableOrientation"
+            class="secondary-button"
+          >
+            Activer
+          </button>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+
+            <strong>
+              🌙 Mode nuit
+            </strong>
+
+            <small>
+              Préserver la vision nocturne
+            </small>
+
+          </div>
+
+          <button
+            id="toggleNightMode"
+            class="secondary-button"
+          >
+            Activer
+          </button>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+
+            <strong>
+              🔊 Audio
+            </strong>
+
+            <small>
+              Lecture des informations
+            </small>
+
+          </div>
+
+          <button
+            id="toggleAudio"
+            class="secondary-button"
+          >
+            Désactivé
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         TOAST
+    ======================================================== -->
+
+    <div
+      id="toast"
+      class="toast"
+      role="status"
+      aria-live="polite"
+    >
+
+      <span id="toastIcon">
+        ℹ️
+      </span>
+
+      <span id="toastMessage">
+        Information
+      </span>
+
+    </div>
+
+
+  </main>
+
+
+  <!-- =========================================================
+       JAVASCRIPT
+  ========================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/satellite.js@7.0.1/dist/satellite.min.js"></script>
+
+<script src="app.js"></script>
+<script src="satellites.js"></script>
+
+
+  <!-- =========================================================
+       FALLBACK
+  ========================================================== -->
+
+  <noscript>
+
+    <div class="noscript">
+
+      🌌 Ciel Live nécessite JavaScript
+      pour fonctionner.
+
+    </div>
+
+  </noscript>
+
+</body>
+</html>
