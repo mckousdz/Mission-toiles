@@ -5,711 +5,184 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#020611">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Mission Étoiles — V8</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Mission Étoiles — V6.1 Mode Enfant</title>
 
 <style>
 :root{
   --bg:#020611;
-  --panel:rgba(5,12,28,.90);
-  --line:rgba(255,255,255,.14);
+  --panel:rgba(5,12,28,.88);
+  --line:rgba(255,255,255,.13);
   --text:#f5f7ff;
   --muted:#9ba7c2;
   --accent:#7dd3fc;
   --green:#6ee7b7;
   --yellow:#fde68a;
-  --pink:#f9a8d4;
+  --red:#fb7185;
 }
 
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",
-  "Segoe UI",Roboto,Arial,sans-serif;
+  margin:0; width:100%; height:100%; overflow:hidden;
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;
 }
 
-body{
-  touch-action:none;
-}
-
-button{
-  font:inherit;
-  color:inherit;
-}
+body{ touch-action:none; }
+button{ font:inherit; color:inherit; }
 
 #app{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 50% 20%,#101b3b 0,#050a19 38%,#020611 78%);
+  position:fixed; inset:0; overflow:hidden;
+  background: radial-gradient(circle at 50% 20%,#101b3b 0,#050a19 35%,#020611 75%);
 }
 
-#sky{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  z-index:2;
-  cursor:grab;
-}
-
-#sky:active{
-  cursor:grabbing;
-}
-
-#hud{
-  position:absolute;
-  inset:0;
-  z-index:10;
-  pointer-events:none;
-}
+#sky{ position:absolute; inset:0; width:100%; height:100%; z-index:2; cursor:grab; }
+#sky:active{ cursor:grabbing; }
+#hud{ position:absolute; inset:0; z-index:10; pointer-events:none; }
 
 .topbar{
-  position:absolute;
-  top:env(safe-area-inset-top,12px);
-  left:12px;
-  right:12px;
-  padding-top:8px;
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
+  position:absolute; top:env(safe-area-inset-top,12px); left:12px; right:12px;
+  padding-top:8px; display:flex; justify-content:space-between; align-items:flex-start;
 }
 
 .brand{
-  pointer-events:auto;
-  padding:9px 12px;
-  border:1px solid var(--line);
-  background:rgba(2,7,20,.55);
-  backdrop-filter:blur(12px);
-  border-radius:14px;
+  pointer-events:auto; padding:9px 12px; border:1px solid var(--line);
+  background:rgba(2,7,20,.55); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:14px;
 }
-
-.brand strong{
-  display:block;
-  font-size:14px;
-}
-
-.brand span{
-  display:block;
-  margin-top:2px;
-  color:var(--muted);
-  font-size:10px;
-}
+.brand strong{ display:block; font-size:14px; }
+.brand span{ display:block; margin-top:2px; color:var(--muted); font-size:10px; }
 
 .status{
-  pointer-events:auto;
-  padding:8px 10px;
-  border:1px solid var(--line);
-  background:rgba(2,7,20,.55);
-  backdrop-filter:blur(12px);
-  border-radius:13px;
-  font-size:11px;
-  color:var(--muted);
-  text-align:right;
+  pointer-events:auto; padding:8px 10px; border:1px solid var(--line);
+  background:rgba(2,7,20,.55); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-radius:13px; font-size:11px; color:var(--muted); text-align:right;
 }
-
-.status b{
-  color:var(--green);
-}
+.status b{ color:var(--green); }
 
 .compass{
-  position:absolute;
-  top:82px;
-  left:50%;
-  transform:translateX(-50%);
-  width:62px;
-  height:62px;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:50%;
-  background:rgba(2,7,20,.38);
-  backdrop-filter:blur(8px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  position:absolute; top:82px; left:50%; transform:translateX(-50%);
+  width:62px; height:62px; border:1px solid rgba(255,255,255,.16); border-radius:50%;
+  background:rgba(2,7,20,.38); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center;
 }
-
-.compass .ring{
-  position:absolute;
-  inset:5px;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:50%;
-}
-
-.compass .needle{
-  width:2px;
-  height:22px;
-  background:linear-gradient(#fb7185 50%,#fff 50%);
-  transform-origin:50% 50%;
-  border-radius:4px;
-}
-
-.compass .n{
-  position:absolute;
-  top:3px;
-  font-size:9px;
-  color:#fb7185;
-  font-weight:700;
-}
+.compass .ring{ position:absolute; inset:5px; border:1px solid rgba(255,255,255,.08); border-radius:50%; }
+.compass .needle{ width:2px; height:22px; background:linear-gradient(#fb7185 50%,#fff 50%); transform-origin:50% 50%; border-radius:4px; }
+.compass .n{ position:absolute; top:3px; font-size:9px; color:#fb7185; font-weight:700; }
 
 .heading{
-  position:absolute;
-  top:148px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:4px 8px;
-  border-radius:8px;
-  background:rgba(2,7,20,.48);
-  font-size:10px;
-  color:#cbd5e1;
-  white-space:nowrap;
+  position:absolute; top:148px; left:50%; transform:translateX(-50%);
+  padding:4px 8px; border-radius:8px; background:rgba(2,7,20,.48); font-size:10px; color:#cbd5e1; white-space:nowrap;
 }
 
+/* BANNIÈRE MODE ENFANT */
 .kidBanner{
-  position:absolute;
-  top:180px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:6px 14px;
-  border-radius:20px;
-  background:rgba(253,230,138,.18);
-  border:1px solid rgba(253,230,138,.4);
-  font-size:11px;
-  font-weight:700;
-  color:var(--yellow);
-  display:none;
-  pointer-events:auto;
-  backdrop-filter:blur(10px);
-  white-space:nowrap;
+  position:absolute; top:180px; left:50%; transform:translateX(-50%);
+  padding:6px 14px; border-radius:20px; background:rgba(253,230,138,.18); border:1px solid rgba(253,230,138,.4);
+  font-size:11px; font-weight:700; color:var(--yellow); display:none; pointer-events:auto; backdrop-filter:blur(10px);
 }
+.kidBanner.show{ display:block; }
 
-.kidBanner.show{
-  display:block;
-}
-
-.reticle{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:44px;
-  height:44px;
-  transform:translate(-50%,-50%);
-  opacity:.75;
-}
-
-.reticle:before,
-.reticle:after{
-  content:"";
-  position:absolute;
-  background:rgba(255,255,255,.65);
-}
-
-.reticle:before{
-  width:1px;
-  height:44px;
-  left:21px;
-  top:0;
-}
-
-.reticle:after{
-  height:1px;
-  width:44px;
-  left:0;
-  top:21px;
-}
-
-.reticle .dot{
-  position:absolute;
-  width:4px;
-  height:4px;
-  border-radius:50%;
-  background:#fff;
-  left:20px;
-  top:20px;
-}
+.reticle{ position:absolute; left:50%; top:50%; width:44px; height:44px; transform:translate(-50%,-50%); opacity:.75; }
+.reticle:before, .reticle:after{ content:""; position:absolute; background:rgba(255,255,255,.65); }
+.reticle:before{ width:1px; height:44px; left:21px; top:0; }
+.reticle:after{ height:1px; width:44px; left:0; top:21px; }
+.reticle .dot{ position:absolute; width:4px; height:4px; border-radius:50%; background:#fff; left:20px; top:20px; }
 
 .controls{
-  pointer-events:auto;
-  position:absolute;
-  left:12px;
-  right:12px;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:8px;
+  pointer-events:auto; position:absolute; left:12px; right:12px;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 12px); display:flex; align-items:flex-end; justify-content:space-between; gap:8px;
 }
-
-.controlGroup{
-  display:flex;
-  gap:7px;
-  align-items:center;
-}
+.controlGroup{ display:flex; gap:7px; align-items:center; }
 
 .btn{
-  border:1px solid var(--line);
-  background:rgba(4,10,24,.72);
-  backdrop-filter:blur(12px);
-  border-radius:13px;
-  min-height:42px;
-  padding:9px 12px;
-  font-size:12px;
-  font-weight:600;
-  box-shadow:0 5px 25px rgba(0,0,0,.18);
-  cursor:pointer;
+  border:1px solid var(--line); background:rgba(4,10,24,.72); backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px); border-radius:13px; min-height:42px; padding:9px 12px;
+  font-size:12px; font-weight:600; box-shadow:0 5px 25px rgba(0,0,0,.18); cursor:pointer;
 }
-
-.btn:active{
-  transform:scale(.97);
-}
-
-.btn.active{
-  background:rgba(253,230,138,.25);
-  border-color:var(--yellow);
-  color:var(--yellow);
-}
-
-.btn.small{
-  min-height:38px;
-  padding:8px 10px;
-  font-size:11px;
-}
-
-.btn.icon{
-  width:42px;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-}
+.btn:active{ transform:scale(.97); }
+.btn.active{ background:rgba(253,230,138,.25); border-color:var(--yellow); color:var(--yellow); }
+.btn.primary{ background:rgba(30,70,120,.8); border-color:rgba(125,211,252,.32); }
+.btn.small{ min-height:38px; padding:8px 10px; font-size:11px; }
+.btn.icon{ width:42px; padding:0; display:flex; align-items:center; justify-content:center; font-size:18px; }
 
 .mission{
-  position:absolute;
-  left:12px;
-  top:220px;
-  width:min(270px,78vw);
-  padding:12px;
-  border:1px solid rgba(125,211,252,.25);
-  background:rgba(3,9,22,.82);
-  backdrop-filter:blur(12px);
-  border-radius:14px;
-  pointer-events:auto;
-  transition:.2s;
+  position:absolute; left:12px; top:220px; width:min(270px,78vw); padding:12px;
+  border:1px solid rgba(125,211,252,.25); background:rgba(3,9,22,.82); backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px); border-radius:14px; pointer-events:auto; transition:transform .2s ease,opacity .2s ease;
 }
+.mission.hidden{ opacity:0; transform:translateX(-120%); pointer-events:none; }
+.missionHead{ display:flex; justify-content:space-between; align-items:center; }
+.missionTitle{ font-size:13px; font-weight:700; }
+.missionCount{ font-size:11px; color:var(--accent); font-weight:bold; }
+.progress{ height:5px; border-radius:10px; background:rgba(255,255,255,.09); overflow:hidden; margin-top:8px; }
+.progressBar{ width:0%; height:100%; background:linear-gradient(90deg,#38bdf8,#6ee7b7); transition:width .3s ease; }
+.missionTarget{ margin-top:8px; font-size:12px; font-weight:700; color:#fff; }
+.missionCoords{ margin-top:4px; font-size:11px; color:var(--yellow); font-weight:600; }
+.missionGuidance{ margin-top:4px; font-size:11px; color:var(--green); font-weight:bold; }
 
-.mission.hidden{
-  opacity:0;
-  transform:translateX(-120%);
-  pointer-events:none;
-}
-
-.missionHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.missionTitle{
-  font-size:13px;
-  font-weight:700;
-}
-
-.missionCount{
-  font-size:11px;
-  color:var(--accent);
-  font-weight:bold;
-}
-
-.progress{
-  height:5px;
-  border-radius:10px;
-  background:rgba(255,255,255,.09);
-  overflow:hidden;
-  margin-top:8px;
-}
-
-.progressBar{
-  width:0%;
-  height:100%;
-  background:linear-gradient(90deg,#38bdf8,#6ee7b7);
-  transition:width .3s ease;
-}
-
-.missionTarget{
-  margin-top:8px;
-  font-size:12px;
-  font-weight:700;
-}
-
-.missionCoords{
-  margin-top:4px;
-  font-size:11px;
-  color:var(--yellow);
-  font-weight:600;
-}
-
-.missionGuidance{
-  margin-top:4px;
-  font-size:11px;
-  color:var(--green);
-  font-weight:bold;
-}
-
+/* POPUP INFORMATION CLIC */
 .infoBox{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(.92);
-  width:min(330px,86vw);
-  padding:17px;
-  border-radius:18px;
-  border:1px solid var(--accent);
-  background:rgba(3,9,24,.94);
-  backdrop-filter:blur(20px);
-  pointer-events:auto;
-  opacity:0;
-  display:none;
-  transition:.2s;
-  z-index:150;
-  text-align:center;
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(.9);
+  width:min(320px,85vw); padding:16px; border-radius:18px; border:1px solid var(--accent);
+  background:rgba(3,9,24,.92); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  pointer-events:auto; opacity:0; display:none; transition:all .2s ease; z-index:150; text-align:center;
 }
+.infoBox.show{ opacity:1; transform:translate(-50%,-50%) scale(1); display:block; }
+.infoBox h3{ margin:0 0 6px; font-size:16px; color:var(--accent); }
+.infoBox p{ margin:4px 0; font-size:12px; color:var(--muted); line-height:1.4; white-space:pre-line; }
+.infoBox .closeBtn{ margin-top:12px; width:100%; min-height:36px; border-radius:10px; border:0; background:rgba(255,255,255,.1); font-weight:bold; cursor:pointer; }
 
-.infoBox.show{
-  opacity:1;
-  transform:translate(-50%,-50%) scale(1);
-  display:block;
-}
-
-.infoBox h3{
-  margin:0 0 8px;
-  font-size:17px;
-  color:var(--accent);
-}
-
-.infoBox p{
-  margin:4px 0;
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.5;
-  white-space:pre-line;
-}
-
-.closeBtn{
-  margin-top:12px;
-  width:100%;
-  min-height:38px;
-  border-radius:10px;
-  border:0;
-  background:rgba(255,255,255,.1);
-  font-weight:bold;
+.issTimerBox{
+  margin-bottom:10px; padding:10px; border-radius:12px; background:rgba(253,230,138,.08); border:1px solid rgba(253,230,138,.25);
+  font-size:12px; font-weight:bold; text-align:center; color:var(--yellow);
 }
 
 .panel{
-  position:absolute;
-  z-index:30;
-  inset:auto 10px calc(env(safe-area-inset-bottom,0px) + 70px) 10px;
-  max-height:70vh;
-  overflow:auto;
-  padding:14px;
-  border:1px solid var(--line);
-  border-radius:18px;
-  background:var(--panel);
-  backdrop-filter:blur(20px);
-  display:none;
-  pointer-events:auto;
+  position:absolute; z-index:30; inset:auto 10px calc(env(safe-area-inset-bottom,0px) + 70px) 10px;
+  max-height:70vh; overflow:auto; padding:14px; border:1px solid var(--line); border-radius:18px;
+  background:var(--panel); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); display:none;
 }
-
-.panel.open{
-  display:block;
-}
-
-.panel h2{
-  margin:0 0 8px;
-  font-size:17px;
-}
-
-.panel p{
-  margin:7px 0;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.45;
-}
-
-.panelClose{
-  float:right;
-}
-
-.list{
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-  margin-top:10px;
-}
-
-.item{
-  padding:9px 10px;
-  border-radius:11px;
-  background:rgba(255,255,255,.045);
-  border:1px solid rgba(255,255,255,.06);
-}
-
-.item strong{
-  font-size:12px;
-}
-
-.item span{
-  display:block;
-  margin-top:3px;
-  font-size:10px;
-  color:var(--muted);
-}
+.panel.open{ display:block; }
+.panel h2{ margin:0 0 8px; font-size:17px; }
+.panel p{ margin:7px 0; color:var(--muted); font-size:12px; line-height:1.45; }
+.panelClose{ float:right; }
+.list{ display:flex; flex-direction:column; gap:7px; margin-top:10px; }
+.item{ padding:9px 10px; border-radius:11px; background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.06); cursor:pointer; }
+.item strong{ font-size:12px; }
+.item span{ display:block; margin-top:3px; font-size:10px; color:var(--muted); }
 
 #welcome{
-  position:absolute;
-  inset:0;
-  z-index:100;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:22px;
-  background:
-    radial-gradient(circle at 50% 25%,rgba(40,80,160,.35),transparent 38%),
-    linear-gradient(180deg,#030817,#01030b);
+  position:absolute; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:25px;
+  background: radial-gradient(circle at 50% 25%,rgba(40,80,160,.35),transparent 38%), linear-gradient(180deg,#030817,#01030b);
 }
-
 .welcomeCard{
-  width:min(390px,100%);
-  text-align:center;
-  padding:25px 20px;
-  border-radius:24px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(5,12,30,.78);
-  backdrop-filter:blur(18px);
+  width:min(390px,100%); text-align:center; padding:25px 20px; border-radius:24px;
+  border:1px solid rgba(255,255,255,.12); background:rgba(5,12,30,.75); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
 }
-
-.logo{
-  font-size:48px;
-  margin-bottom:8px;
-}
-
-.welcomeCard h1{
-  margin:0;
-  font-size:26px;
-}
-
-.welcomeCard h1 span{
-  color:#7dd3fc;
-}
-
-.welcomeCard p{
-  color:#aeb8ce;
-  font-size:12px;
-  line-height:1.55;
-  margin:10px 0 18px;
-}
-
-.nameInput{
-  width:100%;
-  height:48px;
-  padding:0 14px;
-  border-radius:14px;
-  border:1px solid rgba(125,211,252,.35);
-  background:rgba(255,255,255,.06);
-  color:white;
-  outline:none;
-  text-align:center;
-  font-size:15px;
-  margin-bottom:10px;
-}
-
-.nameInput::placeholder{
-  color:#71809e;
-}
-
-.bigStart{
-  width:100%;
-  min-height:48px;
-  border:0;
-  border-radius:15px;
-  background:linear-gradient(135deg,#2563eb,#0891b2);
-  font-size:14px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.welcomeHint{
-  font-size:10px;
-  color:#71809e;
-  margin-top:10px;
-}
+.logo{ font-size:48px; margin-bottom:8px; }
+.welcomeCard h1{ margin:0; font-size:26px; }
+.welcomeCard h1 span{ color:#7dd3fc; }
+.welcomeCard p{ color:#aeb8ce; font-size:12px; line-height:1.55; margin:10px 0 18px; }
+.bigStart{ width:100%; min-height:48px; border:0; border-radius:15px; background:linear-gradient(135deg,#2563eb,#0891b2); font-size:14px; font-weight:800; cursor:pointer; }
 
 .toast{
-  position:absolute;
-  z-index:200;
-  left:50%;
-  top:calc(env(safe-area-inset-top,0px) + 15px);
-  transform:translate(-50%,-20px);
-  padding:10px 14px;
-  border-radius:12px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  color:var(--text);
-  font-size:11px;
-  opacity:0;
-  pointer-events:none;
-  transition:.2s ease;
-  white-space:nowrap;
+  position:absolute; z-index:200; left:50%; top:calc(env(safe-area-inset-top,0px) + 15px);
+  transform:translate(-50%,-20px); padding:10px 13px; border-radius:12px; background:var(--panel); border:1px solid var(--line);
+  color:var(--text); font-size:11px; opacity:0; pointer-events:none; transition:.2s ease; white-space:nowrap;
 }
+.toast.show{ opacity:1; transform:translate(-50%,0); }
 
-.toast.show{
-  opacity:1;
-  transform:translate(-50%,0);
-}
+.debug{ position:absolute; right:10px; top:175px; padding:7px 8px; border-radius:10px; background:rgba(0,0,0,.35); color:#9ca3af; font:9px/1.4 monospace; pointer-events:none; text-align:right; }
 
-.debug{
-  position:absolute;
-  right:10px;
-  top:175px;
-  padding:7px 8px;
-  border-radius:10px;
-  background:rgba(0,0,0,.35);
-  color:#9ca3af;
-  font:9px/1.4 monospace;
-  pointer-events:none;
-  text-align:right;
-}
-
-.calibration{
-  position:absolute;
-  z-index:50;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:25px;
-  background:rgba(1,4,12,.82);
-  backdrop-filter:blur(10px);
-  pointer-events:auto;
-}
-
-.calibration.open{
-  display:flex;
-}
-
-.calCard{
-  width:min(370px,100%);
-  padding:20px;
-  border-radius:20px;
-  background:var(--panel);
-  border:1px solid var(--line);
-}
-
-.calCard h2{
-  margin:0 0 8px;
-  font-size:19px;
-}
-
-.calCard p{
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.5;
-}
-
-.calAdjust{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:12px 0;
-  background:rgba(255,255,255,.05);
-  padding:8px 12px;
-  border-radius:10px;
-}
-
-.calActions{
-  display:flex;
-  gap:8px;
-}
-
-.calActions .btn{
-  flex:1;
-}
-
-.nameBadge{
-  position:absolute;
-  left:50%;
-  bottom:82px;
-  transform:translateX(-50%);
-  padding:6px 12px;
-  border-radius:20px;
-  background:rgba(5,12,28,.65);
-  border:1px solid rgba(255,255,255,.1);
-  color:#cbd5e1;
-  font-size:10px;
-  pointer-events:none;
-}
-
-.celebration{
-  position:absolute;
-  z-index:180;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  pointer-events:none;
-}
-
-.celebration.show{
-  display:flex;
-}
-
-.celebrationCard{
-  width:min(330px,85vw);
-  padding:25px;
-  text-align:center;
-  border-radius:24px;
-  background:rgba(3,9,24,.93);
-  border:1px solid rgba(110,231,183,.5);
-  box-shadow:0 15px 70px rgba(0,0,0,.5);
-  animation:pop .35s ease;
-}
-
-.celebrationEmoji{
-  font-size:48px;
-}
-
-.celebrationTitle{
-  margin-top:8px;
-  font-size:20px;
-  font-weight:800;
-  color:var(--green);
-}
-
-.celebrationText{
-  margin-top:7px;
-  font-size:13px;
-  color:#dbeafe;
-  line-height:1.45;
-}
-
-@keyframes pop{
-  from{
-    opacity:0;
-    transform:scale(.7);
-  }
-  to{
-    opacity:1;
-    transform:scale(1);
-  }
-}
+.calibration{ position:absolute; z-index:50; inset:0; display:none; align-items:center; justify-content:center; padding:25px; background:rgba(1,4,12,.82); backdrop-filter:blur(10px); }
+.calibration.open{ display:flex; }
+.calCard{ width:min(370px,100%); padding:20px; border-radius:20px; background:var(--panel); border:1px solid var(--line); }
+.calCard h2{ margin:0 0 8px; font-size:19px; }
+.calCard p{ color:var(--muted); font-size:12px; line-height:1.5; }
+.calActions{ display:flex; gap:8px; margin-top:12px; }
+.calActions .btn{ flex:1; }
+.calAdjust{ display:flex; justify-content:space-between; align-items:center; margin:12px 0; background:rgba(255,255,255,.05); padding:8px 12px; border-radius:10px; }
 </style>
 </head>
 
@@ -717,2434 +190,1155 @@ button{
 
 <div id="app">
 
-<canvas id="sky"></canvas>
+  <canvas id="sky"></canvas>
 
-<div id="hud">
+  <div id="hud">
 
-<div class="topbar">
-  <div class="brand">
-    <strong>🌌 Mission Étoiles</strong>
-    <span>V8 • Explorateur du ciel</span>
-  </div>
-
-  <div class="status" id="status">
-    <b id="statusDot">●</b>
-    <span id="statusText">Ciel prêt</span>
-  </div>
-</div>
-
-<div class="compass">
-  <div class="ring"></div>
-  <div class="n">N</div>
-  <div class="needle" id="needle"></div>
-</div>
-
-<div class="heading" id="heading">
-  Orientation : —°
-</div>
-
-<div class="kidBanner" id="kidBanner">
-  🖐️ Glisse pour explorer • 🤏 Pince pour zoomer
-</div>
-
-<div class="reticle">
-  <div class="dot"></div>
-</div>
-
-<div class="mission" id="mission">
-
-  <div class="missionHead">
-    <div class="missionTitle">
-      🎯 Mission de <span id="childNameMission">l'explorateur</span>
+    <div class="topbar">
+      <div class="brand">
+        <strong>🌌 Mission Étoiles</strong>
+        <span>V6.1 • Mode Enfant & Dessins</span>
+      </div>
+      <div class="status" id="status">
+        <b id="statusDot">●</b>
+        <span id="statusText">Ciel prêt</span>
+      </div>
     </div>
 
-    <div class="missionCount" id="missionCount">
-      0 / 5
-    </div>
-  </div>
-
-  <div class="progress">
-    <div class="progressBar" id="progressBar"></div>
-  </div>
-
-  <div class="missionTarget" id="missionTarget">
-    Préparation de la mission…
-  </div>
-
-  <div class="missionCoords" id="missionCoords">
-    Position : —
-  </div>
-
-  <div class="missionGuidance" id="missionGuidance">
-    Cherche dans le ciel…
-  </div>
-
-</div>
-
-<div class="debug" id="debug">
-  Az : —°<br>
-  Alt : —°<br>
-  Mode : —
-</div>
-
-<div class="nameBadge" id="nameBadge">
-  ⭐ Explorateur
-</div>
-
-<div class="infoBox" id="infoBox">
-
-  <h3 id="infoTitle">
-    Étoile
-  </h3>
-
-  <p id="infoDesc">
-    Description
-  </p>
-
-  <button class="closeBtn" id="infoClose">
-    Fermer
-  </button>
-
-</div>
-
-<div class="controls">
-
-  <div class="controlGroup">
-
-    <button class="btn small" id="kidModeBtn">
-      👶 Mode Enfant
-    </button>
-
-    <button class="btn small" id="missionBtn">
-      🎯 Mission
-    </button>
-
-  </div>
-
-  <div class="controlGroup">
-
-    <button class="btn icon" id="calibrateBtn">
-      🧭
-    </button>
-
-    <button class="btn icon" id="satBtn">
-      🛰️
-    </button>
-
-    <button class="btn icon" id="settingsBtn">
-      ⚙️
-    </button>
-
-  </div>
-
-</div>
-
-</div>
-
-<div class="panel" id="satPanel">
-
-  <button class="btn small panelClose" data-close="satPanel">
-    Fermer
-  </button>
-
-  <h2>🛰️ Satellites & ISS</h2>
-
-  <div class="issTimerBox" id="issTimer">
-    Recherche de l'ISS…
-  </div>
-
-  <div class="list" id="satList"></div>
-
-</div>
-
-<div class="panel" id="settingsPanel">
-
-  <button class="btn small panelClose" data-close="settingsPanel">
-    Fermer
-  </button>
-
-  <h2>⚙️ Réglages</h2>
-
-  <button class="btn" id="sensorBtn">
-    🧭 Réactiver les capteurs
-  </button>
-
-  <p id="locationText">
-    Position : recherche…
-  </p>
-
-  <p>
-    Explorateur actuel :
-    <strong id="settingsName">—</strong>
-  </p>
-
-</div>
-
-<div class="calibration" id="calibration">
-
-  <div class="calCard">
-
-    <h2>🧭 Calibrage</h2>
-
-    <p>
-      Oriente ton téléphone vers le Nord puis utilise
-      les boutons pour corriger l'orientation si nécessaire.
-    </p>
-
-    <div class="calAdjust">
-
-      <button class="btn small" id="calMinus">
-        −5°
-      </button>
-
-      <span id="calVal">
-        Offset : 0°
-      </span>
-
-      <button class="btn small" id="calPlus">
-        +5°
-      </button>
-
+    <div class="compass">
+      <div class="ring"></div>
+      <div class="n">N</div>
+      <div class="needle" id="needle"></div>
     </div>
 
-    <div class="calActions">
+    <div class="heading" id="heading">Orientation : —°</div>
+    <div class="kidBanner" id="kidBanner">🖐️ Glisse pour te déplacer • Pince ou molette pour zoomer</div>
 
-      <button class="btn" id="cancelCal">
-        Fermer
-      </button>
+    <div class="reticle"><div class="dot"></div></div>
 
-      <button class="btn" id="doCal">
-        Définir le Nord
-      </button>
+    <div class="mission" id="mission">
+      <div class="missionHead">
+        <div class="missionTitle">🎯 Mission en cours</div>
+        <div class="missionCount" id="missionCount">0 / 5</div>
+      </div>
+      <div class="progress"><div class="progressBar" id="progressBar"></div></div>
+      <div class="missionTarget" id="missionTarget">Recherche de l'étoile…</div>
+      <div class="missionCoords" id="missionCoords">Position : —</div>
+      <div class="missionGuidance" id="missionGuidance">Pointe ton écran vers le ciel</div>
+    </div>
 
+    <div class="debug" id="debug">Capteur : —<br>Az : —°<br>Alt : —°</div>
+
+    <!-- POPUP CLIC SUR OBJET -->
+    <div class="infoBox" id="infoBox">
+      <h3 id="infoTitle">Étoile</h3>
+      <p id="infoDesc">Description...</p>
+      <button class="closeBtn" id="infoClose">Fermer</button>
+    </div>
+
+    <div class="controls">
+      <div class="controlGroup">
+        <button class="btn small" id="kidModeBtn">👶 Mode Enfant</button>
+        <button class="btn small" id="missionBtn">🎯 Mission</button>
+      </div>
+
+      <div class="controlGroup">
+        <button class="btn icon" id="calibrateBtn" title="Ajuster la boussole">🧭</button>
+        <button class="btn icon" id="satBtn" title="Satellites & ISS">🛰️</button>
+        <button class="btn icon" id="settingsBtn" title="Réglages">⚙️</button>
+      </div>
     </div>
 
   </div>
 
-</div>
-
-<div id="welcome">
-
-  <div class="welcomeCard">
-
-    <div class="logo">
-      🌌
-    </div>
-
-    <h1>
-      Mission <span>Étoiles</span>
-    </h1>
-
-    <p>
-      Bienvenue jeune explorateur !<br>
-      Entre ton prénom pour commencer ta mission.
-    </p>
-
-    <input
-      id="childName"
-      class="nameInput"
-      type="text"
-      maxlength="20"
-      autocomplete="off"
-      placeholder="Ton prénom ⭐"
-    >
-
-    <button class="bigStart" id="startBtn">
-      🚀 Commencer l'exploration
-    </button>
-
-    <div class="welcomeHint">
-      Ton prénom sera utilisé pour t'encourager pendant les missions.
-    </div>
-
+  <div class="panel" id="satPanel">
+    <button class="btn small panelClose" data-close="satPanel">Fermer</button>
+    <h2>🛰️ Satellites & ISS</h2>
+    <div class="issTimerBox" id="issTimer">Calcul du prochain passage de l'ISS…</div>
+    <div class="list" id="satList"></div>
   </div>
 
-</div>
-
-<div class="celebration" id="celebration">
-
-  <div class="celebrationCard">
-
-    <div class="celebrationEmoji" id="celebrationEmoji">
-      ⭐
-    </div>
-
-    <div class="celebrationTitle" id="celebrationTitle">
-      Bravo !
-    </div>
-
-    <div class="celebrationText" id="celebrationText">
-      Tu as trouvé une étoile !
-    </div>
-
+  <div class="panel" id="settingsPanel">
+    <button class="btn small panelClose" data-close="settingsPanel">Fermer</button>
+    <h2>⚙️ Réglages</h2>
+    <button class="btn primary" id="sensorBtn">🧭 Réactiver les capteurs</button>
+    <p id="locationText" style="margin-top:12px;">Position : recherche…</p>
   </div>
 
-</div>
+  <div class="calibration" id="calibration">
+    <div class="calCard">
+      <h2>🧭 Calibrage Boussole</h2>
+      <p>Ajuste l'offset si le Nord dévie.</p>
+      <div class="calAdjust">
+        <button class="btn small" id="calMinus">-5°</button>
+        <span id="calVal">Offset : 0°</span>
+        <button class="btn small" id="calPlus">+5°</button>
+      </div>
+      <div class="calActions">
+        <button class="btn" id="cancelCal">Fermer</button>
+        <button class="btn primary" id="doCal">Définir comme Nord (0°)</button>
+      </div>
+    </div>
+  </div>
 
-<div class="toast" id="toast"></div>
+  <div id="welcome">
+    <div class="welcomeCard">
+      <div class="logo">🌌</div>
+      <h1>Mission <span>Étoiles</span></h1>
+      <p>Découvre le ciel avec le mode enfant interactif, clique sur les étoiles et admire les dessins des constellations !</p>
+      <button class="bigStart" id="startBtn">🚀 Démarrer l'exploration</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
 </div>
 
 <script type="module">
 
-/* =========================================================
-   MISSION ÉTOILES V8
-   ========================================================= */
-
 const $ = id => document.getElementById(id);
-
 const canvas = $("sky");
 const ctx = canvas.getContext("2d");
 
-let W = 0;
-let H = 0;
-let DPR = 1;
+let W = 0, H = 0, DPR = 1;
+let locationData = { lat: 48.98, lon: 2.25, height: 0 };
+let orientation = { az: 0, alt: 30, heading: null, ready: false };
+let calibrationOffset = Number(localStorage.getItem("missionEtoilesV5Cal") || 0);
 
-let childName = "";
-
-let locationData = {
-  lat: 48.98,
-  lon: 2.25,
-  height: 0
-};
-
-let orientation = {
-  az:0,
-  alt:30,
-  heading:null,
-  ready:false
-};
-
-let calibrationOffset =
-  Number(localStorage.getItem("missionEtoilesV8Cal") || 0);
-
-/* =========================================================
-   MODE ENFANT
-   ========================================================= */
-
+/* MODE ENFANT ET NAVIGATION MANUELLE */
 let kidMode = false;
+let manualAz = 0, manualAlt = 30;
+let zoomLevel = 1.0; // 0.6x à 3.5x
 
-let manualAz = 0;
-let manualAlt = 30;
+/*
+  Suivi des pointeurs (doigt/souris), utilisé pour trois gestes :
+  - 1 doigt en Mode Enfant  -> glisser (pan)
+  - 2 doigts en Mode Enfant -> pincer (zoom)
+  - n'importe quel mode     -> tap bref sans mouvement = identification
+*/
+const activePointers = new Map();
+let dragStart = null;
+let pinchStart = null;
+let tapCandidate = null;
 
-let zoomLevel = 1;
+const TAP_MOVE_THRESHOLD = 10;
+const TAP_MAX_DURATION = 450;
 
-let isDragging = false;
+/*
+  Cibles tactiles reconstituées à chaque frame dessinée
+  (étoiles, satellites/ISS, constellations). Le tap consulte
+  cette liste au lieu de tout recalculer au moment du toucher.
+*/
+let frameTargets = [];
 
-let dragStart = {
-  x:0,
-  y:0,
-  az:0,
-  alt:0
-};
-
-let activePointers = new Map();
-let pinchStartDistance = 0;
-let pinchStartZoom = 1;
-
-/* =========================================================
-   SATELLITES
-   ========================================================= */
+/*
+  Objet actuellement sélectionné : surligné à l'écran par un
+  anneau pendant quelques secondes, indépendamment de la fiche
+  d'info qui, elle, reste ouverte jusqu'à fermeture manuelle.
+*/
+let selectedObject = null;
 
 let satellites = [];
 let satelliteLib = null;
 let satelliteLibPromise = null;
 let issNextPass = null;
 
-/* =========================================================
-   MISSIONS
-   ========================================================= */
+/*
+  Cache des positions satellites : le calcul SGP4 est le plus
+  coûteux du rendu, on ne le relance qu'à intervalle réduit
+  plutôt qu'à chaque frame dessinée.
+*/
+let satPositionCache = new Map();
+let lastSatPositionUpdate = 0;
+const SAT_UPDATE_INTERVAL = 300;
+
+/*
+  Cooldown sur la recherche du prochain passage ISS : si aucun
+  passage n'est trouvé dans les prochaines 24h, on évite de
+  relancer la boucle de recherche (1440 propagations) en continu.
+*/
+let lastISSPassCheck = 0;
+const ISS_PASS_CHECK_INTERVAL = 5*60*1000;
 
 let currentTargetIndex = 0;
 
-const FOV_BASE_H = 75;
-const FOV_BASE_V = 65;
-
-const DEG = Math.PI / 180;
-const RAD = 180 / Math.PI;
+const FOV_BASE_H = 75, FOV_BASE_V = 65;
+const DEG = Math.PI / 180, RAD = 180 / Math.PI;
 
 /* =========================================================
-   ÉTOILES
+   ÉTOILES & CONSTELLATIONS DÉTAILLÉES
    ========================================================= */
 
 const stars = [
-
-{name:"Sirius",ra:6.7525,dec:-16.7161,mag:-1.46},
-{name:"Canopus",ra:6.3992,dec:-52.6957,mag:-0.74},
-{name:"Arcturus",ra:14.261,dec:19.1825,mag:-0.05},
-{name:"Vega",ra:18.6156,dec:38.7837,mag:0.03},
-{name:"Capella",ra:5.2782,dec:45.998,mag:0.08},
-{name:"Rigel",ra:5.2423,dec:-8.2016,mag:0.13},
-{name:"Procyon",ra:7.655,dec:5.225,mag:0.34},
-{name:"Betelgeuse",ra:5.9195,dec:7.407,mag:0.42},
-{name:"Altair",ra:19.8464,dec:8.8683,mag:0.77},
-{name:"Aldebaran",ra:4.5987,dec:16.5093,mag:0.85},
-{name:"Spica",ra:13.4199,dec:-11.1614,mag:0.98},
-{name:"Antares",ra:16.4901,dec:-26.4319,mag:1.06},
-{name:"Pollux",ra:7.7553,dec:28.0262,mag:1.14},
-{name:"Deneb",ra:20.6905,dec:45.2803,mag:1.25},
-{name:"Regulus",ra:10.1395,dec:11.9672,mag:1.35},
-{name:"Polaris",ra:2.5303,dec:89.2641,mag:1.98},
-{name:"Bellatrix",ra:5.4208,dec:6.3497,mag:1.64},
-{name:"Saiph",ra:5.7959,dec:-9.6696,mag:2.07},
-
-{name:"Dubhe",ra:11.0621,dec:61.7511,mag:1.79},
-{name:"Merak",ra:11.0307,dec:56.3775,mag:2.37},
-{name:"Phecda",ra:11.9006,dec:53.6947,mag:2.44},
-{name:"Megrez",ra:12.2570,dec:57.0326,mag:3.31},
-{name:"Alioth",ra:12.9004,dec:55.9598,mag:1.77},
-{name:"Mizar",ra:13.3986,dec:54.9254,mag:2.23},
-{name:"Alkaid",ra:13.7925,dec:49.3133,mag:1.85}
-
+  {name:"Sirius", ra:6.7525, dec:-16.7161, mag:-1.46},
+  {name:"Canopus", ra:6.3992, dec:-52.6957, mag:-0.74},
+  {name:"Arcturus", ra:14.261, dec:19.1825, mag:-0.05},
+  {name:"Vega", ra:18.6156, dec:38.7837, mag:0.03},
+  {name:"Capella", ra:5.2782, dec:45.998, mag:0.08},
+  {name:"Rigel", ra:5.2423, dec:-8.2016, mag:0.13},
+  {name:"Procyon", ra:7.655, dec:5.225, mag:0.34},
+  {name:"Betelgeuse", ra:5.9195, dec:7.407, mag:0.42},
+  {name:"Altair", ra:19.8464, dec:8.8683, mag:0.77},
+  {name:"Aldebaran", ra:4.5987, dec:16.5093, mag:0.85},
+  {name:"Spica", ra:13.4199, dec:-11.1614, mag:0.98},
+  {name:"Antares", ra:16.4901, dec:-26.4319, mag:1.06},
+  {name:"Pollux", ra:7.7553, dec:28.0262, mag:1.14},
+  {name:"Deneb", ra:20.6905, dec:45.2803, mag:1.25},
+  {name:"Regulus", ra:10.1395, dec:11.9672, mag:1.35},
+  {name:"Polaris", ra:2.5303, dec:89.2641, mag:1.98},
+  {name:"Bellatrix", ra:5.4208, dec:6.3497, mag:1.64},
+  {name:"Saiph", ra:5.7959, dec:-9.6696, mag:2.07},
+  {name:"Dubhe", ra:11.0621, dec:61.7511, mag:1.79},
+  {name:"Merak", ra:11.0307, dec:56.3775, mag:2.37},
+  {name:"Phecda", ra:11.9006, dec:53.6947, mag:2.44},
+  {name:"Megrez", ra:12.2570, dec:57.0326, mag:3.31},
+  {name:"Alioth", ra:12.9004, dec:55.9598, mag:1.77},
+  {name:"Mizar", ra:13.3986, dec:54.9254, mag:2.23},
+  {name:"Alkaid", ra:13.7925, dec:49.3133, mag:1.85}
 ];
-
-/* =========================================================
-   CONSTELLATIONS
-   ========================================================= */
 
 const constellations = [
-
-{
-  name:"Grande Ourse 🐻",
-  stars:[
-    "Dubhe",
-    "Merak",
-    "Phecda",
-    "Megrez",
-    "Alioth",
-    "Mizar",
-    "Alkaid"
-  ],
-  lines:[
-    ["Dubhe","Merak"],
-    ["Merak","Phecda"],
-    ["Phecda","Megrez"],
-    ["Megrez","Alioth"],
-    ["Alioth","Mizar"],
-    ["Mizar","Alkaid"],
-    ["Megrez","Dubhe"]
-  ],
-  type:"bear"
-},
-
-{
-  name:"Orion 🏹",
-  stars:[
-    "Betelgeuse",
-    "Bellatrix",
-    "Rigel",
-    "Saiph"
-  ],
-  lines:[
-    ["Betelgeuse","Bellatrix"],
-    ["Bellatrix","Rigel"],
-    ["Rigel","Saiph"],
-    ["Saiph","Betelgeuse"]
-  ],
-  type:"hunter"
-},
-
-{
-  name:"Triangle d'Été 📐",
-  stars:[
-    "Vega",
-    "Deneb",
-    "Altair"
-  ],
-  lines:[
-    ["Vega","Deneb"],
-    ["Deneb","Altair"],
-    ["Altair","Vega"]
-  ],
-  type:"triangle"
-}
-
+  {
+    name: "Grande Ourse 🐻",
+    stars: ["Dubhe","Merak","Phecda","Megrez","Alioth","Mizar","Alkaid"],
+    lines: [["Dubhe","Merak"], ["Merak","Phecda"], ["Phecda","Megrez"], ["Megrez","Alioth"], ["Alioth","Mizar"], ["Mizar","Alkaid"], ["Megrez","Dubhe"]],
+    type: "bear"
+  },
+  {
+    name: "Orion 🏹",
+    stars: ["Betelgeuse","Bellatrix","Rigel","Saiph"],
+    lines: [["Betelgeuse","Bellatrix"], ["Bellatrix","Rigel"], ["Rigel","Saiph"], ["Saiph","Betelgeuse"]],
+    type: "hunter"
+  },
+  {
+    name: "Triangle d'Été 📐",
+    stars: ["Vega","Deneb","Altair"],
+    lines: [["Vega","Deneb"], ["Deneb","Altair"], ["Altair","Vega"]],
+    type: "triangle"
+  }
 ];
-
-/* =========================================================
-   MISSIONS
-   ========================================================= */
 
 const missions = [
-
-{
-  name:"Vega",
-  text:"Trouve Véga ⭐",
-  encouragement:"Quel regard d'explorateur !"
-},
-
-{
-  name:"Arcturus",
-  text:"Trouve Arcturus ⭐",
-  encouragement:"Incroyable ! Tu progresses très vite !"
-},
-
-{
-  name:"Altair",
-  text:"Trouve Altaïr ⭐",
-  encouragement:"Super ! Les étoiles n'ont plus de secret pour toi !"
-},
-
-{
-  name:"Deneb",
-  text:"Trouve Deneb ⭐",
-  encouragement:"Magnifique observation !"
-},
-
-{
-  name:"Sirius",
-  text:"Trouve Sirius ⭐",
-  encouragement:"Bravo ! Tu as trouvé l'une des étoiles les plus brillantes !"
-}
-
+  {name:"Vega", text:"Trouve Véga ⭐"},
+  {name:"Arcturus", text:"Trouve Arcturus ⭐"},
+  {name:"Altair", text:"Trouve Altaïr ⭐"},
+  {name:"Deneb", text:"Trouve Deneb ⭐"},
+  {name:"Sirius", text:"Trouve Sirius ⭐"}
 ];
 
 /* =========================================================
-   OUTILS
+   UTILS & MATHS
    ========================================================= */
 
-function clamp(v,a,b){
-  return Math.max(a,Math.min(b,v));
-}
-
-function wrap360(v){
-  v %= 360;
-  return v < 0 ? v + 360 : v;
-}
-
-function angleDiff(a,b){
-  return ((a-b+540)%360)-180;
-}
-
-function lerpAngle(a,b,t){
-  return wrap360(a + angleDiff(b,a)*t);
-}
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function wrap360(v){ v %= 360; return v < 0 ? v + 360 : v; }
+function angleDiff(a,b){ return ((a-b+540)%360)-180; }
+function lerpAngle(a,b,t){ return wrap360(a + angleDiff(b,a)*t); }
 
 function getCardinal(az){
-
-  const dirs=[
-    "N",
-    "NE",
-    "E",
-    "SE",
-    "S",
-    "SO",
-    "O",
-    "NO"
-  ];
-
-  return dirs[Math.round(az/45)%8];
+  const dirs = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+  return dirs[Math.round(az / 45) % 8];
 }
 
-function toast(message,duration=2600){
+/*
+  Moyenne circulaire d'azimuts : une moyenne arithmétique
+  naïve casse près de la limite 0°/360° (ex: 350° et 10°
+  donneraient 180° au lieu de ~0°). On moyenne les vecteurs
+  unitaires puis on reconvertit en angle.
+*/
+function averageAzimuth(azList){
+  let sumX = 0, sumY = 0;
+  for(const az of azList){
+    const rad = az*DEG;
+    sumX += Math.cos(rad);
+    sumY += Math.sin(rad);
+  }
+  return wrap360(Math.atan2(sumY, sumX)*RAD);
+}
 
-  const el=$("toast");
+function pointerDistance(a,b){
+  return Math.hypot(a.x-b.x, a.y-b.y);
+}
 
-  el.textContent=message;
-
+function toast(message, duration=2600){
+  const el = $("toast");
+  el.textContent = message;
   el.classList.add("show");
-
   clearTimeout(toast.timer);
-
-  toast.timer=setTimeout(()=>{
-    el.classList.remove("show");
-  },duration);
+  toast.timer = setTimeout(()=>{ el.classList.remove("show"); }, duration);
 }
 
-function setStatus(text,good=true){
-
-  $("statusText").textContent=text;
-
-  $("statusDot").style.color=
-    good ? "#6ee7b7" : "#fde68a";
+function setStatus(text, good=true){
+  $("statusText").textContent = text;
+  $("statusDot").style.color = good ? "#6ee7b7" : "#fde68a";
 }
-
-/* =========================================================
-   REDIMENSIONNEMENT
-   ========================================================= */
 
 function resize(){
-
-  DPR=Math.min(window.devicePixelRatio || 1,2);
-
-  W=window.innerWidth;
-  H=window.innerHeight;
-
-  canvas.width=Math.floor(W*DPR);
-  canvas.height=Math.floor(H*DPR);
-
-  canvas.style.width=W+"px";
-  canvas.style.height=H+"px";
-
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.floor(W*DPR); canvas.height = Math.floor(H*DPR);
+  canvas.style.width = W+"px"; canvas.style.height = H+"px";
   ctx.setTransform(DPR,0,0,DPR,0,0);
 }
-
-window.addEventListener("resize",resize);
-
+window.addEventListener("resize", resize);
 resize();
 
 /* =========================================================
-   ASTRONOMIE
+   ASTRONOMY MATHS
    ========================================================= */
 
-function julianDate(date=new Date()){
-
-  return date.getTime()/86400000+2440587.5;
-
-}
-
+function julianDate(date=new Date()){ return date.getTime()/86400000 + 2440587.5; }
 function gmst(date=new Date()){
-
-  const jd=julianDate(date);
-
-  const T=(jd-2451545)/36525;
-
-  return wrap360(
-    280.46061837+
-    360.98564736629*(jd-2451545)+
-    0.000387933*T*T
-  );
+  const jd = julianDate(date);
+  const T = (jd-2451545.0)/36525;
+  return wrap360(280.46061837 + 360.98564736629*(jd-2451545) + 0.000387933*T*T);
 }
+function lst(date=new Date()){ return wrap360(gmst(date)+locationData.lon); }
 
-function lst(date=new Date()){
+function raDecToAltAz(raHours,decDeg,date=new Date()){
+  const LST = lst(date);
+  const Hdeg = angleDiff(LST,raHours*15);
+  const Hrad = Hdeg*DEG;
+  const lat = locationData.lat*DEG;
+  const dec = decDeg*DEG;
 
-  return wrap360(
-    gmst(date)+locationData.lon
-  );
-}
+  const sinAlt = Math.sin(lat)*Math.sin(dec) + Math.cos(lat)*Math.cos(dec)*Math.cos(Hrad);
+  const alt = Math.asin(clamp(sinAlt,-1,1))*RAD;
 
-function raDecToAltAz(
-  raHours,
-  decDeg,
-  date=new Date()
-){
-
-  const LST=lst(date);
-
-  const Hdeg=angleDiff(
-    LST,
-    raHours*15
-  );
-
-  const Hrad=Hdeg*DEG;
-
-  const lat=locationData.lat*DEG;
-  const dec=decDeg*DEG;
-
-  const sinAlt=
-    Math.sin(lat)*Math.sin(dec)+
-    Math.cos(lat)*Math.cos(dec)*Math.cos(Hrad);
-
-  const alt=
-    Math.asin(clamp(sinAlt,-1,1))*RAD;
-
-  const y=
-    -Math.sin(Hrad)*Math.cos(dec);
-
-  const x=
-    Math.sin(dec)*Math.cos(lat)-
-    Math.cos(dec)*Math.sin(lat)*Math.cos(Hrad);
-
-  const az=wrap360(
-    Math.atan2(y,x)*RAD
-  );
+  const y = -Math.sin(Hrad)*Math.cos(dec);
+  const x = Math.sin(dec)*Math.cos(lat) - Math.cos(dec)*Math.sin(lat)*Math.cos(Hrad);
+  const az = wrap360(Math.atan2(y,x)*RAD);
 
   return {az,alt};
 }
 
 /* =========================================================
-   VUE ACTIVE
+   ORIENTATION ET CONTROLES TACTILES (MODE ENFANT)
    ========================================================= */
 
 function getActiveView(){
-
   return {
-
-    az:kidMode
-      ? manualAz
-      : orientation.az,
-
-    alt:kidMode
-      ? manualAlt
-      : orientation.alt,
-
-    fovH:FOV_BASE_H/zoomLevel,
-    fovV:FOV_BASE_V/zoomLevel
-
+    az: kidMode ? manualAz : orientation.az,
+    alt: kidMode ? manualAlt : orientation.alt,
+    fovH: FOV_BASE_H / zoomLevel,
+    fovV: FOV_BASE_V / zoomLevel
   };
 }
 
-/* =========================================================
-   ORIENTATION
-   ========================================================= */
-
 function updateOrientationFromEvent(e){
+  if(kidMode || e.beta == null || e.gamma == null) return;
 
-  if(kidMode) return;
+  const beta = e.beta;
+  const gamma = e.gamma;
 
-  if(e.beta==null || e.gamma==null)
-    return;
-
-  const beta=e.beta;
-  const gamma=e.gamma;
-
-  let rawHeading=null;
-
-  if(
-    typeof e.webkitCompassHeading==="number" &&
-    isFinite(e.webkitCompassHeading)
-  ){
-
-    rawHeading=e.webkitCompassHeading;
-
-  }else if(
-    e.absolute &&
-    e.alpha!=null
-  ){
-
-    rawHeading=wrap360(360-e.alpha);
-
+  let rawHeading = null;
+  if(typeof e.webkitCompassHeading === "number" && isFinite(e.webkitCompassHeading)){
+    rawHeading = e.webkitCompassHeading;
+  } else if(e.absolute && e.alpha != null){
+    rawHeading = wrap360(360 - e.alpha);
   }
 
-  let targetAlt=90-beta;
+  let targetAlt = 90 - beta;
+  if(Math.abs(gamma) > 90){ targetAlt = beta - 90; }
+  targetAlt = clamp(targetAlt, -90, 90);
 
-  if(Math.abs(gamma)>90)
-    targetAlt=beta-90;
+  let az = orientation.az;
+  if(rawHeading !== null){ az = wrap360(rawHeading + calibrationOffset); }
 
-  targetAlt=clamp(targetAlt,-90,90);
-
-  let az=orientation.az;
-
-  if(rawHeading!==null)
-    az=wrap360(
-      rawHeading+calibrationOffset
-    );
-
-  orientation.az=
-    lerpAngle(
-      orientation.az,
-      az,
-      .18
-    );
-
-  orientation.alt +=
-    (targetAlt-orientation.alt)*.18;
-
-  orientation.heading=rawHeading;
-  orientation.ready=true;
+  orientation.az = lerpAngle(orientation.az, az, 0.15);
+  orientation.alt = orientation.alt + (targetAlt - orientation.alt) * 0.15;
+  orientation.heading = rawHeading;
+  orientation.ready = true;
 
   updateOrientationHUD();
 }
 
 function updateOrientationHUD(){
-
-  const view=getActiveView();
-
-  $("heading").textContent=
-    `${getCardinal(view.az)} (${Math.round(view.az)}°) • Alt ${Math.round(view.alt)}°`
-    +(kidMode
-      ? ` • Zoom ${zoomLevel.toFixed(1)}x`
-      :"");
-
-  $("needle").style.transform=
-    `rotate(${view.az}deg)`;
-
-  $("debug").innerHTML=
-    `Az : ${Math.round(view.az)}°<br>`+
-    `Alt : ${Math.round(view.alt)}°<br>`+
-    `Mode : ${kidMode ? "Enfant":"Capteurs"}`;
-
+  const view = getActiveView();
+  $("heading").textContent = `${getCardinal(view.az)} (${Math.round(view.az)}°) • Alt ${Math.round(view.alt)}° ${kidMode ? "• Zoom "+zoomLevel.toFixed(1)+"x" : ""}`;
+  $("needle").style.transform = `rotate(${view.az}deg)`;
+  $("debug").innerHTML = `Az : ${Math.round(view.az)}°<br>Alt : ${Math.round(view.alt)}°<br>Mode : ${kidMode ? "Enfant" : "Gyro"}`;
 }
 
 /* =========================================================
-   MODE ENFANT : TOUCH / DRAG
+   GESTES TACTILES : GLISSER (1 doigt) / PINCER (2 doigts) / TAP
    ========================================================= */
 
-canvas.addEventListener(
-  "pointerdown",
-  e=>{
+canvas.addEventListener("pointerdown", e => {
 
-    if(!kidMode) return;
+  try{ canvas.setPointerCapture(e.pointerId); }catch{}
 
-    canvas.setPointerCapture?.(e.pointerId);
+  activePointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
 
-    activePointers.set(
-      e.pointerId,
-      {
-        x:e.clientX,
-        y:e.clientY
-      }
-    );
+  if(activePointers.size === 1){
 
-    if(activePointers.size===1){
+    tapCandidate = {x:e.clientX, y:e.clientY, t:Date.now(), pointerId:e.pointerId, moved:false};
 
-      isDragging=true;
-
-      dragStart={
-        x:e.clientX,
-        y:e.clientY,
-        az:manualAz,
-        alt:manualAlt
-      };
-
-    }else if(activePointers.size===2){
-
-      const pts=[...activePointers.values()];
-
-      pinchStartDistance=Math.hypot(
-        pts[0].x-pts[1].x,
-        pts[0].y-pts[1].y
-      );
-
-      pinchStartZoom=zoomLevel;
+    if(kidMode){
+      dragStart = {x:e.clientX, y:e.clientY, az:manualAz, alt:manualAlt};
     }
+  }
+  else{
 
-  },
-  {passive:false}
-);
+    // Un deuxième doigt arrive : ce n'est plus un tap.
+    tapCandidate = null;
 
-canvas.addEventListener(
-  "pointermove",
-  e=>{
+    if(kidMode && activePointers.size === 2){
 
-    if(!kidMode) return;
+      const pts = [...activePointers.values()];
 
-    if(!activePointers.has(e.pointerId))
-      return;
+      pinchStart = {dist:pointerDistance(pts[0],pts[1]), zoom:zoomLevel};
 
-    activePointers.set(
-      e.pointerId,
-      {
-        x:e.clientX,
-        y:e.clientY
-      }
-    );
-
-    if(activePointers.size===1 && isDragging){
-
-      const dx=e.clientX-dragStart.x;
-      const dy=e.clientY-dragStart.y;
-
-      const view=getActiveView();
-
-      manualAz=wrap360(
-        dragStart.az-
-        (dx/W)*view.fovH
-      );
-
-      manualAlt=clamp(
-        dragStart.alt+
-        (dy/H)*view.fovV,
-        -85,
-        85
-      );
-
-      updateOrientationHUD();
-
-    }else if(activePointers.size===2){
-
-      const pts=[...activePointers.values()];
-
-      const distance=Math.hypot(
-        pts[0].x-pts[1].x,
-        pts[0].y-pts[1].y
-      );
-
-      if(pinchStartDistance>0){
-
-        const ratio=
-          distance/pinchStartDistance;
-
-        zoomLevel=clamp(
-          pinchStartZoom*ratio,
-          .6,
-          4
-        );
-
-        updateOrientationHUD();
-      }
-
+      dragStart = null;
     }
+  }
+});
 
-    e.preventDefault();
+window.addEventListener("pointermove", e => {
 
-  },
-  {passive:false}
-);
+  if(!activePointers.has(e.pointerId)) return;
 
-function pointerEnd(e){
+  activePointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+
+  if(tapCandidate && tapCandidate.pointerId === e.pointerId){
+
+    const d = Math.hypot(e.clientX-tapCandidate.x, e.clientY-tapCandidate.y);
+
+    if(d > TAP_MOVE_THRESHOLD){
+      tapCandidate.moved = true;
+    }
+  }
+
+  if(!kidMode) return;
+
+  if(activePointers.size === 2 && pinchStart){
+
+    const pts = [...activePointers.values()];
+
+    const dist = pointerDistance(pts[0],pts[1]);
+
+    zoomLevel = clamp(pinchStart.zoom*(dist/pinchStart.dist), 0.6, 3.5);
+
+    updateOrientationHUD();
+
+    return;
+  }
+
+  if(activePointers.size === 1 && dragStart){
+
+    const dx = e.clientX-dragStart.x;
+    const dy = e.clientY-dragStart.y;
+
+    const view = getActiveView();
+
+    manualAz = wrap360(dragStart.az-(dx/W)*view.fovH);
+    manualAlt = clamp(dragStart.alt+(dy/H)*view.fovV, -85, 85);
+
+    updateOrientationHUD();
+  }
+});
+
+function endPointer(e){
 
   activePointers.delete(e.pointerId);
 
-  if(activePointers.size===0)
-    isDragging=false;
+  try{ canvas.releasePointerCapture(e.pointerId); }catch{}
 
-}
+  if(tapCandidate && tapCandidate.pointerId === e.pointerId){
 
-canvas.addEventListener(
-  "pointerup",
-  pointerEnd
-);
+    const duration = Date.now()-tapCandidate.t;
 
-canvas.addEventListener(
-  "pointercancel",
-  pointerEnd
-);
-
-canvas.addEventListener(
-  "wheel",
-  e=>{
-
-    if(!kidMode) return;
-
-    e.preventDefault();
-
-    zoomLevel=clamp(
-      zoomLevel+
-      (e.deltaY<0 ? .2:-.2),
-      .6,
-      4
-    );
-
-    updateOrientationHUD();
-
-  },
-  {passive:false}
-);
-
-/* =========================================================
-   MODE ENFANT
-   ========================================================= */
-
-$("kidModeBtn").addEventListener(
-  "click",
-  ()=>{
-
-    kidMode=!kidMode;
-
-    $("kidModeBtn")
-      .classList
-      .toggle("active",kidMode);
-
-    $("kidBanner")
-      .classList
-      .toggle("show",kidMode);
-
-    if(kidMode){
-
-      manualAz=orientation.az;
-      manualAlt=orientation.alt;
-
-      toast(
-        `👶 ${childName || "Explorateur"}, à toi de jouer !`,
-        3000
-      );
-
-    }else{
-
-      toast(
-        "🧭 Mode capteurs réactivé",
-        2200
-      );
-
+    if(!tapCandidate.moved && duration < TAP_MAX_DURATION){
+      handleTap(e.clientX, e.clientY);
     }
 
-    updateOrientationHUD();
-
-  }
-);
-
-/* =========================================================
-   PROJECTION
-   ========================================================= */
-
-function project(az,alt){
-
-  const view=getActiveView();
-
-  const dx=angleDiff(
-    az,
-    view.az
-  );
-
-  const dy=alt-view.alt;
-
-  if(
-    Math.abs(dx)>
-      view.fovH/2+10 ||
-    Math.abs(dy)>
-      view.fovV/2+10
-  ){
-
-    return null;
+    tapCandidate = null;
   }
 
-  return {
-
-    x:
-      W/2+
-      (dx/view.fovH)*W,
-
-    y:
-      H/2-
-      (dy/view.fovV)*H
-
-  };
-
-}
-
-/* =========================================================
-   ÉTOILES
-   ========================================================= */
-
-function getStars(){
-
-  const now=new Date();
-
-  return stars.map(
-    s=>({
-      ...s,
-      ...raDecToAltAz(
-        s.ra,
-        s.dec,
-        now
-      )
-    })
-  );
-
-}
-
-/* =========================================================
-   CONSTELLATION CENTER
-   ========================================================= */
-
-function getConstellationCenter(constel){
-
-  const currentStars=getStars();
-
-  const selected=
-    currentStars.filter(
-      s=>constel.stars.includes(s.name)
-    );
-
-  if(!selected.length)
-    return null;
-
-  let x=0;
-  let y=0;
-  let z=0;
-
-  for(const s of selected){
-
-    const az=s.az*DEG;
-    const alt=s.alt*DEG;
-
-    x+=Math.cos(alt)*Math.cos(az);
-    y+=Math.cos(alt)*Math.sin(az);
-    z+=Math.sin(alt);
-
-  }
-
-  x/=selected.length;
-  y/=selected.length;
-  z/=selected.length;
-
-  return {
-
-    az:wrap360(
-      Math.atan2(y,x)*RAD
-    ),
-
-    alt:
-      Math.atan2(
-        z,
-        Math.sqrt(x*x+y*y)
-      )*RAD
-
-  };
-
-}
-
-/* =========================================================
-   FILIGRANES
-   ========================================================= */
-
-function drawConstellationWatermark(
-  constel,
-  starMap
-){
-
-  const names=constel.stars;
-
-  const points=names
-    .map(n=>starMap.get(n))
-    .filter(Boolean)
-    .map(s=>project(s.az,s.alt))
-    .filter(Boolean);
-
-  if(points.length<3)
+  if(!kidMode){
+    dragStart = null;
+    pinchStart = null;
     return;
+  }
 
-  const center=points.reduce(
-    (a,p)=>({
-      x:a.x+p.x/points.length,
-      y:a.y+p.y/points.length
-    }),
-    {x:0,y:0}
-  );
+  if(activePointers.size === 1){
+
+    // Un doigt reste après un pincement : on repart en glisser
+    // depuis sa position actuelle, sans saut de vue.
+    const remaining = [...activePointers.values()][0];
+
+    dragStart = {x:remaining.x, y:remaining.y, az:manualAz, alt:manualAlt};
+
+    pinchStart = null;
+  }
+  else if(activePointers.size === 0){
+
+    dragStart = null;
+    pinchStart = null;
+  }
+}
+
+window.addEventListener("pointerup", endPointer);
+window.addEventListener("pointercancel", endPointer);
+
+/* ZOOM MOLETTE SOURIS (desktop) */
+canvas.addEventListener("wheel", e => {
+  if(!kidMode) return;
+  e.preventDefault();
+  zoomLevel = clamp(zoomLevel + (e.deltaY < 0 ? 0.2 : -0.2), 0.6, 3.5);
+  updateOrientationHUD();
+}, { passive: false });
+
+/* BASCULE MODE ENFANT */
+$("kidModeBtn").addEventListener("click", () => {
+  kidMode = !kidMode;
+  $("kidModeBtn").classList.toggle("active", kidMode);
+  $("kidBanner").classList.toggle("show", kidMode);
+  if(kidMode){
+    manualAz = orientation.az;
+    manualAlt = orientation.alt;
+    toast("👶 Mode Enfant activé ! Glisse et zoom librement.");
+  } else {
+    dragStart = null;
+    pinchStart = null;
+    toast("🧭 Mode Capteurs gyro réactivé !");
+  }
+  updateOrientationHUD();
+});
+
+/* =========================================================
+   IDENTIFICATION AU TAP (étoiles / satellites / constellations)
+   ========================================================= */
+
+function showInfoBox(title, desc){
+  $("infoTitle").textContent = title;
+  $("infoDesc").textContent = desc;
+  $("infoBox").classList.add("show");
+}
+$("infoClose").addEventListener("click", () => $("infoBox").classList.remove("show"));
+
+function handleTap(cx, cy){
+
+  if(!frameTargets.length) return;
+
+  let best = null;
+  let bestDist = Infinity;
+
+  for(const t of frameTargets){
+
+    const d = Math.hypot(t.x-cx, t.y-cy);
+
+    if(d < t.hit && d < bestDist){
+      bestDist = d;
+      best = t;
+    }
+  }
+
+  if(!best){
+    selectedObject = null;
+    return;
+  }
+
+  selectObject(best);
+}
+
+function selectObject(target){
+
+  if(target.type === "satellite"){
+
+    selectedObject = {type:"satellite", name:target.name, ref:target.ref, until:Date.now()+6000};
+
+    showInfoBox(
+      target.isISS ? "🛸 ISS (Station Spatiale)" : "🛰️ "+target.name,
+      `Direction : ${getCardinal(target.az)} (${Math.round(target.az)}°)\nAltitude : ${Math.round(target.alt)}°\nDistance : ${Math.round(target.range)} km`
+    );
+  }
+  else if(target.type === "star"){
+
+    selectedObject = {type:"star", name:target.name, until:Date.now()+6000};
+
+    showInfoBox(
+      `⭐ Étoile : ${target.name}`,
+      `Luminosité (Mag) : ${target.mag}\nDirection : ${getCardinal(target.az)} (${Math.round(target.az)}°)\nAltitude : ${Math.round(target.alt)}°`
+    );
+  }
+  else if(target.type === "constellation"){
+
+    selectedObject = {type:"constellation", name:target.name, until:Date.now()+6000};
+
+    showInfoBox(
+      `🌌 Constellation : ${target.name}`,
+      `Formée par ${target.starCount} étoiles visibles dans cette zone du ciel.`
+    );
+  }
+}
+
+function locateSelected(currentStars){
+
+  if(!selectedObject) return null;
+
+  if(selectedObject.type === "star"){
+    const s = currentStars.find(st => st.name === selectedObject.name);
+    return s ? {az:s.az, alt:s.alt} : null;
+  }
+
+  if(selectedObject.type === "satellite"){
+    const p = getCachedSatPosition(selectedObject.ref);
+    return p ? {az:p.az, alt:p.alt} : null;
+  }
+
+  if(selectedObject.type === "constellation"){
+    const constel = constellations.find(c => c.name === selectedObject.name);
+    if(!constel) return null;
+    return getConstellationCenter(constel, currentStars);
+  }
+
+  return null;
+}
+
+function drawSelection(currentStars){
+
+  if(!selectedObject) return;
+
+  if(Date.now() > selectedObject.until){
+    selectedObject = null;
+    return;
+  }
+
+  const loc = locateSelected(currentStars);
+
+  if(!loc){
+    selectedObject = null;
+    return;
+  }
+
+  const p = project(loc.az, loc.alt);
+  if(!p) return;
+
+  const pulse = 16+Math.sin(Date.now()/220)*3;
 
   ctx.save();
-
-  ctx.globalAlpha=.11;
-
-  if(constel.type==="bear"){
-
-    ctx.fillStyle="#7dd3fc";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-      center.x,
-      center.y,
-      80,
-      42,
-      -.2,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.font="48px serif";
-    ctx.textAlign="center";
-    ctx.fillText(
-      "🐻",
-      center.x,
-      center.y+16
-    );
-
-  }
-
-  if(constel.type==="hunter"){
-
-    ctx.font="75px serif";
-    ctx.textAlign="center";
-
-    ctx.fillText(
-      "🏹",
-      center.x,
-      center.y+22
-    );
-
-  }
-
-  if(constel.type==="triangle"){
-
-    ctx.font="65px serif";
-    ctx.textAlign="center";
-
-    ctx.fillText(
-      "🦢",
-      center.x,
-      center.y+18
-    );
-
-  }
-
+  ctx.strokeStyle = "#fde68a";
+  ctx.lineWidth = 2;
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = "rgba(253,230,138,.8)";
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, pulse, 0, Math.PI*2);
+  ctx.stroke();
   ctx.restore();
-
 }
 
 /* =========================================================
-   CONSTELLATIONS
-   ========================================================= */
-
-function drawConstellations(){
-
-  const currentStars=getStars();
-
-  const starMap=
-    new Map(
-      currentStars.map(
-        s=>[s.name,s]
-      )
-    );
-
-  for(const constel of constellations){
-
-    drawConstellationWatermark(
-      constel,
-      starMap
-    );
-
-    ctx.save();
-
-    ctx.strokeStyle=
-      "rgba(125,211,252,.42)";
-
-    ctx.lineWidth=1.3;
-
-    ctx.setLineDash([4,4]);
-
-    for(const line of constel.lines){
-
-      const a=starMap.get(line[0]);
-      const b=starMap.get(line[1]);
-
-      if(!a || !b)
-        continue;
-
-      const pa=project(a.az,a.alt);
-      const pb=project(b.az,b.alt);
-
-      if(!pa || !pb)
-        continue;
-
-      ctx.beginPath();
-
-      ctx.moveTo(pa.x,pa.y);
-      ctx.lineTo(pb.x,pb.y);
-
-      ctx.stroke();
-
-    }
-
-    ctx.restore();
-
-    const center=
-      getConstellationCenter(
-        constel
-      );
-
-    if(
-      center &&
-      center.alt>0
-    ){
-
-      const p=
-        project(
-          center.az,
-          center.alt
-        );
-
-      if(p){
-
-        ctx.save();
-
-        ctx.font=
-          "bold 13px sans-serif";
-
-        ctx.fillStyle=
-          "#7dd3fc";
-
-        ctx.shadowBlur=8;
-        ctx.shadowColor="#38bdf8";
-
-        ctx.textAlign="center";
-
-        ctx.fillText(
-          constel.name,
-          p.x,
-          p.y
-        );
-
-        ctx.restore();
-
-      }
-
-    }
-
-  }
-
-}
-
-/* =========================================================
-   ÉTOILES
-   ========================================================= */
-
-function drawStars(){
-
-  const currentStars=getStars();
-
-  for(const star of currentStars){
-
-    if(star.alt<0)
-      continue;
-
-    const p=
-      project(
-        star.az,
-        star.alt
-      );
-
-    if(!p)
-      continue;
-
-    const radius=
-      Math.max(
-        1.5,
-        4.5-star.mag*.5
-      );
-
-    ctx.save();
-
-    ctx.fillStyle="#fff";
-
-    ctx.shadowBlur=
-      star.mag<1 ? 10:3;
-
-    ctx.shadowColor="#fff";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      p.x,
-      p.y,
-      radius,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.shadowBlur=0;
-
-    ctx.font="10px sans-serif";
-
-    ctx.fillStyle=
-      "rgba(255,255,255,.86)";
-
-    ctx.fillText(
-      star.name,
-      p.x+6,
-      p.y-4
-    );
-
-    ctx.restore();
-
-  }
-
-}
-
-/* =========================================================
-   SATELLITES
+   SATELLITES & MINUTEUR ISS
    ========================================================= */
 
 async function loadSatelliteLibrary(){
-
-  if(satelliteLib)
-    return satelliteLib;
-
-  if(satelliteLibPromise)
-    return satelliteLibPromise;
-
-  satelliteLibPromise=
-    import(
-      "https://esm.sh/satellite.js@7.1.0"
-    ).then(
-      m=>{
-        satelliteLib=m;
-        return m;
-      }
-    );
-
+  if(satelliteLib) return satelliteLib;
+  if(satelliteLibPromise) return satelliteLibPromise;
+  satelliteLibPromise = import("https://esm.sh/satellite.js@7.1.0").then(m => { satelliteLib = m; return m; });
   return satelliteLibPromise;
-
 }
 
 async function loadSatellites(){
+  const lib = await loadSatelliteLibrary();
+  if(!lib) return;
 
   try{
-
-    const lib=
-      await loadSatelliteLibrary();
-
-    const res=
-      await fetch(
-        "https://celestrak.org/NORAD/elements/gp.php?GROUP=STATIONS&FORMAT=JSON",
-        {
-          cache:"no-store"
-        }
-      );
-
-    if(!res.ok)
-      throw new Error("Celestrak");
-
-    const data=
-      await res.json();
-
-    satellites=
-      data.map(
-        r=>({
-
-          name:r.OBJECT_NAME,
-
-          norad:r.NORAD_CAT_ID,
-
-          isISS:
-            String(r.NORAD_CAT_ID)==="25544" ||
-            /ISS|ZARYA/i.test(
-              r.OBJECT_NAME
-            ),
-
-          satrec:
-            lib.json2satrec(r)
-
-        })
-      );
-
-    setStatus(
-      `${satellites.length} satellites`,
-      true
-    );
-
-    updateSatelliteList();
-
+    const res = await fetch("https://celestrak.org/NORAD/elements/gp.php?GROUP=STATIONS&FORMAT=JSON");
+    const data = await res.json();
+    satellites = data.map(r => ({
+      name: r.OBJECT_NAME,
+      norad: r.NORAD_CAT_ID,
+      isISS: r.NORAD_CAT_ID === 25544 || /ISS|ZARYA/i.test(r.OBJECT_NAME),
+      satrec: lib.json2satrec(r)
+    }));
+    satPositionCache.clear();
+    setStatus(`${satellites.length} Satellites & ISS`, true);
     findNextISSPass();
-
-  }catch(error){
-
-    console.warn(
-      "Satellites:",
-      error
-    );
-
-    setStatus(
-      "Satellites indisponibles",
-      false
-    );
-
+    lastISSPassCheck = Date.now();
+  }catch(e){
+    setStatus("Erreur Satellites", false);
   }
-
 }
 
-function getSatLookAngles(
-  sat,
-  date=new Date()
-){
-
-  if(!satelliteLib)
-    return null;
-
+function getSatLookAngles(sat, date = new Date()){
+  if(!satelliteLib) return null;
   try{
-
-    const pv=
-      satelliteLib.propagate(
-        sat.satrec,
-        date
-      );
-
-    if(
-      !pv ||
-      !pv.position
-    )
-      return null;
-
-    const gmstRad=
-      satelliteLib.gstime(date);
-
-    const observer={
-      longitude:
-        locationData.lon*DEG,
-
-      latitude:
-        locationData.lat*DEG,
-
-      height:
-        locationData.height/1000
-    };
-
-    const ecf=
-      satelliteLib.eciToEcf(
-        pv.position,
-        gmstRad
-      );
-
-    const angles=
-      satelliteLib.ecfToLookAngles(
-        observer,
-        ecf
-      );
-
-    return {
-
-      az:
-        wrap360(
-          angles.azimuth*RAD
-        ),
-
-      alt:
-        angles.elevation*RAD,
-
-      range:
-        angles.rangeSat
-
-    };
-
-  }catch{
-
-    return null;
-
-  }
-
+    const pv = satelliteLib.propagate(sat.satrec, date);
+    if(!pv || !pv.position) return null;
+    const gmstRad = satelliteLib.gstime(date);
+    const observer = { longitude: locationData.lon * DEG, latitude: locationData.lat * DEG, height: locationData.height / 1000 };
+    const positionEcf = satelliteLib.eciToEcf(pv.position, gmstRad);
+    const angles = satelliteLib.ecfToLookAngles(observer, positionEcf);
+    return { az: wrap360(angles.azimuth*RAD), alt: angles.elevation*RAD, range: angles.rangeSat };
+  }catch{ return null; }
 }
 
-/* =========================================================
-   ISS
-   ========================================================= */
+/*
+  Rafraîchit le cache des positions satellites au maximum
+  toutes les SAT_UPDATE_INTERVAL ms (le SGP4 est ce qui coûte
+  cher, pas la projection écran qui, elle, reste à 30 FPS).
+*/
+function refreshSatellitePositionCache(){
 
-function findNextISSPass(){
+  const now = Date.now();
 
-  const iss=
-    satellites.find(
-      s=>s.isISS
-    );
+  if(now-lastSatPositionUpdate < SAT_UPDATE_INTERVAL) return;
 
-  if(!iss)
-    return;
-
-  const now=new Date();
-
-  for(
-    let i=1;
-    i<=1440;
-    i++
-  ){
-
-    const t=
-      new Date(
-        now.getTime()+
-        i*60000
-      );
-
-    const angle=
-      getSatLookAngles(
-        iss,
-        t
-      );
-
-    if(
-      angle &&
-      angle.alt>5
-    ){
-
-      issNextPass=t;
-
-      return;
-
-    }
-
-  }
-
-}
-
-function updateISSCountdown(){
-
-  const el=$("issTimer");
-
-  const iss=
-    satellites.find(
-      s=>s.isISS
-    );
-
-  if(!iss){
-
-    el.textContent=
-      "ISS en attente des données orbitales…";
-
-    return;
-
-  }
-
-  const current=
-    getSatLookAngles(iss);
-
-  if(
-    current &&
-    current.alt>0
-  ){
-
-    el.textContent=
-      "🟢 L'ISS est visible maintenant !";
-
-    el.style.color=
-      "var(--green)";
-
-    return;
-
-  }
-
-  if(
-    !issNextPass ||
-    issNextPass<new Date()
-  ){
-
-    findNextISSPass();
-
-  }
-
-  if(issNextPass){
-
-    const diff=
-      Math.max(
-        0,
-        Math.floor(
-          (issNextPass-new Date())/1000
-        )
-      );
-
-    const h=
-      Math.floor(diff/3600);
-
-    const m=
-      Math.floor(
-        (diff%3600)/60
-      );
-
-    const s=
-      diff%60;
-
-    el.textContent=
-      `⏱️ ISS : ${String(h).padStart(2,"0")}h `+
-      `${String(m).padStart(2,"0")}m `+
-      `${String(s).padStart(2,"0")}s`;
-
-  }
-
-}
-
-function updateSatelliteList(){
-
-  const list=$("satList");
-
-  list.innerHTML="";
-
-  if(!satellites.length){
-
-    list.innerHTML=
-      `<div class="item">
-        <strong>Aucun satellite chargé</strong>
-        <span>Les données orbitales seront réessayées.</span>
-      </div>`;
-
-    return;
-
-  }
-
-  const visible=
-    satellites
-      .map(s=>({
-
-        sat:s,
-        look:getSatLookAngles(s)
-
-      }))
-      .filter(x=>
-        x.look &&
-        x.look.alt>0
-      )
-      .sort(
-        (a,b)=>
-          b.look.alt-a.look.alt
-      )
-      .slice(0,15);
-
-  for(const item of visible){
-
-    const div=
-      document.createElement("div");
-
-    div.className="item";
-
-    div.innerHTML=
-      `<strong>
-        ${item.sat.isISS ? "🛸 ":"🛰️ "}
-        ${item.sat.name}
-      </strong>
-      <span>
-        ${getCardinal(item.look.az)}
-        ${Math.round(item.look.az)}°
-        • Alt ${Math.round(item.look.alt)}°
-      </span>`;
-
-    list.appendChild(div);
-
-  }
-
-}
-
-/* =========================================================
-   IDENTIFICATION
-   ========================================================= */
-
-function showInfoBox(
-  title,
-  description
-){
-
-  $("infoTitle").textContent=
-    title;
-
-  $("infoDesc").textContent=
-    description;
-
-  $("infoBox")
-    .classList
-    .add("show");
-
-}
-
-$("infoClose").addEventListener(
-  "click",
-  ()=>{
-    $("infoBox")
-      .classList
-      .remove("show");
-  }
-);
-
-canvas.addEventListener(
-  "click",
-  e=>{
-
-    if(isDragging)
-      return;
-
-    const rect=
-      canvas.getBoundingClientRect();
-
-    const x=
-      e.clientX-rect.left;
-
-    const y=
-      e.clientY-rect.top;
-
-    /* SATELLITES */
-
-    for(const sat of satellites){
-
-      const look=
-        getSatLookAngles(sat);
-
-      if(!look || look.alt<0)
-        continue;
-
-      const p=
-        project(
-          look.az,
-          look.alt
-        );
-
-      if(
-        p &&
-        Math.hypot(
-          p.x-x,
-          p.y-y
-        )<28
-      ){
-
-        showInfoBox(
-
-          sat.isISS
-            ? "🛸 Station Spatiale Internationale"
-            : "🛰️ "+sat.name,
-
-          `Direction : ${getCardinal(look.az)} (${Math.round(look.az)}°)
-Altitude : ${Math.round(look.alt)}°
-Distance : ${Math.round(look.range)} km`
-
-        );
-
-        return;
-
-      }
-
-    }
-
-    /* ÉTOILES */
-
-    for(const star of getStars()){
-
-      if(star.alt<0)
-        continue;
-
-      const p=
-        project(
-          star.az,
-          star.alt
-        );
-
-      if(
-        p &&
-        Math.hypot(
-          p.x-x,
-          p.y-y
-        )<25
-      ){
-
-        showInfoBox(
-
-          `⭐ ${star.name}`,
-
-          `Magnitude : ${star.mag}
-Direction : ${getCardinal(star.az)} (${Math.round(star.az)}°)
-Altitude : ${Math.round(star.alt)}°`
-
-        );
-
-        return;
-
-      }
-
-    }
-
-    /* CONSTELLATIONS */
-
-    for(const c of constellations){
-
-      const center=
-        getConstellationCenter(c);
-
-      if(
-        !center ||
-        center.alt<0
-      )
-        continue;
-
-      const p=
-        project(
-          center.az,
-          center.alt
-        );
-
-      if(
-        p &&
-        Math.hypot(
-          p.x-x,
-          p.y-y
-        )<45
-      ){
-
-        showInfoBox(
-
-          `🌌 ${c.name}`,
-
-          `Cette constellation contient ${c.stars.length} étoiles principales dans Mission Étoiles.
-            
-Explore le ciel pour découvrir sa forme !`
-
-        );
-
-        return;
-
-      }
-
-    }
-
-  }
-);
-
-/* =========================================================
-   MISSION
-   ========================================================= */
-
-function updateMissionGuidance(){
-
-  if(
-    currentTargetIndex>=missions.length
-  ){
-
-    $("missionTarget").textContent=
-      `🏆 Mission terminée, ${childName} !`;
-
-    $("missionCoords").textContent=
-      "";
-
-    $("missionGuidance").textContent=
-      "🌟 Tu es maintenant un véritable explorateur !";
-
-    return;
-
-  }
-
-  const mission=
-    missions[currentTargetIndex];
-
-  const target=
-    getStars().find(
-      s=>s.name===mission.name
-    );
-
-  if(!target)
-    return;
-
-  $("missionTarget").textContent=
-    mission.text;
-
-  if(target.alt<0){
-
-    $("missionCoords").textContent=
-      `Sous l'horizon • ${getCardinal(target.az)}`;
-
-    $("missionGuidance").textContent=
-      "⏳ Cette étoile reviendra bientôt.";
-
-    return;
-
-  }
-
-  $("missionCoords").textContent=
-    `Direction : ${getCardinal(target.az)} ${Math.round(target.az)}° • Alt ${Math.round(target.alt)}°`;
-
-  const view=
-    getActiveView();
-
-  const diffAz=
-    angleDiff(
-      target.az,
-      view.az
-    );
-
-  const diffAlt=
-    target.alt-view.alt;
-
-  let guidance="";
-
-  if(
-    Math.abs(diffAz)<=5 &&
-    Math.abs(diffAlt)<=5
-  ){
-
-    guidance=
-      `🎯 ${childName}, tu es dessus !`;
-
-  }else{
-
-    const azDir=
-      diffAz>0
-        ? `👉 Droite ${Math.abs(Math.round(diffAz))}°`
-        : `👈 Gauche ${Math.abs(Math.round(diffAz))}°`;
-
-    const altDir=
-      diffAlt>0
-        ? `👆 Monte`
-        : `👇 Descends`;
-
-    guidance=
-      Math.abs(diffAz)>5 &&
-      Math.abs(diffAlt)>5
-        ? `${azDir} • ${altDir}`
-        : Math.abs(diffAz)>5
-          ? azDir
-          : altDir;
-
-  }
-
-  $("missionGuidance").textContent=
-    guidance;
-
-  if(
-    Math.abs(diffAz)<4 &&
-    Math.abs(diffAlt)<4
-  ){
-
-    completeMission(
-      mission,
-      target
-    );
-
-  }
-
-}
-
-function completeMission(
-  mission,
-  target
-){
-
-  const foundName=
-    mission.name;
-
-  currentTargetIndex++;
-
-  $("missionCount").textContent=
-    `${currentTargetIndex} / ${missions.length}`;
-
-  $("progressBar").style.width=
-    `${currentTargetIndex/missions.length*100}%`;
-
-  showCelebration(
-    foundName,
-    mission.encouragement
-  );
-
-}
-
-function showCelebration(
-  starName,
-  encouragement
-){
-
-  $("celebrationTitle").textContent=
-    `Bravo ${childName} ! ⭐`;
-
-  $("celebrationText").textContent=
-    `Tu as trouvé ${starName} ! ${encouragement}`;
-
-  $("celebrationEmoji").textContent=
-    currentTargetIndex>=missions.length
-      ? "🏆"
-      : "🌟";
-
-  $("celebration")
-    .classList
-    .add("show");
-
-  setTimeout(
-    ()=>{
-      $("celebration")
-        .classList
-        .remove("show");
-    },
-    2400
-  );
-
-}
-
-/* =========================================================
-   RENDU
-   ========================================================= */
-
-function draw(){
-
-  ctx.fillStyle="#020611";
-
-  ctx.fillRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-  drawConstellations();
-
-  drawStars();
-
-  drawSatellites();
-
-  updateMissionGuidance();
-
-  updateISSCountdown();
-
-  requestAnimationFrame(draw);
-
-}
-
-function drawSatellites(){
+  lastSatPositionUpdate = now;
 
   for(const sat of satellites){
 
-    const look=
-      getSatLookAngles(sat);
+    const p = getSatLookAngles(sat);
 
-    if(
-      !look ||
-      look.alt<0
-    )
-      continue;
-
-    const p=
-      project(
-        look.az,
-        look.alt
-      );
-
-    if(!p)
-      continue;
-
-    ctx.save();
-
-    if(sat.isISS){
-
-      ctx.fillStyle="#fde68a";
-      ctx.shadowBlur=18;
-      ctx.shadowColor="#fde68a";
-
-      ctx.beginPath();
-
-      ctx.arc(
-        p.x,
-        p.y,
-        6,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-
-      ctx.shadowBlur=0;
-
-      ctx.font=
-        "bold 11px sans-serif";
-
-      ctx.fillText(
-        "🛸 ISS",
-        p.x+9,
-        p.y+4
-      );
-
+    if(p){
+      satPositionCache.set(sat, p);
     }else{
+      satPositionCache.delete(sat);
+    }
+  }
+}
 
-      ctx.fillStyle=
-        "#7dd3fc";
+function getCachedSatPosition(sat){
+  return satPositionCache.get(sat) || null;
+}
+
+function findNextISSPass(){
+  const iss = satellites.find(s => s.isISS);
+  if(!iss || !satelliteLib) return;
+
+  const now = new Date();
+  let passTime = null;
+
+  for(let i = 0; i < 1440; i++){
+    const checkTime = new Date(now.getTime() + i * 60000);
+    const angles = getSatLookAngles(iss, checkTime);
+    if(angles && angles.alt > 5){
+      passTime = checkTime;
+      break;
+    }
+  }
+  issNextPass = passTime;
+}
+
+function updateISSCountdown(){
+  const countdownEl = $("issTimer");
+  if(!countdownEl) return;
+
+  const iss = satellites.find(s => s.isISS);
+  if(!iss){ countdownEl.textContent = "Chargement ISS…"; return; }
+
+  const currentAngles = getCachedSatPosition(iss);
+  if(currentAngles && currentAngles.alt > 0){
+    countdownEl.textContent = "🟢 L'ISS EST VISIBLE EN CE MOMENT !";
+    countdownEl.style.color = "var(--green)";
+    return;
+  }
+
+  countdownEl.style.color = "var(--yellow)";
+
+  // Cooldown : évite de relancer la recherche (1440 propagations)
+  // à chaque frame quand aucun passage n'est trouvé.
+  if((!issNextPass || issNextPass < new Date()) && Date.now()-lastISSPassCheck > ISS_PASS_CHECK_INTERVAL){
+    lastISSPassCheck = Date.now();
+    findNextISSPass();
+  }
+
+  if(issNextPass){
+    const diff = Math.max(0, Math.floor((issNextPass - new Date()) / 1000));
+    const hrs = Math.floor(diff / 3600);
+    const mins = Math.floor((diff % 3600) / 60);
+    const secs = diff % 60;
+    countdownEl.textContent = `⏱️ Prochain passage ISS : ${String(hrs).padStart(2,'0')}h ${String(mins).padStart(2,'0')}m ${String(secs).padStart(2,'0')}s`;
+  } else {
+    countdownEl.textContent = "🔭 Recherche du prochain passage visible…";
+  }
+}
+
+/* =========================================================
+   RENDU PROJECTION, CONSTELLATIONS ET DESSINS FILIGRANES
+   ========================================================= */
+
+function project(az, alt){
+  const view = getActiveView();
+  let dx = angleDiff(az, view.az);
+  let dy = alt - view.alt;
+
+  if(Math.abs(dx) > view.fovH/2 + 10 || Math.abs(dy) > view.fovV/2 + 10) return null;
+  return { x: W/2 + (dx / view.fovH) * W, y: H/2 - (dy / view.fovV) * H };
+}
+
+function getStars(){
+  const now = new Date();
+  return stars.map(s => ({ ...s, ...raDecToAltAz(s.ra, s.dec, now) }));
+}
+
+function getConstellationCenter(constel, currentStars){
+  const cStars = currentStars.filter(s => constel.stars.includes(s.name));
+  if(cStars.length === 0) return null;
+
+  const az = averageAzimuth(cStars.map(s => s.az));
+
+  let sumAlt = 0;
+  for(const s of cStars){ sumAlt += s.alt; }
+
+  return { az, alt: sumAlt / cStars.length };
+}
+
+/* DESSINS EN FILIGRANE DES CONSTELLATIONS */
+function drawConstellationWatermarks(constel, starMap){
+  ctx.save();
+
+  if(constel.type === "bear"){ // GRANDE OURSE
+    const pts = ["Dubhe","Merak","Phecda","Megrez","Alioth","Mizar","Alkaid"].map(n => starMap.get(n)).filter(s => s && s.alt >= 0);
+    const projPts = pts.map(s => project(s.az, s.alt)).filter(Boolean);
+    if(projPts.length >= 4){
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(125, 211, 252, 0.05)";
+      ctx.strokeStyle = "rgba(125, 211, 252, 0.25)";
+      ctx.lineWidth = 2;
+      ctx.moveTo(projPts[0].x, projPts[0].y);
+      for(let p of projPts){ ctx.lineTo(p.x, p.y); }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  } 
+  else if(constel.type === "hunter"){ // ORION
+    const pts = ["Betelgeuse","Bellatrix","Rigel","Saiph"].map(n => starMap.get(n)).filter(s => s && s.alt >= 0);
+    const projPts = pts.map(s => project(s.az, s.alt)).filter(Boolean);
+    if(projPts.length >= 4){
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(253, 230, 138, 0.06)";
+      ctx.strokeStyle = "rgba(253, 230, 138, 0.3)";
+      ctx.lineWidth = 1.8;
+      ctx.moveTo(projPts[0].x, projPts[0].y);
+      ctx.lineTo(projPts[1].x, projPts[1].y);
+      ctx.lineTo(projPts[2].x, projPts[2].y);
+      ctx.lineTo(projPts[3].x, projPts[3].y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+  else if(constel.type === "triangle"){ // TRIANGLE D'ÉTÉ
+    const pts = ["Vega","Deneb","Altair"].map(n => starMap.get(n)).filter(s => s && s.alt >= 0);
+    const projPts = pts.map(s => project(s.az, s.alt)).filter(Boolean);
+    if(projPts.length === 3){
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(110, 231, 183, 0.07)";
+      ctx.strokeStyle = "rgba(110, 231, 183, 0.35)";
+      ctx.lineWidth = 2;
+      ctx.moveTo(projPts[0].x, projPts[0].y);
+      ctx.lineTo(projPts[1].x, projPts[1].y);
+      ctx.lineTo(projPts[2].x, projPts[2].y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+}
+
+function drawConstellations(currentStars, starMap){
+
+  for(const constel of constellations){
+    // 1. Dessins Filigranes
+    drawConstellationWatermarks(constel, starMap);
+
+    // 2. Lignes de la constellation
+    ctx.save();
+    ctx.strokeStyle = "rgba(125, 211, 252, 0.4)";
+    ctx.lineWidth = 1.3;
+    ctx.setLineDash([4, 4]);
+
+    for(const [nameA, nameB] of constel.lines){
+      const sA = starMap.get(nameA);
+      const sB = starMap.get(nameB);
+      if(!sA || !sB || (sA.alt < 0 && sB.alt < 0)) continue;
+
+      const pA = project(sA.az, sA.alt);
+      const pB = project(sB.az, sB.alt);
+      if(!pA || !pB) continue;
 
       ctx.beginPath();
-
-      ctx.arc(
-        p.x,
-        p.y,
-        2.5,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-
+      ctx.moveTo(pA.x, pA.y);
+      ctx.lineTo(pB.x, pB.y);
+      ctx.stroke();
     }
-
     ctx.restore();
 
-  }
+    // 3. Nom de la constellation au centre (+ cible tactile)
+    const center = getConstellationCenter(constel, currentStars);
+    if(center && center.alt > 0){
+      const pCenter = project(center.az, center.alt);
+      if(pCenter){
 
-}
+        frameTargets.push({
+          type:"constellation",
+          name:constel.name,
+          starCount:constel.stars.length,
+          x:pCenter.x,
+          y:pCenter.y,
+          hit:35
+        });
 
-/* =========================================================
-   GEOLOCALISATION
-   ========================================================= */
-
-function getLocation(){
-
-  return new Promise(
-    resolve=>{
-
-      if(!navigator.geolocation){
-
-        resolve();
-
-        return;
-
+        ctx.save();
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillStyle = "#7dd3fc";
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "#38bdf8";
+        ctx.textAlign = "center";
+        ctx.fillText(constel.name, pCenter.x, pCenter.y);
+        ctx.restore();
       }
-
-      navigator.geolocation.getCurrentPosition(
-
-        p=>{
-
-          locationData.lat=
-            p.coords.latitude;
-
-          locationData.lon=
-            p.coords.longitude;
-
-          locationData.height=
-            p.coords.altitude || 0;
-
-          $("locationText").textContent=
-            `Position : ${locationData.lat.toFixed(2)}°, ${locationData.lon.toFixed(2)}°`;
-
-          resolve();
-
-        },
-
-        ()=>{
-          resolve();
-        },
-
-        {
-          enableHighAccuracy:true,
-          timeout:10000,
-          maximumAge:300000
-        }
-
-      );
-
     }
-  );
+  }
+}
 
+function drawStars(currentStars){
+  for(const star of currentStars){
+    if(star.alt < 0) continue;
+    const p = project(star.az, star.alt);
+    if(!p) continue;
+
+    frameTargets.push({
+      type:"star",
+      name:star.name,
+      mag:star.mag,
+      az:star.az,
+      alt:star.alt,
+      x:p.x,
+      y:p.y,
+      hit:22
+    });
+
+    ctx.save();
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(1.5, 4.5 - star.mag*0.5), 0, Math.PI*2); ctx.fill();
+    ctx.font = "10px sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,.85)";
+    ctx.fillText(star.name, p.x + 6, p.y - 4);
+    ctx.restore();
+  }
+}
+
+function drawSatellitesAndISS(){
+  for(const sat of satellites){
+    const pSat = getCachedSatPosition(sat);
+    if(!pSat || pSat.alt < 0) continue;
+    const p = project(pSat.az, pSat.alt);
+    if(!p) continue;
+
+    frameTargets.push({
+      type:"satellite",
+      name:sat.name,
+      ref:sat,
+      isISS:sat.isISS,
+      az:pSat.az,
+      alt:pSat.alt,
+      range:pSat.range,
+      x:p.x,
+      y:p.y,
+      hit:26
+    });
+
+    ctx.save();
+    if(sat.isISS){
+      ctx.shadowBlur = 15; ctx.shadowColor = "#fde68a"; ctx.fillStyle = "#fde68a";
+      ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill();
+      ctx.font = "bold 12px sans-serif"; ctx.fillStyle = "#fde68a";
+      ctx.fillText("🛸 ISS (Station Spatiale)", p.x + 10, p.y + 4);
+    } else {
+      ctx.fillStyle = "#7dd3fc";
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  }
 }
 
 /* =========================================================
-   CAPTEURS
+   GUIDAGE DES MISSIONS
    ========================================================= */
 
-async function requestSensors(){
-
-  try{
-
-    if(
-      typeof DeviceOrientationEvent!=="undefined" &&
-      typeof DeviceOrientationEvent.requestPermission==="function"
-    ){
-
-      const result=
-        await DeviceOrientationEvent.requestPermission();
-
-      if(result!=="granted"){
-
-        setStatus(
-          "Mode manuel disponible",
-          false
-        );
-
-        return;
-
-      }
-
-    }
-
-    window.addEventListener(
-      "deviceorientation",
-      updateOrientationFromEvent,
-      true
-    );
-
-    setStatus(
-      "Capteurs actifs",
-      true
-    );
-
-  }catch(error){
-
-    setStatus(
-      "Mode manuel disponible",
-      false
-    );
-
+function updateMissionGuidance(currentStars){
+  if(currentTargetIndex >= missions.length){
+    $("missionTarget").textContent = "🏆 Toutes les missions sont accomplies !";
+    $("missionCoords").textContent = "";
+    $("missionGuidance").textContent = "Félicitations !";
+    return;
   }
 
+  const currentMission = missions[currentTargetIndex];
+  const targetStar = currentStars.find(s => s.name === currentMission.name);
+  if(!targetStar) return;
+
+  $("missionTarget").textContent = currentMission.text;
+
+  if(targetStar.alt < 0){
+    $("missionCoords").textContent = `Sous l'horizon (${getCardinal(targetStar.az)}, ${Math.round(targetStar.az)}°)`;
+    $("missionGuidance").textContent = "⚠️ Cette étoile n'est pas encore levée.";
+    return;
+  }
+
+  $("missionCoords").textContent = `Direction : ${getCardinal(targetStar.az)} (${Math.round(targetStar.az)}°) • Alt : ${Math.round(targetStar.alt)}°`;
+
+  const view = getActiveView();
+  const diffAz = angleDiff(targetStar.az, view.az);
+  const diffAlt = targetStar.alt - view.alt;
+
+  let guidanceText = "";
+  if(Math.abs(diffAz) <= 5 && Math.abs(diffAlt) <= 5){
+    guidanceText = "🎯 Cible en vue ! Stabilise l'appareil.";
+  } else {
+    let azDir = diffAz > 0 ? `👉 Tourne à droite (${Math.abs(Math.round(diffAz))}°)` : `👈 Tourne à gauche (${Math.abs(Math.round(diffAz))}°)`;
+    let altDir = diffAlt > 0 ? `👆 Lève (${Math.abs(Math.round(diffAlt))}°)` : `👇 Baisse (${Math.abs(Math.round(diffAlt))}°)`;
+
+    guidanceText = Math.abs(diffAz) > 5 && Math.abs(diffAlt) > 5 ? `${azDir} • ${altDir}` : (Math.abs(diffAz) > 5 ? azDir : altDir);
+  }
+
+  $("missionGuidance").textContent = guidanceText;
+
+  if(Math.abs(diffAz) < 4 && Math.abs(diffAlt) < 4){
+    const starName = targetStar.name;
+    currentTargetIndex++;
+    $("missionCount").textContent = `${currentTargetIndex} / ${missions.length}`;
+    $("progressBar").style.width = `${(currentTargetIndex / missions.length) * 100}%`;
+    toast(`⭐ Bravo ! Tu as trouvé ${starName} !`);
+  }
 }
 
 /* =========================================================
-   DÉMARRAGE
+   BOUCLE DE RENDU (throttlée ~30 FPS)
    ========================================================= */
 
-$("startBtn").addEventListener(
-  "click",
-  async()=>{
+let lastFrame = 0;
 
-    const input=
-      $("childName").value.trim();
+function draw(now=0){
 
-    childName=
-      input ||
-      "Explorateur";
-
-    localStorage.setItem(
-      "missionEtoilesChildName",
-      childName
-    );
-
-    $("childNameMission").textContent=
-      childName;
-
-    $("settingsName").textContent=
-      childName;
-
-    $("nameBadge").textContent=
-      `⭐ ${childName}`;
-
-    $("welcome")
-      .style
-      .display="none";
-
-    toast(
-      `🚀 Bienvenue ${childName} !`,
-      3000
-    );
-
-    await requestSensors();
-
-    await getLocation();
-
-    loadSatellites();
-
+  if(now-lastFrame < 33){
+    requestAnimationFrame(draw);
+    return;
   }
-);
 
-/* =========================================================
-   RESTAURATION PRÉNOM
-   ========================================================= */
+  lastFrame = now;
 
-const savedName=
-  localStorage.getItem(
-    "missionEtoilesChildName"
-  );
+  frameTargets = [];
 
-if(savedName){
+  ctx.fillStyle = "#020611";
+  ctx.fillRect(0,0,W,H);
 
-  $("childName").value=
-    savedName;
+  const currentStars = getStars();
+  const starMap = new Map(currentStars.map(s => [s.name, s]));
 
+  refreshSatellitePositionCache();
+
+  drawConstellations(currentStars, starMap);
+  drawStars(currentStars);
+  drawSatellitesAndISS();
+  drawSelection(currentStars);
+  updateMissionGuidance(currentStars);
+  updateISSCountdown();
+
+  requestAnimationFrame(draw);
 }
 
 /* =========================================================
-   BOUTONS
+   CALIBRAGE BOUSSOLE
    ========================================================= */
 
-$("missionBtn").addEventListener(
-  "click",
-  ()=>{
-    $("mission")
-      .classList
-      .toggle("hidden");
-  }
-);
+function refreshCalDisplay(){
+  $("calVal").textContent = `Offset : ${Math.round(calibrationOffset)}°`;
+}
 
-$("satBtn").addEventListener(
-  "click",
-  ()=>{
+$("calibrateBtn").addEventListener("click", () => {
+  refreshCalDisplay();
+  $("calibration").classList.add("open");
+});
 
-    document
-      .querySelectorAll(".panel")
-      .forEach(
-        p=>p.classList.remove("open")
-      );
+$("cancelCal").addEventListener("click", () => {
+  $("calibration").classList.remove("open");
+});
 
-    $("satPanel")
-      .classList
-      .add("open");
+$("calMinus").addEventListener("click", () => {
+  calibrationOffset = wrap360(calibrationOffset - 5);
+  if(calibrationOffset > 180) calibrationOffset -= 360;
+  refreshCalDisplay();
+});
 
-    updateSatelliteList();
+$("calPlus").addEventListener("click", () => {
+  calibrationOffset = wrap360(calibrationOffset + 5);
+  if(calibrationOffset > 180) calibrationOffset -= 360;
+  refreshCalDisplay();
+});
 
-  }
-);
-
-$("settingsBtn").addEventListener(
-  "click",
-  ()=>{
-
-    document
-      .querySelectorAll(".panel")
-      .forEach(
-        p=>p.classList.remove("open")
-      );
-
-    $("settingsPanel")
-      .classList
-      .add("open");
-
-  }
-);
-
-document
-  .querySelectorAll("[data-close]")
-  .forEach(
-    btn=>{
-
-      btn.addEventListener(
-        "click",
-        ()=>{
-          $(btn.dataset.close)
-            .classList
-            .remove("open");
-        }
-      );
-
-    }
-  );
-
-/* =========================================================
-   CALIBRATION
-   ========================================================= */
-
-$("calibrateBtn").addEventListener(
-  "click",
-  ()=>{
-    $("calVal").textContent=
-      `Offset : ${calibrationOffset}°`;
-
-    $("calibration")
-      .classList
-      .add("open");
-  }
-);
-
-$("calMinus").addEventListener(
-  "click",
-  ()=>{
-
-    calibrationOffset=
-      wrap360(
-        calibrationOffset-5
-      );
-
-    if(calibrationOffset>180)
-      calibrationOffset-=360;
-
-    $("calVal").textContent=
-      `Offset : ${calibrationOffset}°`;
-
-  }
-);
-
-$("calPlus").addEventListener(
-  "click",
-  ()=>{
-
-    calibrationOffset+=5;
-
-    if(calibrationOffset>180)
-      calibrationOffset-=360;
-
-    $("calVal").textContent=
-      `Offset : ${calibrationOffset}°`;
-
-  }
-);
-
-$("doCal").addEventListener(
-  "click",
-  ()=>{
-
-    localStorage.setItem(
-      "missionEtoilesV8Cal",
-      calibrationOffset
-    );
-
-    toast(
-      "🧭 Calibration enregistrée",
-      2200
-    );
-
-    $("calibration")
-      .classList
-      .remove("open");
-
-  }
-);
-
-$("cancelCal").addEventListener(
-  "click",
-  ()=>{
-    $("calibration")
-      .classList
-      .remove("open");
-  }
-);
-
-$("sensorBtn").addEventListener(
-  "click",
-  requestSensors
-);
+$("doCal").addEventListener("click", () => {
+  localStorage.setItem("missionEtoilesV5Cal", calibrationOffset);
+  $("calibration").classList.remove("open");
+  toast(`✅ Nord réglé (offset ${Math.round(calibrationOffset)}°)`, 3000);
+});
 
 /* =========================================================
    INITIALISATION
    ========================================================= */
 
+async function getLocation(){
+  if(!navigator.geolocation){
+    $("locationText").textContent = "Position : géolocalisation indisponible";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    p => {
+      locationData.lat = p.coords.latitude;
+      locationData.lon = p.coords.longitude;
+      $("locationText").textContent = `Position : ${locationData.lat.toFixed(2)}°, ${locationData.lon.toFixed(2)}°`;
+    },
+    () => {
+      $("locationText").textContent = "Position : localisation refusée (valeur par défaut)";
+    },
+    { enableHighAccuracy:true, timeout:7000, maximumAge:300000 }
+  );
+}
+
+$("startBtn").addEventListener("click", async ()=>{
+  await requestSensors();
+  await getLocation();
+  loadSatellites();
+  $("welcome").style.display = "none";
+  toast("🌌 Ciel prêt ! Utilise le mode enfant pour naviguer au doigt.", 3500);
+});
+
+async function requestSensors(){
+  try{
+    if(typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function"){
+      const res = await DeviceOrientationEvent.requestPermission();
+      if(res !== "granted"){
+        setStatus("Capteur limité", false);
+        toast("⚠️ Orientation refusée — utilise le Mode Enfant 👶 pour explorer au doigt.", 4200);
+        return;
+      }
+    }
+    window.addEventListener("deviceorientation", updateOrientationFromEvent, true);
+    setStatus("Capteurs actifs", true);
+  }catch(err){
+    setStatus("Capteur limité", false);
+  }
+}
+
+$("sensorBtn").addEventListener("click", requestSensors);
+
+$("satBtn").addEventListener("click", ()=>{ document.querySelectorAll(".panel").forEach(p=>p.classList.remove("open")); $("satPanel").classList.add("open"); });
+$("settingsBtn").addEventListener("click", ()=>{ document.querySelectorAll(".panel").forEach(p=>p.classList.remove("open")); $("settingsPanel").classList.add("open"); });
+$("missionBtn").addEventListener("click", ()=>{ $("mission").classList.toggle("hidden"); });
+
+document.querySelectorAll("[data-close]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{ $(btn.dataset.close).classList.remove("open"); });
+});
+
 requestAnimationFrame(draw);
 
-updateOrientationHUD();
-
 </script>
-
 </body>
 </html>
